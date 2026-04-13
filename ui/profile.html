@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 银川市卫健委体重管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F8FAFC}
+        .dashboard{display:flex;min-height:100vh}
+        .sidebar{width:260px;background:#FFFFFF;border-right:1px solid #E5E7EB;position:fixed;height:100vh;overflow-y:auto}
+        .sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E5E7EB}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#00BAAD,#00D4C8);border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:24px;height:24px;color:#FFFFFF}
+        .sidebar-logo span{font-size:16px;font-weight:600;color:#1F2937}
+        .sidebar-nav{padding:16px 12px}
+        .nav-section{margin-bottom:24px}
+        .nav-section-title{font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;padding:0 12px;margin-bottom:8px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;color:#6B7280;cursor:pointer;transition:all 0.2s;text-decoration:none}
+        .nav-item:hover{background:#F3F4F6;color:#1F2937}
+        .nav-item.active{background:linear-gradient(135deg,rgba(0,186,173,0.1),rgba(0,212,200,0.1));color:#00BAAD}
+        .nav-item svg{width:20px;height:20px;flex-shrink:0}
+        .nav-item span{font-size:14px;font-weight:500}
+        .main{margin-left:260px;flex:1;padding:24px}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+        .header-left h1{font-size:24px;font-weight:700;color:#1F2937;margin-bottom:4px}
+        .header-left p{font-size:14px;color:#6B7280}
+        .profile-grid{display:grid;grid-template-columns:320px 1fr;gap:24px}
+        .profile-left{display:flex;flex-direction:column;gap:24px}
+        .card{background:#FFFFFF;border-radius:16px;border:1px solid #E5E7EB}
+        .card-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #F3F4F6}
+        .card-title{font-size:16px;font-weight:600;color:#1F2937}
+        .card-body{padding:24px}
+        .avatar-section{text-align:center;padding:32px 24px}
+        .avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#00BAAD,#00D4C8);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;font-weight:600;color:#FFFFFF}
+        .user-name{font-size:20px;font-weight:600;color:#1F2937;margin-bottom:4px}
+        .user-role{font-size:14px;color:#00BAAD;margin-bottom:8px}
+        .user-dept{font-size:13px;color:#6B7280}
+        .avatar-edit{position:relative;display:inline-block}
+        .avatar-edit-btn{position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:#FFFFFF;border:2px solid #E5E7EB;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s}
+        .avatar-edit-btn:hover{border-color:#00BAAD;background:#F3F4F6}
+        .avatar-edit-btn svg{width:16px;height:16px;color:#6B7280}
+        .stats-row{display:flex;justify-content:space-around;padding:20px 0;border-top:1px solid #F3F4F6;margin-top:8px}
+        .stat-item{text-align:center}
+        .stat-num{font-size:24px;font-weight:700;color:#1F2937}
+        .stat-lbl{font-size:12px;color:#6B7280;margin-top:4px}
+        .profile-right{display:flex;flex-direction:column;gap:24px}
+        .tab-nav{display:flex;gap:8px;margin-bottom:24px;background:#FFFFFF;border-radius:16px;padding:6px;border:1px solid #E5E7EB}
+        .tab-btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;color:#6B7280;cursor:pointer;border:none;background:transparent;transition:all 0.2s}
+        .tab-btn:hover{color:#1F2937;background:#F3F4F6}
+        .tab-btn.active{background:#00BAAD;color:#FFFFFF}
+        .tab-pane{display:none}
+        .tab-pane.active{display:block}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+        .form-group{margin-bottom:20px}
+        .form-label{display:block;font-size:14px;font-weight:500;color:#1F2937;margin-bottom:8px}
+        .form-label .required{color:#EF4444;margin-left:4px}
+        .form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:14px;color:#1F2937;transition:all 0.2s;background:#FFFFFF}
+        .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:#00BAAD;box-shadow:0 0 0 3px rgba(0,186,173,0.1)}
+        .form-input:disabled,.form-select:disabled{background:#F9FAFB;color:#9CA3AF}
+        .form-hint{font-size:12px;color:#9CA3AF;margin-top:6px}
+        .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.2s;font-family:inherit}
+        .btn-primary{background:#00BAAD;color:#FFFFFF}
+        .btn-primary:hover{background:#00A195}
+        .btn-secondary{background:#FFFFFF;border:1px solid #E5E7EB;color:#6B7280}
+        .btn-secondary:hover{border-color:#00BAAD;color:#00BAAD}
+        .btn-sm{padding:6px 12px;font-size:13px}
+        .btn-danger{background:#FFFFFF;border:1px solid #EF4444;color:#EF4444}
+        .btn-danger:hover{background:#EF4444;color:#FFFFFF}
+        .password-strength{margin-top:8px}
+        .strength-bar{display:flex;gap:4px;margin-bottom:4px}
+        .strength-segment{height:4px;flex:1;background:#E5E7EB;border-radius:2px;transition:all 0.3s}
+        .strength-segment.active{background:#10B981}
+        .strength-segment.active.warning{background:#F59E0B}
+        .strength-segment.active.danger{background:#EF4444}
+        .strength-text{font-size:12px;color:#9CA3AF}
+        .todo-list{list-style:none}
+        .todo-item{display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid #F3F4F6}
+        .todo-item:last-child{border-bottom:none}
+        .todo-checkbox{width:20px;height:20px;border:2px solid #D1D5DB;border-radius:6px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:2px}
+        .todo-checkbox:hover{border-color:#00BAAD}
+        .todo-checkbox.checked{background:#00BAAD;border-color:#00BAAD}
+        .todo-checkbox.checked svg{color:#FFFFFF}
+        .todo-content{flex:1}
+        .todo-title{font-size:14px;font-weight:500;color:#1F2937;margin-bottom:4px}
+        .todo-item.completed .todo-title{text-decoration:line-through;color:#9CA3AF}
+        .todo-meta{font-size:13px;color:#6B7280}
+        .todo-time{font-size:12px;color:#9CA3AF;white-space:nowrap}
+        .todo-actions{display:flex;gap:8px}
+        .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+        .badge-urgent{background:rgba(239,68,68,0.1);color:#EF4444}
+        .badge-normal{background:rgba(245,158,11,0.1);color:#F59E0B}
+        .badge-low{background:rgba(16,185,129,0.1);color:#10B981}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000}
+        .modal-overlay.show{display:flex}
+        .modal{background:#FFFFFF;border-radius:16px;width:90%;max-width:500px;max-height:90vh;overflow:hidden;animation:modalIn 0.2s ease}
+        @keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #F3F4F6}
+        .modal-title{font-size:18px;font-weight:600;color:#1F2937}
+        .modal-close{width:32px;height:32px;border-radius:8px;border:none;background:#F3F4F6;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6B7280}
+        .modal-close:hover{background:#E5E7EB;color:#1F2937}
+        .modal-body{padding:24px;overflow-y:auto;max-height:calc(90vh - 140px)}
+        .modal-footer{display:flex;justify-content:flex-end;gap:12px;padding:20px 24px;border-top:1px solid #F3F4F6}
+        .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+        .info-item{background:#F9FAFB;border-radius:10px;padding:16px}
+        .info-label{font-size:13px;color:#6B7280;margin-bottom:4px}
+        .info-value{font-size:15px;font-weight:500;color:#1F2937}
+        .security-item{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid #F3F4F6}
+        .security-item:last-child{border-bottom:none}
+        .security-info{display:flex;align-items:center;gap:12px}
+        .security-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .security-icon svg{width:20px;height:20px}
+        .security-icon.green{background:rgba(16,185,129,0.1);color:#10B981}
+        .security-icon.amber{background:rgba(245,158,11,0.1);color:#F59E0B}
+        .security-icon.red{background:rgba(239,68,68,0.1);color:#EF4444}
+        .security-name{font-size:14px;font-weight:500;color:#1F2937}
+        .security-status{font-size:13px;color:#6B7280}
+        .notification-list{list-style:none}
+        .notif-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F3F4F6}
+        .notif-item:last-child{border-bottom:none}
+        .notif-info{display:flex;align-items:center;gap:12px}
+        .notif-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+        .notif-icon svg{width:18px;height:18px}
+        .notif-icon.teal{background:rgba(0,186,173,0.1);color:#00BAAD}
+        .notif-icon.amber{background:rgba(245,158,11,0.1);color:#F59E0B}
+        .notif-name{font-size:14px;color:#1F2937}
+        .switch{position:relative;display:inline-block;width:44px;height:24px}
+        .switch input{opacity:0;width:0;height:0}
+        .slider{position:absolute;cursor:pointer;inset:0;background:#D1D5DB;border-radius:24px;transition:0.3s}
+        .slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#FFFFFF;border-radius:50%;transition:0.3s}
+        input:checked+.slider{background:#00BAAD}
+        input:checked+.slider:before{transform:translateX(20px)}
+        .action-bar{position:sticky;bottom:0;background:#FFFFFF;border-top:1px solid #E5E7EB;padding:16px 24px;margin:24px -24px -24px;display:flex;justify-content:flex-end;gap:12px}
+        .toast{position:fixed;bottom:24px;right:24px;background:#1F2937;color:#FFFFFF;padding:12px 20px;border-radius:10px;font-size:14px;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:2000}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.success{background:#10B981}
+        .toast.error{background:#EF4444}
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <span>体重管理</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">MAIN</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        <span>数据概览</span>
+                    </a>
+                    <a href="statistics.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span>统计分析</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">CONTENT</div>
+                    <a href="health-guide.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>健康指导管理</span>
+                    </a>
+                    <a href="content.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>个性化表单管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">SYSTEM</div>
+                    <a href="points.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                        <span>积分激励管理</span>
+                    </a>
+                    <a href="system.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span>系统管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">ACCOUNT</div>
+                    <a href="profile.html" class="nav-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>个人中心</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        <!-- 主内容 -->
+        <main class="main">
+            <div class="header">
+                <div class="header-left">
+                    <h1>个人中心</h1>
+                    <p>管理个人信息、账号安全与待办事项</p>
+                </div>
+            </div>
+            <div class="profile-grid">
+                <!-- 左侧用户信息卡片 -->
+                <div class="profile-left">
+                    <div class="card">
+                        <div class="avatar-section">
+                            <div class="avatar-edit">
+                                <div class="avatar">刘</div>
+                                <div class="avatar-edit-btn" onclick="showToast('请在移动端上传头像')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                </div>
+                            </div>
+                            <div class="user-name">刘建国</div>
+                            <div class="user-role">超级管理员</div>
+                            <div class="user-dept">银川市第一人民医院 · 内分泌科</div>
+                        </div>
+                        <div class="stats-row">
+                            <div class="stat-item">
+                                <div class="stat-num">128</div>
+                                <div class="stat-lbl">我的积分</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-num">5</div>
+                                <div class="stat-lbl">待办事项</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-num">32</div>
+                                <div class="stat-lbl">已完成</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">账号信息</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">账号</div>
+                                    <div class="info-value">admin001</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">角色</div>
+                                    <div class="info-value">超级管理员</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">入职时间</div>
+                                    <div class="info-value">2025-03-15</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">最后登录</div>
+                                    <div class="info-value">2026-04-10 08:30</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右侧功能区域 -->
+                <div class="profile-right">
+                    <div class="tab-nav">
+                        <button class="tab-btn active" data-tab="info">基本信息</button>
+                        <button class="tab-btn" data-tab="password">修改密码</button>
+                        <button class="tab-btn" data-tab="todo">待办事项</button>
+                        <button class="tab-btn" data-tab="notify">通知设置</button>
+                    </div>
+                    <!-- 基本信息 -->
+                    <div class="tab-pane active" id="tab-info">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">基本信息</span>
+                                <button class="btn btn-primary btn-sm" onclick="saveBasicInfo()">保存修改</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">姓名 <span class="required">*</span></label>
+                                        <input type="text" class="form-input" value="刘建国">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">工号</label>
+                                        <input type="text" class="form-input" value="10086" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">手机号码 <span class="required">*</span></label>
+                                        <input type="text" class="form-input" value="138****6789">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">电子邮箱</label>
+                                        <input type="email" class="form-input" value="liujianguo@yinchuan.gov.cn">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">所属机构 <span class="required">*</span></label>
+                                        <select class="form-select">
+                                            <option selected>银川市第一人民医院</option>
+                                            <option>银川市第二人民医院</option>
+                                            <option>银川市中医医院</option>
+                                            <option>银川市妇幼保健院</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">所属科室 <span class="required">*</span></label>
+                                        <select class="form-select">
+                                            <option selected>内分泌科</option>
+                                            <option>营养科</option>
+                                            <option>体检中心</option>
+                                            <option>全科医学科</option>
+                                            <option>慢病管理中心</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">职称</label>
+                                        <select class="form-select">
+                                            <option selected>主任医师</option>
+                                            <option>副主任医师</option>
+                                            <option>主治医师</option>
+                                            <option>住院医师</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">执业证书编号</label>
+                                        <input type="text" class="form-input" value="310***********1234">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">个人简介</label>
+                                    <textarea class="form-textarea" placeholder="简单介绍一下自己...">从事内分泌科临床工作15年，专注于肥胖症、糖尿病等代谢性疾病的诊治与健康管理。参与多项国家级代谢性疾病研究课题，发表SCI论文10余篇。</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 修改密码 -->
+                    <div class="tab-pane" id="tab-password">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">修改密码</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">当前密码 <span class="required">*</span></label>
+                                    <input type="password" class="form-input" placeholder="请输入当前密码">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">新密码 <span class="required">*</span></label>
+                                    <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码" oninput="checkPasswordStrength()">
+                                    <div class="password-strength">
+                                        <div class="strength-bar">
+                                            <div class="strength-segment" id="str1"></div>
+                                            <div class="strength-segment" id="str2"></div>
+                                            <div class="strength-segment" id="str3"></div>
+                                            <div class="strength-segment" id="str4"></div>
+                                        </div>
+                                        <div class="strength-text">密码强度：<span id="strengthText">请输入密码</span></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">确认新密码 <span class="required">*</span></label>
+                                    <input type="password" class="form-input" placeholder="请再次输入新密码">
+                                </div>
+                                <div style="background:#F9FAFB;border-radius:10px;padding:16px;margin-bottom:20px">
+                                    <div style="font-size:14px;font-weight:500;color:#1F2937;margin-bottom:8px">密码要求：</div>
+                                    <ul style="font-size:13px;color:#6B7280;list-style:none;line-height:1.8">
+                                        <li>• 长度至少 8 个字符</li>
+                                        <li>• 必须包含大小写字母</li>
+                                        <li>• 必须包含数字</li>
+                                        <li>• 必须包含特殊字符（@, #, $, %, ^, &）</li>
+                                    </ul>
+                                </div>
+                                <button class="btn btn-primary" onclick="changePassword()">确认修改密码</button>
+                            </div>
+                        </div>
+                        <div class="card" style="margin-top:24px">
+                            <div class="card-header">
+                                <span class="card-title">安全设置</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <div class="security-icon green">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        </div>
+                                        <div>
+                                            <div class="security-name">手机绑定</div>
+                                            <div class="security-status">138****6789 已绑定</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm">更换手机</button>
+                                </div>
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <div class="security-icon amber">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                        </div>
+                                        <div>
+                                            <div class="security-name">邮箱绑定</div>
+                                            <div class="security-status">liujianguo@yinchuan.gov.cn</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm">更换邮箱</button>
+                                </div>
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <div class="security-icon red">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                        </div>
+                                        <div>
+                                            <div class="security-name">两步验证</div>
+                                            <div class="security-status">未开启</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm">立即开启</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 待办事项 -->
+                    <div class="tab-pane" id="tab-todo">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">我的待办</span>
+                                <button class="btn btn-primary btn-sm" onclick="openModal('todoModal')">+ 新增待办</button>
+                            </div>
+                            <div class="card-body">
+                                <ul class="todo-list">
+                                    <li class="todo-item">
+                                        <div class="todo-checkbox" onclick="toggleTodo(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:none"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <div class="todo-content">
+                                            <div class="todo-title">审核王某某的减重目标调整申请</div>
+                                            <div class="todo-meta">来自：体重管理系统 · <span class="badge badge-urgent">紧急</span></div>
+                                        </div>
+                                        <div class="todo-time">今天 17:00</div>
+                                        <div class="todo-actions">
+                                            <button class="btn btn-secondary btn-sm">处理</button>
+                                        </div>
+                                    </li>
+                                    <li class="todo-item">
+                                        <div class="todo-checkbox" onclick="toggleTodo(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:none"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <div class="todo-content">
+                                            <div class="todo-title">更新下周健康指导内容库</div>
+                                            <div class="todo-meta">来自：健康指导管理 · <span class="badge badge-normal">一般</span></div>
+                                        </div>
+                                        <div class="todo-time">明天 10:00</div>
+                                        <div class="todo-actions">
+                                            <button class="btn btn-secondary btn-sm">处理</button>
+                                        </div>
+                                    </li>
+                                    <li class="todo-item">
+                                        <div class="todo-checkbox" onclick="toggleTodo(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:none"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <div class="todo-content">
+                                            <div class="todo-title">处理积分兑换审核（3笔待审批）</div>
+                                            <div class="todo-meta">来自：积分激励管理 · <span class="badge badge-normal">一般</span></div>
+                                        </div>
+                                        <div class="todo-time">明天 18:00</div>
+                                        <div class="todo-actions">
+                                            <button class="btn btn-secondary btn-sm">处理</button>
+                                        </div>
+                                    </li>
+                                    <li class="todo-item">
+                                        <div class="todo-checkbox" onclick="toggleTodo(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:none"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <div class="todo-content">
+                                            <div class="todo-title">审核新版个性化表单模板</div>
+                                            <div class="todo-meta">来自：个性化表单管理 · <span class="badge badge-low">较低</span></div>
+                                        </div>
+                                        <div class="todo-time">本周五</div>
+                                        <div class="todo-actions">
+                                            <button class="btn btn-secondary btn-sm">处理</button>
+                                        </div>
+                                    </li>
+                                    <li class="todo-item">
+                                        <div class="todo-checkbox" onclick="toggleTodo(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:none"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <div class="todo-content">
+                                            <div class="todo-title">导出本月就诊数据分析报告</div>
+                                            <div class="todo-meta">来自：统计分析 · <span class="badge badge-low">较低</span></div>
+                                        </div>
+                                        <div class="todo-time">下周一</div>
+                                        <div class="todo-actions">
+                                            <button class="btn btn-secondary btn-sm">处理</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card" style="margin-top:24px">
+                            <div class="card-header">
+                                <span class="card-title">已完成</span>
+                            </div>
+                            <div class="card-body" style="padding:0 24px">
+                                <ul class="todo-list">
+                                    <li class="todo-item completed">
+                                        <div class="todo-checkbox checked" onclick="toggleTodo(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <div class="todo-content">
+                                            <div class="todo-title">审核李某某的健康指导执行反馈</div>
+                                            <div class="todo-meta">已完成 · 2026-04-09 15:32</div>
+                                        </div>
+                                        <div class="todo-actions">
+                                            <button class="btn btn-danger btn-sm">删除</button>
+                                        </div>
+                                    </li>
+                                    <li class="todo-item completed">
+                                        <div class="todo-checkbox checked" onclick="toggleTodo(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <div class="todo-content">
+                                            <div class="todo-title">更新热量换算配置数据</div>
+                                            <div class="todo-meta">已完成 · 2026-04-08 11:20</div>
+                                        </div>
+                                        <div class="todo-actions">
+                                            <button class="btn btn-danger btn-sm">删除</button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 通知设置 -->
+                    <div class="tab-pane" id="tab-notify">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">通知设置</span>
+                            </div>
+                            <div class="card-body">
+                                <ul class="notification-list">
+                                    <li class="notif-item">
+                                        <div class="notif-info">
+                                            <div class="notif-icon teal">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                            </div>
+                                            <span class="notif-name">系统通知</span>
+                                        </div>
+                                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                                    </li>
+                                    <li class="notif-item">
+                                        <div class="notif-info">
+                                            <div class="notif-icon teal">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                            </div>
+                                            <span class="notif-name">待办事项提醒</span>
+                                        </div>
+                                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                                    </li>
+                                    <li class="notif-item">
+                                        <div class="notif-info">
+                                            <div class="notif-icon amber">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                                            </div>
+                                            <span class="notif-name">积分变动通知</span>
+                                        </div>
+                                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                                    </li>
+                                    <li class="notif-item">
+                                        <div class="notif-info">
+                                            <div class="notif-icon teal">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                            </div>
+                                            <span class="notif-name">新用户注册通知</span>
+                                        </div>
+                                        <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                                    </li>
+                                    <li class="notif-item">
+                                        <div class="notif-info">
+                                            <div class="notif-icon teal">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                            </div>
+                                            <span class="notif-name">表单提交通知</span>
+                                        </div>
+                                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- 新增待办弹窗 -->
+    <div class="modal-overlay" id="todoModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">新增待办事项</span>
+                <button class="modal-close" onclick="closeModal('todoModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">待办标题 <span class="required">*</span></label>
+                    <input type="text" class="form-input" placeholder="请输入待办事项标题">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">优先级</label>
+                        <select class="form-select">
+                            <option value="low">较低</option>
+                            <option value="normal" selected>一般</option>
+                            <option value="urgent">紧急</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">截止时间</label>
+                        <input type="datetime-local" class="form-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注</label>
+                    <textarea class="form-textarea" placeholder="补充说明..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('todoModal')">取消</button>
+                <button class="btn btn-primary" onclick="addTodo()">添加</button>
+            </div>
+        </div>
+    </div>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    <script>
+        // Tab 切换
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+            });
+        });
+        // 弹窗
+        function openModal(id) { document.getElementById(id).classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('show');
+            });
+        });
+        // Toast 提示
+        function showToast(msg, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast show' + (type ? ' ' + type : '');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+        // 密码强度检测
+        function checkPasswordStrength() {
+            const pwd = document.getElementById('newPassword').value;
+            const str1 = document.getElementById('str1');
+            const str2 = document.getElementById('str2');
+            const str3 = document.getElementById('str3');
+            const str4 = document.getElementById('str4');
+            const text = document.getElementById('strengthText');
+            
+            let strength = 0;
+            if (pwd.length >= 8) strength++;
+            if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
+            if (/\d/.test(pwd)) strength++;
+            if (/[@#$%^&]/.test(pwd)) strength++;
+            
+            [str1, str2, str3, str4].forEach(s => s.className = 'strength-segment');
+            
+            if (pwd.length === 0) {
+                text.textContent = '请输入密码';
+            } else if (strength <= 1) {
+                str1.className = 'strength-segment active danger';
+                text.textContent = '弱';
+                text.style.color = '#EF4444';
+            } else if (strength <= 2) {
+                str1.className = 'strength-segment active warning';
+                str2.className = 'strength-segment active warning';
+                text.textContent = '中等';
+                text.style.color = '#F59E0B';
+            } else if (strength <= 3) {
+                str1.className = 'strength-segment active';
+                str2.className = 'strength-segment active';
+                str3.className = 'strength-segment active';
+                text.textContent = '良好';
+                text.style.color = '#10B981';
+            } else {
+                str1.className = 'strength-segment active';
+                str2.className = 'strength-segment active';
+                str3.className = 'strength-segment active';
+                str4.className = 'strength-segment active';
+                text.textContent = '强';
+                text.style.color = '#10B981';
+            }
+        }
+        // 修改密码
+        function changePassword() {
+            showToast('密码修改成功！', 'success');
+        }
+        // 保存基本信息
+        function saveBasicInfo() {
+            showToast('基本信息保存成功！', 'success');
+        }
+        // 待办事项切换
+        function toggleTodo(el) {
+            el.classList.toggle('checked');
+            const svg = el.querySelector('svg');
+            if (el.classList.contains('checked')) {
+                svg.style.display = 'block';
+                el.closest('.todo-item').classList.add('completed');
+            } else {
+                svg.style.display = 'none';
+                el.closest('.todo-item').classList.remove('completed');
+            }
+        }
+        // 新增待办
+        function addTodo() {
+            closeModal('todoModal');
+            showToast('待办事项添加成功！', 'success');
+        }
+    </script>
+</body>
+</html>
