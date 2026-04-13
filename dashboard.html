@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据概览 - 银川市卫健委体重管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F8FAFC}
+        .dashboard{display:flex;min-height:100vh}
+        .sidebar{width:260px;background:#FFFFFF;border-right:1px solid #E5E7EB;position:fixed;height:100vh;overflow-y:auto}
+        .sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E5E7EB}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#00BAAD,#00D4C8);border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:24px;height:24px;color:#FFFFFF}
+        .sidebar-logo span{font-size:16px;font-weight:600;color:#1F2937}
+        .sidebar-nav{padding:16px 12px}
+        .nav-section{margin-bottom:24px}
+        .nav-section-title{font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;padding:0 12px;margin-bottom:8px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;color:#6B7280;cursor:pointer;transition:all 0.2s;text-decoration:none}
+        .nav-item:hover{background:#F3F4F6;color:#1F2937}
+        .nav-item.active{background:linear-gradient(135deg,rgba(0,186,173,0.1),rgba(0,212,200,0.1));color:#00BAAD}
+        .nav-item svg{width:20px;height:20px;flex-shrink:0}
+        .nav-item span{font-size:14px;font-weight:500}
+        .main{margin-left:260px;flex:1;padding:24px}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+        .header-left h1{font-size:24px;font-weight:700;color:#1F2937;margin-bottom:4px}
+        .header-left p{font-size:14px;color:#6B7280}
+        .header-right{display:flex;align-items:center;gap:12px}
+        .time-filter{display:flex;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:10px;padding:4px}
+        .time-filter button{padding:8px 16px;border:none;background:none;border-radius:8px;font-size:13px;color:#6B7280;cursor:pointer;transition:all 0.2s;font-family:inherit}
+        .time-filter button:hover{color:#1F2937}
+        .time-filter button.active{background:#00BAAD;color:#FFFFFF;font-weight:500}
+        .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:24px}
+        .stat-card{background:#FFFFFF;border-radius:16px;padding:24px;border:1px solid #E5E7EB;transition:all 0.3s}
+        .stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.06);transform:translateY(-2px)}
+        .stat-card-header{display:flex;justify-content:space-between;margin-bottom:16px}
+        .stat-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+        .stat-card-icon svg{width:24px;height:24px}
+        .stat-card-icon.teal{background:linear-gradient(135deg,rgba(0,186,173,0.15),rgba(0,212,200,0.15));color:#00BAAD}
+        .stat-card-icon.green{background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.1));color:#10B981}
+        .stat-card-icon.amber{background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.1));color:#F59E0B}
+        .stat-card-icon.red{background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.1));color:#EF4444}
+        .stat-card-icon.purple{background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(139,92,246,0.1));color:#8B5CF6}
+        .stat-trend{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:4px 8px;border-radius:20px}
+        .stat-trend.up{color:#10B981;background:rgba(16,185,129,0.1)}
+        .stat-trend.down{color:#EF4444;background:rgba(239,68,68,0.1)}
+        .stat-value{font-size:32px;font-weight:700;color:#1F2937;margin-bottom:4px}
+        .stat-label{font-size:14px;color:#6B7280}
+        .weight-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+        .charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:24px}
+        .chart-card{background:#FFFFFF;border-radius:16px;padding:24px;border:1px solid #E5E7EB}
+        .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .chart-title{font-size:16px;font-weight:600;color:#1F2937}
+        .chart-actions{display:flex;gap:8px}
+        .chart-btn{padding:6px 12px;border:1px solid #E5E7EB;border-radius:8px;background:#FFFFFF;font-size:13px;color:#6B7280;cursor:pointer;transition:all 0.2s;font-family:inherit}
+        .chart-btn:hover{border-color:#00BAAD;color:#00BAAD}
+        .chart-btn.active{background:#00BAAD;color:#FFFFFF;border-color:#00BAAD}
+        .chart-container{height:300px}
+        .chart-container-sm{height:260px}
+        .bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+        .alert-card{background:#FFFFFF;border-radius:16px;padding:24px;border:1px solid #E5E7EB}
+        .alert-item{display:flex;align-items:flex-start;gap:12px;padding:16px 0;border-bottom:1px solid #F3F4F6}
+        .alert-item:last-child{border-bottom:none}
+        .alert-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .alert-icon.warning{background:rgba(245,158,11,0.1);color:#F59E0B}
+        .alert-icon.danger{background:rgba(239,68,68,0.1);color:#EF4444}
+        .alert-icon.info{background:rgba(0,186,173,0.1);color:#00BAAD}
+        .alert-content{flex:1}
+        .alert-title{font-size:14px;font-weight:500;color:#1F2937;margin-bottom:4px}
+        .alert-desc{font-size:13px;color:#6B7280;margin-bottom:4px}
+        .alert-time{font-size:12px;color:#9CA3AF}
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <span>体重管理</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">MAIN</div>
+                    <a href="dashboard.html" class="nav-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        <span>数据概览</span>
+                    </a>
+                    <a href="statistics.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span>统计分析</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">CONTENT</div>
+                    <a href="health-guide.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>健康指导管理</span>
+                    </a>
+                    <a href="content.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>个性化表单管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">SYSTEM</div>
+                    <a href="points.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                        <span>积分激励管理</span>
+                    </a>
+                    <a href="system.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span>系统管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">ACCOUNT</div>
+                    <a href="profile.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>个人中心</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        <!-- 主内容 -->
+        <main class="main">
+            <div class="header">
+                <div class="header-left">
+                    <h1>数据概览</h1>
+                    <p>实时掌握辖区体重管理数据</p>
+                </div>
+                <div class="header-right">
+                    <div class="time-filter">
+                        <button class="active">今日</button>
+                        <button>本周</button>
+                        <button>本月</button>
+                        <button>本季</button>
+                        <button>本年</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                        <span class="stat-trend up">+12.5%</span>
+                    </div>
+                    <div class="stat-value">48,672</div>
+                    <div class="stat-label">总用户数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div>
+                        <span class="stat-trend up">+386</span>
+                    </div>
+                    <div class="stat-value">386</div>
+                    <div class="stat-label">今日新增</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                        <span class="stat-trend up">+8.3%</span>
+                    </div>
+                    <div class="stat-value">12,845</div>
+                    <div class="stat-label">活跃用户</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <span class="stat-trend down">-2.1%</span>
+                    </div>
+                    <div class="stat-value">58.3%</div>
+                    <div class="stat-label">超重/肥胖占比</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+                        <span class="stat-trend up">-0.3</span>
+                    </div>
+                    <div class="stat-value">24.6</div>
+                    <div class="stat-label">区域平均BMI</div>
+                </div>
+            </div>
+            <!-- 超重肥胖细分 -->
+            <div class="weight-breakdown">
+                <!-- 超重用户 -->
+                <div class="stat-card" style="padding:24px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                                <div style="width:8px;height:8px;background:#F59E0B;border-radius:50%;"></div>
+                                <span style="font-size:13px;color:#6B7280;font-weight:500;">超重人群</span>
+                            </div>
+                            <div style="font-size:36px;font-weight:700;color:#1F2937;line-height:1;">32.1%</div>
+                            <div style="font-size:14px;color:#6B7280;margin-top:4px;">15,625 人</div>
+                        </div>
+                        <!-- 环形进度 -->
+                        <div style="position:relative;width:80px;height:80px;">
+                            <svg width="80" height="80" viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r="34" fill="none" stroke="#FEE2E2" stroke-width="8"/>
+                                <circle cx="40" cy="40" r="34" fill="none" stroke="#F59E0B" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="213.6" stroke-dashoffset="50" transform="rotate(-90 40 40)"/>
+                            </svg>
+                            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                                <span style="font-size:16px;font-weight:700;color:#F59E0B;">68%</span>
+                                <span style="font-size:10px;color:#9CA3AF;">控制中</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 细分进度条 -->
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                        <div style="background:#FFFBEB;padding:12px;border-radius:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                <span style="font-size:12px;color:#92400E;">轻度超重</span>
+                                <span style="font-size:12px;font-weight:600;color:#92400E;">12%</span>
+                            </div>
+                            <div style="height:6px;background:#FDE68A;border-radius:3px;overflow:hidden;">
+                                <div style="width:38%;height:100%;background:#F59E0B;border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:11px;color:#92400E;margin-top:4px;">5,842 人</div>
+                        </div>
+                        <div style="background:#FFF7ED;padding:12px;border-radius:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                <span style="font-size:12px;color:#9A3412;">中度超重</span>
+                                <span style="font-size:12px;font-weight:600;color:#9A3412;">15%</span>
+                            </div>
+                            <div style="height:6px;background:#FED7AA;border-radius:3px;overflow:hidden;">
+                                <div style="width:47%;height:100%;background:#EA580C;border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:11px;color:#9A3412;margin-top:4px;">7,302 人</div>
+                        </div>
+                        <div style="background:#FEF2F2;padding:12px;border-radius:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                <span style="font-size:12px;color:#991B1B;">重度超重</span>
+                                <span style="font-size:12px;font-weight:600;color:#991B1B;">5%</span>
+                            </div>
+                            <div style="height:6px;background:#FECACA;border-radius:3px;overflow:hidden;">
+                                <div style="width:16%;height:100%;background:#DC2626;border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:11px;color:#991B1B;margin-top:4px;">2,481 人</div>
+                        </div>
+                    </div>
+                    <!-- 趋势 -->
+                    <div style="display:flex;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #F3F4F6;">
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                            <span style="font-size:12px;color:#10B981;">较上周 -1.2%</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00BAAD" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span style="font-size:12px;color:#00BAAD;">本月目标 30%</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 肥胖用户 -->
+                <div class="stat-card" style="padding:24px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                                <div style="width:8px;height:8px;background:#EF4444;border-radius:50%;"></div>
+                                <span style="font-size:13px;color:#6B7280;font-weight:500;">肥胖人群</span>
+                            </div>
+                            <div style="font-size:36px;font-weight:700;color:#1F2937;line-height:1;">26.2%</div>
+                            <div style="font-size:14px;color:#6B7280;margin-top:4px;">12,748 人</div>
+                        </div>
+                        <!-- 环形进度 -->
+                        <div style="position:relative;width:80px;height:80px;">
+                            <svg width="80" height="80" viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r="34" fill="none" stroke="#FEE2E2" stroke-width="8"/>
+                                <circle cx="40" cy="40" r="34" fill="none" stroke="#EF4444" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="213.6" stroke-dashoffset="80" transform="rotate(-90 40 40)"/>
+                            </svg>
+                            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                                <span style="font-size:16px;font-weight:700;color:#EF4444;">62%</span>
+                                <span style="font-size:10px;color:#9CA3AF;">控制中</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 细分进度条 -->
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+                        <div style="background:#FFF7F7;padding:10px;border-radius:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <span style="font-size:11px;color:#991B1B;">轻度</span>
+                                <span style="font-size:11px;font-weight:600;color:#991B1B;">10%</span>
+                            </div>
+                            <div style="height:5px;background:#FECACA;border-radius:3px;overflow:hidden;">
+                                <div style="width:32%;height:100%;background:#EF4444;border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:10px;color:#991B1B;margin-top:3px;">4,864人</div>
+                        </div>
+                        <div style="background:#FFF5F5;padding:10px;border-radius:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <span style="font-size:11px;color:#B91C1C;">中度</span>
+                                <span style="font-size:11px;font-weight:600;color:#B91C1C;">9%</span>
+                            </div>
+                            <div style="height:5px;background:#FCA5A5;border-radius:3px;overflow:hidden;">
+                                <div style="width:29%;height:100%;background:#DC2626;border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:10px;color:#B91C1C;margin-top:3px;">4,379人</div>
+                        </div>
+                        <div style="background:#FEF2F2;padding:10px;border-radius:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <span style="font-size:11px;color:#7F1D1D;">重度</span>
+                                <span style="font-size:11px;font-weight:600;color:#7F1D1D;">5%</span>
+                            </div>
+                            <div style="height:5px;background:#EF4444;border-radius:3px;overflow:hidden;">
+                                <div style="width:16%;height:100%;background:#B91C1C;border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:10px;color:#7F1D1D;margin-top:3px;">2,435人</div>
+                        </div>
+                        <div style="background:#FAFAFA;padding:10px;border-radius:10px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <span style="font-size:11px;color:#374151;">极重度</span>
+                                <span style="font-size:11px;font-weight:600;color:#374151;">2%</span>
+                            </div>
+                            <div style="height:5px;background:#D1D5DB;border-radius:3px;overflow:hidden;">
+                                <div style="width:8%;height:100%;background:#6B7280;border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:10px;color:#374151;margin-top:3px;">970人</div>
+                        </div>
+                    </div>
+                    <!-- 趋势 -->
+                    <div style="display:flex;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #F3F4F6;">
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                            <span style="font-size:12px;color:#10B981;">较上周 -0.8%</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00BAAD" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span style="font-size:12px;color:#00BAAD;">本月目标 24%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 图表区域 -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">BMI达标率趋势</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn">导出</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="bmiTrendChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">用户年龄分布</h3>
+                    </div>
+                    <div class="chart-container-sm" id="ageDistChart"></div>
+                </div>
+            </div>
+            <!-- 下方图表 -->
+            <div class="bottom-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">银川市用户地域分布</h3>
+                    </div>
+                    <div class="chart-container-sm" id="regionChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">达标率与反弹率趋势</h3>
+                    </div>
+                    <div class="chart-container-sm" id="rateTrendChart"></div>
+                </div>
+                <div class="alert-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">预警信息</h3>
+                        <span style="font-size:12px;color:#9CA3AF">共 3 条</span>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon danger"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <div class="alert-content">
+                            <div class="alert-title">体重反弹率异常 <span style="color:#EF4444;font-weight:600;margin-left:8px;">8.7%</span></div>
+                            <div class="alert-desc">兴庆区 23 名用户体重反弹超过 5%</div>
+                            <div class="alert-time">10分钟前</div>
+                        </div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon warning"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                        <div class="alert-content">
+                            <div class="alert-title">投诉集中预警</div>
+                            <div class="alert-desc">金凤区近一周收到 8 条投诉</div>
+                            <div class="alert-time">30分钟前</div>
+                        </div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon info"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+                        <div class="alert-content">
+                            <div class="alert-title">数据异常提醒</div>
+                            <div class="alert-desc">西夏区 15 条记录数据异常需审核</div>
+                            <div class="alert-time">1小时前</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // BMI达标率趋势图
+        var bmiChart = echarts.init(document.getElementById('bmiTrendChart'));
+        bmiChart.setOption({
+            tooltip: {trigger: 'axis'},
+            legend: {data: ['BMI达标率', '目标值'], bottom: 0},
+            grid: {left: 50, right: 20, top: 20, bottom: 40},
+            xAxis: {
+                type: 'category',
+                data: ['3/10', '3/15', '3/20', '3/25', '3/30', '4/5', '4/10'],
+                axisLine: {lineStyle: {color: '#E5E7EB'}},
+                axisLabel: {color: '#6B7280'}
+            },
+            yAxis: {
+                type: 'value',
+                min: 60,
+                max: 80,
+                axisLine: {show: false},
+                splitLine: {lineStyle: {color: '#F3F4F6'}},
+                axisLabel: {color: '#6B7280', formatter: '{value}%'}
+            },
+            series: [
+                {
+                    name: 'BMI达标率',
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    data: [68, 69, 70, 71, 69, 72, 70],
+                    lineStyle: {color: '#00BAAD', width: 3},
+                    itemStyle: {color: '#00BAAD'},
+                    areaStyle: {
+                        color: {
+                            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                            colorStops: [
+                                {offset: 0, color: 'rgba(0,186,173,0.3)'},
+                                {offset: 1, color: 'rgba(0,186,173,0.05)'}
+                            ]
+                        }
+                    }
+                },
+                {
+                    name: '目标值',
+                    type: 'line',
+                    symbol: 'none',
+                    data: [75, 75, 75, 75, 75, 75, 75],
+                    lineStyle: {color: '#F59E0B', width: 2, type: 'dashed'}
+                }
+            ]
+        });
+        
+        // 年龄分布图 - 环形图带图例
+        var ageChart = echarts.init(document.getElementById('ageDistChart'));
+        ageChart.setOption({
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c}人 ({d}%)'
+            },
+            legend: {
+                orient: 'horizontal',
+                bottom: 0,
+                itemGap: 16,
+                textStyle: {
+                    color: '#6B7280',
+                    fontSize: 12
+                },
+                itemWidth: 12,
+                itemHeight: 12,
+                itemBorderRadius: 3
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: ['45%', '70%'],
+                    center: ['50%', '45%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderRadius: 6,
+                        borderColor: '#fff',
+                        borderWidth: 3
+                    },
+                    label: {
+                        show: true,
+                        position: 'outside',
+                        formatter: '{d}%',
+                        color: '#6B7280',
+                        fontSize: 13,
+                        fontWeight: 500
+                    },
+                    labelLine: {
+                        show: true,
+                        length: 8,
+                        length2: 12,
+                        lineStyle: {
+                            color: '#E5E7EB'
+                        }
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 15,
+                            fontWeight: 'bold',
+                            color: '#1F2937'
+                        },
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.2)'
+                        }
+                    },
+                    data: [
+                        {value: 8520, name: '18-25岁', itemStyle: {color: '#00BAAD'}},
+                        {value: 12830, name: '26-35岁', itemStyle: {color: '#10B981'}},
+                        {value: 11250, name: '36-45岁', itemStyle: {color: '#F59E0B'}},
+                        {value: 9872, name: '46-55岁', itemStyle: {color: '#EF4444'}},
+                        {value: 5200, name: '55岁以上', itemStyle: {color: '#8B5CF6'}}
+                    ]
+                }
+            ]
+        });
+        
+        // 地域分布图 - 横向条形图
+        var regionChart = echarts.init(document.getElementById('regionChart'));
+        regionChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {type: 'shadow'},
+                formatter: function(params) {
+                    var result = params[0].axisValue + '<br/>';
+                    params.forEach(function(item) {
+                        result += item.marker + item.seriesName + ': ' + item.value.toLocaleString() + ' 人<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['总用户', '活跃用户'],
+                bottom: 0
+            },
+            grid: {
+                left: 70,
+                right: 30,
+                top: 15,
+                bottom: 35,
+                containLabel: false
+            },
+            xAxis: {
+                type: 'value',
+                axisLine: {show: false},
+                splitLine: {lineStyle: {color: '#F3F4F6'}},
+                axisLabel: {
+                    color: '#6B7280',
+                    formatter: function(value) {
+                        return value >= 1000 ? (value/1000) + 'k' : value;
+                    }
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: ['灵武市', '贺兰县', '永宁县', '西夏区', '金凤区', '兴庆区'],
+                axisLine: {lineStyle: {color: '#E5E7EB'}},
+                axisLabel: {color: '#1F2937', fontSize: 12}
+            },
+            series: [
+                {
+                    name: '总用户',
+                    type: 'bar',
+                    data: [4200, 5800, 6200, 8500, 11200, 13672],
+                    barWidth: 16,
+                    itemStyle: {
+                        color: {
+                            type: 'linear', x: 0, y: 0, x2: 1, y2: 0,
+                            colorStops: [
+                                {offset: 0, color: '#00D4C8'},
+                                {offset: 1, color: '#00BAAD'}
+                            ]
+                        },
+                        borderRadius: [0, 6, 6, 0]
+                    }
+                },
+                {
+                    name: '活跃用户',
+                    type: 'bar',
+                    data: [3800, 5200, 5600, 7900, 10400, 12800],
+                    barWidth: 16,
+                    itemStyle: {
+                        color: {
+                            type: 'linear', x: 0, y: 0, x2: 1, y2: 0,
+                            colorStops: [
+                                {offset: 0, color: '#F59E0B'},
+                                {offset: 1, color: '#FBBF24'}
+                            ]
+                        },
+                        borderRadius: [0, 6, 6, 0]
+                    }
+                }
+            ]
+        });
+        
+        // 达标率与反弹率趋势折线图
+        var rateTrendChart = echarts.init(document.getElementById('rateTrendChart'));
+        rateTrendChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    var result = params[0].axisValue + '<br/>';
+                    params.forEach(function(item) {
+                        result += item.marker + item.seriesName + ': ' + item.value + '%<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['体重达标率', '腰围达标率', '体重反弹率'],
+                bottom: 0
+            },
+            grid: {left: 50, right: 20, top: 10, bottom: 40},
+            xAxis: {
+                type: 'category',
+                data: ['3/10', '3/15', '3/20', '3/25', '3/30', '4/5', '4/10'],
+                axisLine: {lineStyle: {color: '#E5E7EB'}},
+                axisLabel: {color: '#6B7280'}
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 85,
+                axisLine: {show: false},
+                splitLine: {lineStyle: {color: '#F3F4F6'}},
+                axisLabel: {color: '#6B7280', formatter: '{value}%'}
+            },
+            series: [
+                {
+                    name: '体重达标率',
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    data: [65, 66, 68, 67, 69, 70, 70],
+                    lineStyle: {color: '#00BAAD', width: 2.5},
+                    itemStyle: {color: '#00BAAD'},
+                    areaStyle: {
+                        color: {
+                            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                            colorStops: [
+                                {offset: 0, color: 'rgba(0,186,173,0.25)'},
+                                {offset: 1, color: 'rgba(0,186,173,0.02)'}
+                            ]
+                        }
+                    }
+                },
+                {
+                    name: '腰围达标率',
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    data: [70, 71, 72, 73, 72, 74, 75],
+                    lineStyle: {color: '#F59E0B', width: 2.5},
+                    itemStyle: {color: '#F59E0B'},
+                    areaStyle: {
+                        color: {
+                            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                            colorStops: [
+                                {offset: 0, color: 'rgba(245,158,11,0.2)'},
+                                {offset: 1, color: 'rgba(245,158,11,0.02)'}
+                            ]
+                        }
+                    }
+                },
+                {
+                    name: '体重反弹率',
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6,
+                    data: [5.2, 5.8, 6.1, 5.9, 7.5, 8.2, 8.7],
+                    lineStyle: {color: '#EF4444', width: 2.5},
+                    itemStyle: {color: '#EF4444'},
+                    yAxisIndex: 0
+                }
+            ]
+        });
+        
+        window.addEventListener('resize', function() {
+            bmiChart.resize();
+            ageChart.resize();
+            regionChart.resize();
+            rateTrendChart.resize();
+        });
+
+        // 时间筛选数据配置
+        var timeFilterData = {
+            '今日': {
+                stats: {
+                    totalUsers: '48,672',
+                    totalTrend: '+12.5%',
+                    newUsers: '386',
+                    newTrend: '+386',
+                    activeUsers: '28,459',
+                    activeTrend: '+5.2%',
+                    overweightRate: '58.3%',
+                    overweightTrend: '-2.1%',
+                    avgBMI: '24.6',
+                    bmiTrend: '-0.3'
+                },
+                overweightData: { overweight: '32.1%', overweightCount: '15,625', obese: '26.2%', obeseCount: '12,748' },
+                bmiDistribution: [1200, 2800, 4200, 5800, 6500, 5200, 3800, 2100],
+                ageDistribution: [1500, 3500, 5500, 6000, 4800, 3200, 1800, 900],
+                regionDistribution: [2100, 2450, 2890, 3200, 2567, 3245],
+                bmiTrend: { dates: ['9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'], data: [65, 67, 68, 67, 69, 70, 70] },
+                rateTrend: { dates: ['4/3', '4/4', '4/5', '4/6', '4/7', '4/8', '4/9'], weight: [68, 69, 70, 69, 70, 70, 70], waist: [72, 73, 74, 73, 74, 75, 75], rebound: [8.2, 8.5, 8.4, 8.6, 8.7, 8.5, 8.7] }
+            },
+            '本周': {
+                stats: {
+                    totalUsers: '48,672',
+                    totalTrend: '+15.8%',
+                    newUsers: '2,847',
+                    newTrend: '+1,234',
+                    activeUsers: '35,682',
+                    activeTrend: '+8.7%',
+                    overweightRate: '57.8%',
+                    overweightTrend: '-3.2%',
+                    avgBMI: '24.5',
+                    bmiTrend: '-0.4'
+                },
+                overweightData: { overweight: '31.8%', overweightCount: '15,472', obese: '26.0%', obeseCount: '12,655' },
+                bmiDistribution: [1800, 3500, 5200, 6500, 5800, 4200, 2500, 1500],
+                ageDistribution: [2000, 4200, 5800, 6500, 5200, 3500, 2000, 1000],
+                regionDistribution: [2800, 3100, 3400, 3800, 3200, 4000],
+                bmiTrend: { dates: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'], data: [64, 65, 66, 67, 68, 69, 70] },
+                rateTrend: { dates: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'], weight: [66, 67, 68, 68, 69, 70, 70], waist: [70, 71, 72, 72, 73, 74, 75], rebound: [8.5, 8.3, 8.6, 8.4, 8.7, 8.3, 8.2] }
+            },
+            '本月': {
+                stats: {
+                    totalUsers: '48,672',
+                    totalTrend: '+18.2%',
+                    newUsers: '12,458',
+                    newTrend: '+4,567',
+                    activeUsers: '42,156',
+                    activeTrend: '+12.3%',
+                    overweightRate: '56.5%',
+                    overweightTrend: '-5.8%',
+                    avgBMI: '24.3',
+                    bmiTrend: '-0.6'
+                },
+                overweightData: { overweight: '31.2%', overweightCount: '15,185', obese: '25.3%', obeseCount: '12,314' },
+                bmiDistribution: [2200, 4200, 5800, 6800, 5500, 3800, 2200, 1200],
+                ageDistribution: [2500, 4500, 6000, 6800, 5500, 3800, 2000, 1100],
+                regionDistribution: [3200, 3600, 4000, 4500, 3800, 4800],
+                bmiTrend: { dates: ['3/10', '3/15', '3/20', '3/25', '3/30', '4/5', '4/10'], data: [62, 64, 66, 68, 69, 70, 72] },
+                rateTrend: { dates: ['3/10', '3/15', '3/20', '3/25', '3/30', '4/5', '4/10'], weight: [62, 64, 66, 68, 69, 70, 72], waist: [68, 70, 71, 73, 74, 75, 76], rebound: [6.5, 6.8, 7.2, 7.5, 8.0, 8.5, 8.7] }
+            },
+            '本季': {
+                stats: {
+                    totalUsers: '48,672',
+                    totalTrend: '+25.8%',
+                    newUsers: '38,692',
+                    newTrend: '+12,345',
+                    activeUsers: '45,892',
+                    activeTrend: '+18.6%',
+                    overweightRate: '55.2%',
+                    overweightTrend: '-8.6%',
+                    avgBMI: '24.1',
+                    bmiTrend: '-0.8'
+                },
+                overweightData: { overweight: '30.5%', overweightCount: '14,845', obese: '24.7%', obeseCount: '12,018' },
+                bmiDistribution: [2800, 4800, 6200, 7200, 5800, 4200, 2500, 1400],
+                ageDistribution: [3000, 5000, 6500, 7200, 5800, 4000, 2200, 1200],
+                regionDistribution: [3800, 4200, 4600, 5200, 4400, 5600],
+                bmiTrend: { dates: ['1月', '2月', '3月', '4月'], data: [58, 62, 68, 72] },
+                rateTrend: { dates: ['1月', '2月', '3月', '4月'], weight: [58, 62, 68, 72], waist: [63, 68, 73, 76], rebound: [4.5, 5.8, 7.5, 8.7] }
+            },
+            '本年': {
+                stats: {
+                    totalUsers: '48,672',
+                    totalTrend: '+45.3%',
+                    newUsers: '156,238',
+                    newTrend: '+68,542',
+                    activeUsers: '48,672',
+                    activeTrend: '+45.3%',
+                    overweightRate: '52.8%',
+                    overweightTrend: '-12.5%',
+                    avgBMI: '23.8',
+                    bmiTrend: '-1.2'
+                },
+                overweightData: { overweight: '29.2%', overweightCount: '14,212', obese: '23.6%', obeseCount: '11,487' },
+                bmiDistribution: [3200, 5200, 6800, 7800, 6200, 4500, 2800, 1500],
+                ageDistribution: [3500, 5500, 7000, 7800, 6200, 4500, 2500, 1300],
+                regionDistribution: [4200, 4800, 5400, 6000, 5200, 6400],
+                bmiTrend: { dates: ['Q1', 'Q2', 'Q3', 'Q4'], data: [52, 60, 68, 72] },
+                rateTrend: { dates: ['Q1', 'Q2', 'Q3', 'Q4'], weight: [52, 60, 68, 72], waist: [58, 65, 73, 76], rebound: [3.2, 4.8, 6.8, 8.7] }
+            }
+        };
+
+        // 更新时间筛选数据
+        function updateDashboardData(period) {
+            var data = timeFilterData[period];
+            if (!data) return;
+
+            // 更新统计卡片
+            var statCards = document.querySelectorAll('.stat-card');
+            var stats = [data.stats.totalUsers, data.stats.newUsers, data.stats.activeUsers, data.stats.overweightRate, data.stats.avgBMI];
+            var trends = [data.stats.totalTrend, data.stats.newTrend, data.stats.activeTrend, data.stats.overweightTrend, data.stats.bmiTrend];
+            statCards.forEach(function(card, index) {
+                var value = card.querySelector('.stat-value');
+                var trend = card.querySelector('.stat-trend');
+                if (value) value.textContent = stats[index] || '';
+                if (trend) {
+                    trend.textContent = trends[index] || '';
+                    trend.className = 'stat-trend ' + (trends[index].indexOf('-') === 0 ? 'down' : 'up');
+                }
+            });
+
+            // 更新超重肥胖细分
+            var overweightCards = document.querySelectorAll('.weight-breakdown .stat-card');
+            if (overweightCards.length >= 2) {
+                overweightCards[0].querySelector('.stat-value') && (overweightCards[0].querySelector('.stat-value').textContent = data.overweightData.overweight);
+                overweightCards[0].querySelector('span') && (overweightCards[0].querySelector('span').textContent = data.overweightData.overweightCount + '人');
+                overweightCards[1].querySelector('.stat-value') && (overweightCards[1].querySelector('.stat-value').textContent = data.overweightData.obese);
+                overweightCards[1].querySelector('span') && (overweightCards[1].querySelector('span').textContent = data.overweightData.obeseCount + '人');
+            }
+
+            // 更新顶部BMI达标率趋势图
+            var bmiValidDates = data.bmiTrend.dates.filter(function(d) { return d !== ''; });
+            var bmiValidData = data.bmiTrend.data.filter(function(d) { return d !== 0; });
+            bmiChart.setOption({
+                notMerge: true,
+                xAxis: {
+                    data: bmiValidDates
+                },
+                series: [
+                    {
+                        name: 'BMI达标率',
+                        data: bmiValidData
+                    },
+                    {
+                        name: '目标值',
+                        data: bmiValidData.map(function() { return 75; })
+                    }
+                ]
+            });
+
+            // 更新年龄分布图（饼图）- 需要保持对象格式
+            var ageNames = ['18-25岁', '26-35岁', '36-45岁', '46-55岁', '55岁以上'];
+            var ageColors = ['#00BAAD', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+            var agePieData = data.ageDistribution.map(function(val, idx) {
+                return {value: val, name: ageNames[idx], itemStyle: {color: ageColors[idx]}};
+            });
+            ageChart.setOption({
+                series: [{
+                    data: agePieData
+                }]
+            });
+
+            // 更新地域分布图（两个series）
+            var activeRatio = 0.9; // 活跃用户占总用户约90%
+            var regionActiveData = data.regionDistribution.map(function(val) {
+                return Math.round(val * activeRatio);
+            });
+            regionChart.setOption({
+                series: [
+                    { data: data.regionDistribution },
+                    { data: regionActiveData }
+                ]
+            });
+
+            // 更新达标率趋势图（重新设置完整配置）
+            var validDates = data.rateTrend.dates.filter(function(d) { return d !== ''; });
+            var validWeight = data.rateTrend.weight.filter(function(d) { return d !== 0; });
+            var validWaist = data.rateTrend.waist.filter(function(d) { return d !== 0; });
+            var validRebound = data.rateTrend.rebound.filter(function(d) { return d !== 0; });
+            
+            rateTrendChart.setOption({
+                notMerge: true,
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        var result = params[0].axisValue + '<br/>';
+                        params.forEach(function(item) {
+                            result += item.marker + item.seriesName + ': ' + item.value + '%<br/>';
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['体重达标率', '腰围达标率', '体重反弹率'],
+                    bottom: 0
+                },
+                grid: {left: 50, right: 20, top: 10, bottom: 40},
+                xAxis: {
+                    type: 'category',
+                    data: validDates,
+                    axisLine: {lineStyle: {color: '#E5E7EB'}},
+                    axisLabel: {color: '#6B7280'}
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 85,
+                    axisLine: {show: false},
+                    splitLine: {lineStyle: {color: '#F3F4F6'}},
+                    axisLabel: {color: '#6B7280', formatter: '{value}%'}
+                },
+                series: [
+                    {
+                        name: '体重达标率',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        data: validWeight,
+                        lineStyle: {color: '#00BAAD', width: 2.5},
+                        itemStyle: {color: '#00BAAD'},
+                        areaStyle: {
+                            color: {
+                                type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                                colorStops: [
+                                    {offset: 0, color: 'rgba(0,186,173,0.25)'},
+                                    {offset: 1, color: 'rgba(0,186,173,0.02)'}
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        name: '腰围达标率',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        data: validWaist,
+                        lineStyle: {color: '#F59E0B', width: 2.5},
+                        itemStyle: {color: '#F59E0B'},
+                        areaStyle: {
+                            color: {
+                                type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                                colorStops: [
+                                    {offset: 0, color: 'rgba(245,158,11,0.2)'},
+                                    {offset: 1, color: 'rgba(245,158,11,0.02)'}
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        name: '体重反弹率',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        data: validRebound,
+                        lineStyle: {color: '#EF4444', width: 2.5},
+                        itemStyle: {color: '#EF4444'}
+                    }
+                ]
+            });
+        }
+
+        // 时间筛选按钮交互
+        var periodNames = ['今日', '本周', '本月', '本季', '本年'];
+        document.querySelectorAll('.time-filter button').forEach(function(btn, index) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.time-filter button').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                updateDashboardData(periodNames[index]);
+            });
+        });
+    </script>
+</body>
+</html>
