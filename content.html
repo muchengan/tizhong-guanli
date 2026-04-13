@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个性化表单管理 - 银川市卫健委体重管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F8FAFC}
+        .dashboard{display:flex;min-height:100vh}
+        .sidebar{width:260px;background:#FFFFFF;border-right:1px solid #E5E7EB;position:fixed;height:100vh;overflow-y:auto}
+        .sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E5E7EB}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#00BAAD,#00D4C8);border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:24px;height:24px;color:#FFFFFF}
+        .sidebar-logo span{font-size:16px;font-weight:600;color:#1F2937}
+        .sidebar-nav{padding:16px 12px}
+        .nav-section{margin-bottom:24px}
+        .nav-section-title{font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;padding:0 12px;margin-bottom:8px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;color:#6B7280;cursor:pointer;transition:all 0.2s;text-decoration:none}
+        .nav-item:hover{background:#F3F4F6;color:#1F2937}
+        .nav-item.active{background:linear-gradient(135deg,rgba(0,186,173,0.1),rgba(0,212,200,0.1));color:#00BAAD}
+        .nav-item svg{width:20px;height:20px;flex-shrink:0}
+        .nav-item span{font-size:14px;font-weight:500}
+        .main{margin-left:260px;flex:1;padding:24px}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+        .header-left h1{font-size:24px;font-weight:700;color:#1F2937;margin-bottom:4px}
+        .header-left p{font-size:14px;color:#6B7280}
+        .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.2s}
+        .btn-primary{background:#00BAAD;color:#FFFFFF}
+        .btn-primary:hover{background:#00A195}
+        .btn-secondary{background:#FFFFFF;border:1px solid #E5E7EB;color:#6B7280}
+        .btn-secondary:hover{border-color:#00BAAD;color:#00BAAD}
+        .btn-sm{padding:6px 12px;font-size:13px}
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
+        .stat-card{background:#FFFFFF;border-radius:16px;padding:24px;border:1px solid #E5E7EB}
+        .stat-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+        .stat-card-icon svg{width:24px;height:24px}
+        .stat-card-icon.teal{background:linear-gradient(135deg,rgba(0,186,173,0.15),rgba(0,212,200,0.15));color:#00BAAD}
+        .stat-card-icon.green{background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.1));color:#10B981}
+        .stat-card-icon.amber{background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.1));color:#F59E0B}
+        .stat-card-icon.purple{background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(139,92,246,0.1));color:#8B5CF6}
+        .stat-value{font-size:32px;font-weight:700;color:#1F2937;margin-bottom:4px}
+        .stat-label{font-size:14px;color:#6B7280}
+        .stat-trend{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:4px 8px;border-radius:20px;margin-top:8px}
+        .stat-trend.up{color:#10B981;background:rgba(16,185,129,0.1)}
+        .card{background:#FFFFFF;border-radius:16px;border:1px solid #E5E7EB;margin-bottom:24px}
+        .card-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #F3F4F6}
+        .card-title{font-size:16px;font-weight:600;color:#1F2937}
+        .card-body{padding:24px}
+        .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+        .search-box{display:flex;align-items:center;gap:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:10px 14px;flex:1;max-width:320px}
+        .search-box input{border:none;background:transparent;outline:none;font-size:14px;color:#1F2937;width:100%}
+        .search-box svg{color:#9CA3AF;width:18px;height:18px}
+        .form-select{padding:10px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:14px;color:#1F2937;background:#FFFFFF;cursor:pointer}
+        .table-wrapper{overflow-x:auto}
+        table{width:100%;border-collapse:collapse}
+        th,td{text-align:left;padding:14px 16px;border-bottom:1px solid #F3F4F6}
+        th{background:#F9FAFB;font-size:13px;font-weight:600;color:#6B7280}
+        td{font-size:14px;color:#1F2937}
+        tr:hover{background:#F9FAFB}
+        .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+        .badge-success{background:rgba(16,185,129,0.1);color:#10B981}
+        .badge-danger{background:rgba(239,68,68,0.1);color:#EF4444}
+        .badge-info{background:rgba(99,102,241,0.1);color:#6366F1}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;opacity:0;transition:opacity 0.2s}
+        .modal-overlay.show{display:flex;opacity:1}
+        .modal{background:#FFFFFF;border-radius:16px;width:90%;max-width:700px;max-height:90vh;overflow:hidden;transform:scale(0.95);transition:transform 0.2s}
+        .modal-overlay.show .modal{transform:scale(1)}
+        .modal-header{padding:20px 24px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between}
+        .modal-title{font-size:18px;font-weight:600;color:#1F2937}
+        .modal-close{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9CA3AF;transition:all 0.2s}
+        .modal-close:hover{background:#F3F4F6;color:#1F2937}
+        .modal-body{padding:24px;max-height:60vh;overflow-y:auto}
+        .modal-footer{padding:16px 24px;border-top:1px solid #F3F4F6;display:flex;justify-content:flex-end;gap:12px}
+        .form-group{margin-bottom:20px}
+        .form-label{display:block;font-size:14px;font-weight:500;color:#1F2937;margin-bottom:8px}
+        .form-label .required{color:#EF4444;margin-left:4px}
+        .form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:14px;color:#1F2937;transition:all 0.2s}
+        .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:#00BAAD;box-shadow:0 0 0 3px rgba(0,186,173,0.1)}
+        .form-textarea{resize:vertical;min-height:80px}
+        .form-hint{font-size:12px;color:#9CA3AF;margin-top:6px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .field-list{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden}
+        .field-item{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #F3F4F6;background:#FFFFFF}
+        .field-item:last-child{border-bottom:none}
+        .field-item.dragging{background:#E6FAF8}
+        .field-drag{color:#9CA3AF;cursor:grab;margin-right:12px}
+        .field-info{flex:1;display:flex;align-items:center;gap:12px}
+        .field-name{font-weight:500;color:#1F2937}
+        .field-type{font-size:12px;color:#9CA3AF}
+        .field-required{font-size:11px;padding:2px 6px;border-radius:4px;background:rgba(239,68,68,0.1);color:#EF4444}
+        .field-actions{display:flex;gap:8px}
+        .field-actions button{padding:4px 8px;font-size:12px;border:none;border-radius:6px;cursor:pointer;background:#F3F4F6;color:#6B7280}
+        .field-actions button:hover{background:#E5E7EB}
+        .field-actions button.delete:hover{background:rgba(239,68,68,0.1);color:#EF4444}
+        .add-field-btn{width:100%;padding:12px;border:2px dashed #E5E7EB;border-radius:10px;background:transparent;color:#9CA3AF;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;transition:all 0.2s}
+        .add-field-btn:hover{border-color:#00BAAD;color:#00BAAD;background:rgba(0,186,173,0.05)}
+        .toast{position:fixed;bottom:24px;right:24px;background:#1F2937;color:#FFFFFF;padding:12px 20px;border-radius:10px;font-size:14px;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:2000}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.success{background:#10B981}
+        .toast.error{background:#EF4444}
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <span>体重管理</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">MAIN</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        <span>数据概览</span>
+                    </a>
+                    <a href="statistics.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span>统计分析</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">CONTENT</div>
+                    <a href="health-guide.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>健康指导管理</span>
+                    </a>
+                    <a href="content.html" class="nav-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>个性化表单管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">SYSTEM</div>
+                    <a href="points.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                        <span>积分激励管理</span>
+                    </a>
+                    <a href="system.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span>系统管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">ACCOUNT</div>
+                    <a href="profile.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>个人中心</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容 -->
+        <main class="main">
+            <div class="header">
+                <div class="header-left">
+                    <h1>个性化表单管理</h1>
+                    <p>配置和管理个性化健康表单模板</p>
+                </div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-icon teal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">表单总数</div>
+                    <div class="stat-trend up">+3 本月新增</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">使用中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon amber">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                    </div>
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">已停用</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div class="stat-value">326</div>
+                    <div class="stat-label">本周填写</div>
+                    <div class="stat-trend up">+12%</div>
+                </div>
+            </div>
+
+            <!-- 表单列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">表单模板列表</div>
+                    <button class="btn btn-primary" onclick="openFormModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        新增表单
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" placeholder="搜索表单名称..." id="searchInput" oninput="filterForms()">
+                        </div>
+                        <select class="form-select" style="width:140px" id="statusFilter" onchange="filterForms()">
+                            <option value="">全部状态</option>
+                            <option value="active">使用中</option>
+                            <option value="inactive">已停用</option>
+                        </select>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>表单名称</th>
+                                    <th>表单类型</th>
+                                    <th>字段数量</th>
+                                    <th>必填项</th>
+                                    <th>使用次数</th>
+                                    <th>状态</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="formTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 表单弹窗 -->
+    <div class="modal-overlay" id="formModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="formModalTitle">新增表单</div>
+                <div class="modal-close" onclick="closeFormModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="formId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">表单名称<span class="required">*</span></label>
+                        <input type="text" class="form-input" id="formName" placeholder="如：周减重复盘表">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">表单类型<span class="required">*</span></label>
+                        <select class="form-select" id="formType">
+                            <option value="review">复盘类</option>
+                            <option value="survey">调查类</option>
+                            <option value="record">记录类</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">表单描述</label>
+                    <textarea class="form-textarea" id="formDesc" placeholder="简要描述该表单的用途..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">表单字段配置<span class="required">*</span></label>
+                    <div class="form-hint">拖拽调整字段顺序，点击编辑字段属性</div>
+                    <div class="field-list" id="fieldList"></div>
+                    <button type="button" class="add-field-btn" onclick="addField()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        添加字段
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeFormModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveForm()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 字段编辑弹窗 -->
+    <div class="modal-overlay" id="fieldModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">编辑字段</div>
+                <div class="modal-close" onclick="closeFieldModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="fieldIndex">
+                <div class="form-group">
+                    <label class="form-label">字段名称<span class="required">*</span></label>
+                    <input type="text" class="form-input" id="fieldName" placeholder="如：本周体重变化">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">字段类型<span class="required">*</span></label>
+                    <select class="form-select" id="fieldType" onchange="onFieldTypeChange()">
+                        <option value="text">单行文本</option>
+                        <option value="textarea">多行文本</option>
+                        <option value="number">数字</option>
+                        <option value="select">下拉选择</option>
+                        <option value="radio">单选</option>
+                        <option value="checkbox">多选</option>
+                        <option value="date">日期</option>
+                        <option value="datetime">日期时间</option>
+                    </select>
+                </div>
+                <div class="form-group" id="optionsGroup" style="display:none">
+                    <label class="form-label">选项（每行一个）</label>
+                    <textarea class="form-textarea" id="fieldOptions" placeholder="选项1&#10;选项2&#10;选项3"></textarea>
+                    <div class="form-hint">适用于下拉选择、单选、多选类型</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">占位提示</label>
+                    <input type="text" class="form-input" id="fieldPlaceholder" placeholder="如：请输入具体数值">
+                </div>
+                <div style="padding:12px;background:#F9FAFB;border-radius:10px">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                        <input type="checkbox" id="fieldRequired" style="width:18px;height:18px;accent-color:#00BAAD">
+                        <span style="font-size:14px;color:#1F2937">设为必填项</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeFieldModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveField()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let formData = [
+            {
+                id: 1, name: '周减重复盘表', type: 'review', typeName: '复盘类', description: '每周减重数据进行复盘总结',
+                fields: [
+                    { name: '本周起始体重', type: 'number', required: true, placeholder: '单位：kg' },
+                    { name: '本周结束体重', type: 'number', required: true, placeholder: '单位：kg' },
+                    { name: '本周运动情况', type: 'textarea', required: false, placeholder: '描述本周运动情况' },
+                    { name: '本周饮食情况', type: 'textarea', required: false, placeholder: '描述本周饮食情况' },
+                    { name: '遇到的问题', type: 'text', required: false, placeholder: '本周遇到哪些困难' },
+                    { name: '下周计划', type: 'textarea', required: false, placeholder: '下周减重计划' }
+                ],
+                usageCount: 156, status: 'active', createTime: '2026-03-15'
+            },
+            {
+                id: 2, name: '饮食依从性调查表', type: 'survey', typeName: '调查类', description: '调查患者饮食执行情况',
+                fields: [
+                    { name: '是否按计划饮食', type: 'radio', required: true, options: ['完全按计划', '偶尔偏离', '经常偏离'] },
+                    { name: '每日主食摄入量', type: 'select', required: true, options: ['过多', '适量', '过少'] },
+                    { name: '每日蔬果摄入量', type: 'select', required: true, options: ['过多', '适量', '过少'] },
+                    { name: '高热量食物摄入频率', type: 'radio', required: true, options: ['从不', '偶尔', '经常'] },
+                    { name: '饮食习惯改进建议', type: 'textarea', required: false, placeholder: '您的改进建议' }
+                ],
+                usageCount: 89, status: 'active', createTime: '2026-03-10'
+            },
+            {
+                id: 3, name: '月度体测记录表', type: 'record', typeName: '记录类', description: '记录每月体测各项指标',
+                fields: [
+                    { name: '身高', type: 'number', required: true, placeholder: '单位：cm' },
+                    { name: '体重', type: 'number', required: true, placeholder: '单位：kg' },
+                    { name: '体脂率', type: 'number', required: true, placeholder: '单位：%' },
+                    { name: '腰围', type: 'number', required: false, placeholder: '单位：cm' },
+                    { name: '臀围', type: 'number', required: false, placeholder: '单位：cm' },
+                    { name: '测量日期', type: 'date', required: true }
+                ],
+                usageCount: 45, status: 'active', createTime: '2026-03-08'
+            },
+            {
+                id: 4, name: '运动日志表', type: 'record', typeName: '记录类', description: '记录每日运动详情',
+                fields: [
+                    { name: '运动日期', type: 'date', required: true },
+                    { name: '运动类型', type: 'select', required: true, options: ['有氧运动', '力量训练', '柔韧性训练', '其他'] },
+                    { name: '运动时长', type: 'number', required: true, placeholder: '单位：分钟' },
+                    { name: '运动强度', type: 'radio', required: true, options: ['低强度', '中强度', '高强度'] },
+                    { name: '完成情况', type: 'textarea', required: false, placeholder: '描述完成情况' }
+                ],
+                usageCount: 203, status: 'active', createTime: '2026-02-28'
+            },
+            {
+                id: 5, name: '减重目标评估表', type: 'survey', typeName: '调查类', description: '评估患者减重目标设定情况',
+                fields: [
+                    { name: '目标体重', type: 'number', required: true, placeholder: '单位：kg' },
+                    { name: '目标周期', type: 'select', required: true, options: ['1个月', '3个月', '6个月', '12个月'] },
+                    { name: '减重动力', type: 'checkbox', required: true, options: ['健康原因', '外形美观', '医生建议', '其他'] },
+                    { name: '预期困难', type: 'textarea', required: false, placeholder: '预计会遇到哪些困难' }
+                ],
+                usageCount: 67, status: 'inactive', createTime: '2026-02-20'
+            }
+        ];
+
+        let currentFields = [];
+
+        function renderTable(data) {
+            const tbody = document.getElementById('formTableBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#9CA3AF">暂无数据</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(form => {
+                const requiredCount = form.fields.filter(f => f.required).length;
+                return `
+                    <tr>
+                        <td><strong>${form.name}</strong></td>
+                        <td><span class="badge badge-info">${form.typeName}</span></td>
+                        <td>${form.fields.length} 个</td>
+                        <td><span class="badge badge-danger">${requiredCount} 个必填</span></td>
+                        <td>${form.usageCount} 次</td>
+                        <td><span class="badge ${form.status === 'active' ? 'badge-success' : 'badge-danger'}">${form.status === 'active' ? '使用中' : '已停用'}</span></td>
+                        <td>${form.createTime}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="editForm(${form.id})">编辑</button>
+                            <button class="btn btn-sm ${form.status === 'active' ? '' : 'btn-primary'}" style="${form.status === 'active' ? 'background:rgba(239,68,68,0.1);color:#EF4444' : ''}" onclick="toggleStatus(${form.id})">
+                                ${form.status === 'active' ? '停用' : '启用'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterForms() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            const filtered = formData.filter(form => {
+                return form.name.toLowerCase().includes(keyword) && (!status || form.status === status);
+            });
+            renderTable(filtered);
+        }
+
+        function openFormModal(id = null) {
+            const modal = document.getElementById('formModal');
+            if (id) {
+                document.getElementById('formModalTitle').textContent = '编辑表单';
+                const form = formData.find(f => f.id === id);
+                document.getElementById('formId').value = form.id;
+                document.getElementById('formName').value = form.name;
+                document.getElementById('formType').value = form.type;
+                document.getElementById('formDesc').value = form.description || '';
+                currentFields = JSON.parse(JSON.stringify(form.fields));
+            } else {
+                document.getElementById('formModalTitle').textContent = '新增表单';
+                document.getElementById('formId').value = '';
+                document.getElementById('formName').value = '';
+                document.getElementById('formType').value = 'review';
+                document.getElementById('formDesc').value = '';
+                currentFields = [];
+            }
+            renderFieldList();
+            modal.classList.add('show');
+        }
+
+        function closeFormModal() {
+            document.getElementById('formModal').classList.remove('show');
+        }
+
+        function renderFieldList() {
+            const container = document.getElementById('fieldList');
+            if (currentFields.length === 0) {
+                container.innerHTML = '<div style="padding:20px;text-align:center;color:#9CA3AF">暂无字段，请点击"添加字段"按钮添加</div>';
+                return;
+            }
+            container.innerHTML = currentFields.map((field, index) => `
+                <div class="field-item" draggable="true" ondragstart="onDragStart(event, ${index})" ondragover="onDragOver(event)" ondrop="onDrop(event, ${index})">
+                    <div class="field-drag">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+                    </div>
+                    <div class="field-info">
+                        <span class="field-name">${field.name}</span>
+                        <span class="field-type">${getTypeName(field.type)}</span>
+                        ${field.required ? '<span class="field-required">必填</span>' : ''}
+                    </div>
+                    <div class="field-actions">
+                        <button onclick="editField(${index})">编辑</button>
+                        <button class="delete" onclick="deleteField(${index})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getTypeName(type) {
+            const types = { 'text': '单行文本', 'textarea': '多行文本', 'number': '数字', 'select': '下拉选择', 'radio': '单选', 'checkbox': '多选', 'date': '日期', 'datetime': '日期时间' };
+            return types[type] || type;
+        }
+
+        function addField() {
+            currentFields.push({ name: '', type: 'text', required: false, placeholder: '', options: [] });
+            renderFieldList();
+            editField(currentFields.length - 1);
+        }
+
+        function editField(index) {
+            const field = currentFields[index];
+            document.getElementById('fieldIndex').value = index;
+            document.getElementById('fieldName').value = field.name || '';
+            document.getElementById('fieldType').value = field.type || 'text';
+            document.getElementById('fieldOptions').value = (field.options || []).join('\n');
+            document.getElementById('fieldPlaceholder').value = field.placeholder || '';
+            document.getElementById('fieldRequired').checked = field.required || false;
+            onFieldTypeChange();
+            document.getElementById('fieldModal').classList.add('show');
+        }
+
+        function saveField() {
+            const index = parseInt(document.getElementById('fieldIndex').value);
+            const name = document.getElementById('fieldName').value.trim();
+            const type = document.getElementById('fieldType').value;
+            const options = document.getElementById('fieldOptions').value.trim().split('\n').filter(o => o.trim());
+            const placeholder = document.getElementById('fieldPlaceholder').value.trim();
+            const required = document.getElementById('fieldRequired').checked;
+            if (!name) { showToast('请输入字段名称', 'error'); return; }
+            if (['select', 'radio', 'checkbox'].includes(type) && options.length === 0) { showToast('请输入选项内容', 'error'); return; }
+            currentFields[index] = { name, type, options, placeholder, required };
+            renderFieldList();
+            closeFieldModal();
+            showToast('字段已保存', 'success');
+        }
+
+        function deleteField(index) {
+            if (confirm('确定要删除该字段吗？')) {
+                currentFields.splice(index, 1);
+                renderFieldList();
+                showToast('字段已删除', 'success');
+            }
+        }
+
+        function closeFieldModal() {
+            document.getElementById('fieldModal').classList.remove('show');
+        }
+
+        function onFieldTypeChange() {
+            const type = document.getElementById('fieldType').value;
+            document.getElementById('optionsGroup').style.display = ['select', 'radio', 'checkbox'].includes(type) ? 'block' : 'none';
+        }
+
+        let draggedIndex = null;
+        function onDragStart(event, index) { draggedIndex = index; event.target.classList.add('dragging'); }
+        function onDragOver(event) { event.preventDefault(); }
+        function onDrop(event, targetIndex) {
+            event.preventDefault();
+            if (draggedIndex !== null && draggedIndex !== targetIndex) {
+                const item = currentFields.splice(draggedIndex, 1)[0];
+                currentFields.splice(targetIndex, 0, item);
+                renderFieldList();
+            }
+            document.querySelectorAll('.field-item').forEach(el => el.classList.remove('dragging'));
+            draggedIndex = null;
+        }
+
+        function editForm(id) { openFormModal(id); }
+
+        function toggleStatus(id) {
+            const form = formData.find(f => f.id === id);
+            if (form) {
+                form.status = form.status === 'active' ? 'inactive' : 'active';
+                renderTable(formData);
+                showToast(`表单已${form.status === 'active' ? '启用' : '停用'}`, 'success');
+            }
+        }
+
+        function saveForm() {
+            const id = document.getElementById('formId').value;
+            const name = document.getElementById('formName').value.trim();
+            const type = document.getElementById('formType').value;
+            const description = document.getElementById('formDesc').value.trim();
+            if (!name) { showToast('请输入表单名称', 'error'); return; }
+            if (currentFields.length === 0) { showToast('请至少添加一个字段', 'error'); return; }
+            const typeNames = { 'review': '复盘类', 'survey': '调查类', 'record': '记录类' };
+            if (id) {
+                const form = formData.find(f => f.id === parseInt(id));
+                form.name = name; form.type = type; form.typeName = typeNames[type];
+                form.description = description; form.fields = JSON.parse(JSON.stringify(currentFields));
+                showToast('表单已更新', 'success');
+            } else {
+                formData.unshift({
+                    id: Date.now(), name, type, typeName: typeNames[type], description,
+                    fields: JSON.parse(JSON.stringify(currentFields)), usageCount: 0,
+                    status: 'active', createTime: new Date().toISOString().split('T')[0]
+                });
+                showToast('表单已创建', 'success');
+            }
+            renderTable(formData);
+            closeFormModal();
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        renderTable(formData);
+    </script>
+</body>
+</html>
