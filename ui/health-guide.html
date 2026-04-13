@@ -1,0 +1,2259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康指导管理 - 银川市卫健委体重管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F8FAFC}
+.dashboard{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#fff;border-right:1px solid #E5E7EB;position:fixed;height:100vh;overflow-y:auto}
+.sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E5E7EB}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#00BAAD,#00D4C8);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:24px;height:24px;color:#fff}
+.sidebar-logo span{font-size:16px;font-weight:600;color:#1F2937}
+.sidebar-nav{padding:16px 12px}
+.nav-section{margin-bottom:24px}
+.nav-section-title{font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;color:#6B7280;cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-item:hover{background:#F3F4F6;color:#1F2937}
+.nav-item.active{background:linear-gradient(135deg,rgba(0,186,173,0.1),rgba(0,212,200,0.1));color:#00BAAD}
+.nav-item svg{width:20px;height:20px;flex-shrink:0}
+.nav-item span{font-size:14px;font-weight:500}
+.main{margin-left:260px;flex:1;padding:24px}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.page-header-left h1{font-size:24px;font-weight:700;color:#1F2937;margin-bottom:4px}
+.page-header-left p{font-size:14px;color:#6B7280}
+.header-actions{display:flex;align-items:center;gap:12px}
+.tab-nav{display:flex;gap:4px;background:#fff;border-radius:12px;padding:4px;box-shadow:0 1px 3px rgba(0,0,0,0.08);margin-bottom:24px;width:fit-content}
+.tab-btn{padding:10px 20px;border-radius:8px;border:none;background:transparent;color:#6B7280;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit}
+.tab-btn:hover{color:#1F2937;background:#F3F4F6}
+.tab-btn.active{background:#00BAAD;color:#fff}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);transition:all .3s}
+.kpi-card:hover{box-shadow:0 4px 12px rgba(0,186,173,0.15);transform:translateY(-2px)}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.kpi-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.kpi-icon svg{width:22px;height:22px;color:#fff}
+.kpi-trend{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px}
+.kpi-trend.up{color:#10B981;background:rgba(16,185,129,0.1)}
+.kpi-trend.down{color:#EF4444;background:rgba(239,68,68,0.1)}
+.kpi-value{font-size:28px;font-weight:700;color:#1F2937;margin-bottom:4px}
+.kpi-label{font-size:13px;color:#6B7280}
+.kpi-sub{font-size:12px;color:#9CA3AF;margin-top:8px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.chart-card .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.chart-card .chart-title{font-size:15px;font-weight:600;color:#1F2937}
+.chart-card .chart-actions{display:flex;gap:8px}
+.chart-card .chart-btn{padding:6px 12px;border-radius:6px;border:1px solid #E5E7EB;background:#fff;color:#6B7280;font-size:12px;cursor:pointer;transition:all .2s;font-family:inherit}
+.chart-card .chart-btn:hover{background:#F3F4F6}
+.chart-card .chart-btn.active{background:#00BAAD;color:#fff;border-color:#00BAAD}
+.chart-row-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+
+/* 食谱详情弹窗样式 */
+.recipe-detail-modal{max-width:900px}
+.recipe-detail-header{display:flex;align-items:center;gap:16px;padding-bottom:16px;border-bottom:1px solid #E5E7EB;margin-bottom:20px}
+.recipe-detail-badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500}
+.recipe-detail-badge.baby{background:#FEF3C7;color:#D97706}
+.recipe-detail-badge.elder{background:#EDE9FE;color:#7C3AED}
+.recipe-detail-badge.pregnant{background:#FCE7F3;color:#DB2777}
+.recipe-detail-badge.patient{background:#D1FAE5;color:#059669}
+.recipe-detail-badge.fat{background:#FEE2E2;color:#DC2626}
+.recipe-detail-badge.muscle{background:#DBEAFE;color:#2563EB}
+.recipe-detail-badge.maintain{background:#E0E7FF;color:#4F46E5}
+.recipe-detail-badge.protein{background:#D1FAE5;color:#059669}
+.recipe-detail-badge.lowgi{background:#FEF3C7;color:#D97706}
+.recipe-nutrition-row{display:flex;gap:16px;margin-bottom:20px}
+.recipe-nutrition-item{flex:1;background:#F9FAFB;border-radius:10px;padding:16px;text-align:center}
+.recipe-nutrition-item .num{font-size:24px;font-weight:700;color:#00BAAD}
+.recipe-nutrition-item .unit{font-size:12px;color:#6B7280}
+.recipe-nutrition-item .label{font-size:13px;color:#374151;margin-top:4px}
+.recipe-meals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.recipe-meal-card{background:#F9FAFB;border-radius:12px;padding:16px}
+.recipe-meal-card .meal-title{font-size:14px;font-weight:600;color:#1F2937;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.recipe-meal-card .meal-title .meal-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.recipe-meal-card .meal-icon.breakfast{background:#FEF3C7;color:#D97706}
+.recipe-meal-card .meal-icon.lunch{background:#D1FAE5;color:#059669}
+.recipe-meal-card .meal-icon.dinner{background:#DBEAFE;color:#2563EB}
+.recipe-meal-card .meal-icon.snack{background:#FCE7F3;color:#DB2777}
+.recipe-meal-card .meal-cal{font-size:12px;color:#6B7280;margin-bottom:8px}
+.recipe-meal-card .meal-foods{font-size:13px;color:#374151;line-height:1.6}
+.recipe-meal-card .meal-tips{font-size:12px;color:#059669;margin-top:8px;padding-top:8px;border-top:1px dashed #D1FAE5}
+.recipe-cooking-steps{padding:16px;background:#FAFAFA;border-radius:12px;margin-top:16px}
+.recipe-cooking-steps h4{font-size:14px;font-weight:600;color:#1F2937;margin-bottom:12px}
+.recipe-cooking-steps ol{counter-reset:step;padding-left:0;list-style:none}
+.recipe-cooking-steps li{counter-increment:step;position:relative;padding-left:36px;margin-bottom:10px;font-size:13px;color:#374151;line-height:1.6}
+.recipe-cooking-steps li::before{content:counter(step);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:#00BAAD;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.recipe-tips-box{padding:16px;background:#EFF6FF;border-radius:12px;margin-top:16px;border-left:4px solid #3B82F6}
+.recipe-tips-box h4{font-size:14px;font-weight:600;color:#1E40AF;margin-bottom:8px}
+.recipe-tips-box p{font-size:13px;color:#1E40AF;line-height:1.6;margin:0}
+.recipe-detail-footer{margin-top:16px;padding-top:16px;border-top:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center}
+.recipe-detail-tags{display:flex;gap:8px;flex-wrap:wrap}
+.recipe-tag{padding:4px 10px;background:#F3F4F6;color:#6B7280;border-radius:4px;font-size:12px}
+.recipe-person-info{display:flex;gap:20px}
+.recipe-person-info span{font-size:13px;color:#6B7280}
+.chart-div{height:280px}
+.table-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.table-card .table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.table-card .table-title{font-size:15px;font-weight:600;color:#1F2937}
+.table-toolbar{display:flex;gap:8px;align-items:center}
+.search-box{display:flex;align-items:center;gap:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:8px 12px}
+.search-box svg{width:16px;height:16px;color:#9CA3AF;flex-shrink:0}
+.search-box input{border:none;background:transparent;outline:none;font-size:13px;color:#1F2937;font-family:inherit;width:180px}
+.search-box input::placeholder{color:#9CA3AF}
+.toolbar-btn{padding:8px 14px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;color:#6B7280;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:500}
+.toolbar-btn:hover{background:#F3F4F6;color:#1F2937}
+.toolbar-btn.primary{background:#00BAAD;color:#fff;border-color:#00BAAD}
+.toolbar-btn.primary:hover{background:#009E94}
+table{width:100%;border-collapse:collapse}
+thead th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #F3F4F6;white-space:nowrap}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:#F9FAFB}
+tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid #F9FAFB}
+.badge{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500}
+.badge-success{background:rgba(16,185,129,0.1);color:#10B981}
+.badge-warning{background:rgba(245,158,11,0.1);color:#F59E0B}
+.badge-danger{background:rgba(239,68,68,0.1);color:#EF4444}
+.badge-info{background:rgba(59,130,246,0.1);color:#3B82F6}
+.badge-gray{background:#F3F4F6;color:#6B7280}
+.action-btns{display:flex;gap:6px}
+.action-btn{padding:5px 10px;border-radius:6px;border:none;font-size:12px;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:500}
+.action-btn.view{background:rgba(59,130,246,0.1);color:#3B82F6}
+.action-btn.edit{background:rgba(0,186,173,0.1);color:#00BAAD}
+.action-btn.delete{background:rgba(239,68,68,0.1);color:#EF4444}
+.action-btn:hover{opacity:0.8}
+.pagination{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid #F3F4F6}
+.pagination-info{font-size:13px;color:#6B7280}
+.pagination-btns{display:flex;gap:4px}
+.page-btn{padding:6px 12px;border-radius:6px;border:1px solid #E5E7EB;background:#fff;color:#6B7280;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.page-btn:hover{background:#F3F4F6}
+.page-btn.active{background:#00BAAD;color:#fff;border-color:#00BAAD}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;width:560px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-header{padding:20px 24px;border-bottom:1px solid #F3F4F6;display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:17px;font-weight:600;color:#1F2937}
+.modal-close{width:32px;height:32px;border-radius:8px;border:none;background:#F3F4F6;color:#6B7280;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}
+.modal-close:hover{background:#E5E7EB;color:#1F2937}
+.modal-body{padding:24px}
+.modal-footer{padding:16px 24px;border-top:1px solid #F3F4F6;display:flex;justify-content:flex-end;gap:8px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px}
+.form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid #E5E7EB;border-radius:8px;font-size:14px;color:#1F2937;font-family:inherit;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:#00BAAD}
+.form-textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-cancel{padding:10px 20px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;color:#6B7280;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
+.btn-cancel:hover{background:#F3F4F6}
+.btn-confirm{padding:10px 20px;border-radius:8px;border:none;background:#00BAAD;color:#fff;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s}
+.btn-confirm:hover{background:#009E94}
+.toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;display:none;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);animation:slideIn .3s ease}
+.toast.show{display:flex}
+.toast.success{background:#10B981;color:#fff}
+.toast.error{background:#EF4444;color:#fff}
+.toast.info{background:#3B82F6;color:#fff}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.banner{background:linear-gradient(135deg,#00BAAD,#00D4C8);border-radius:14px;padding:24px;margin-bottom:24px;color:#fff;display:flex;align-items:center;gap:16px}
+.banner-icon{width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.banner-icon svg{width:28px;height:28px}
+.banner-content h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.banner-content p{font-size:13px;opacity:0.9;line-height:1.5}
+.exchange-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.exchange-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);border-left:4px solid #00BAAD}
+.exchange-card .exchange-title{font-size:15px;font-weight:600;color:#1F2937;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.exchange-card .exchange-title .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.exchange-card .exchange-info{font-size:13px;color:#6B7280;line-height:1.6}
+.exchange-card .exchange-info strong{color:#1F2937}
+.exchange-detail-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+.detail-card{background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.detail-card .detail-num{font-size:22px;font-weight:700;color:#00BAAD;margin-bottom:4px}
+.detail-card .detail-label{font-size:12px;color:#6B7280}
+.tag-list{display:flex;flex-wrap:wrap;gap:6px}
+.tag{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;background:#F3F4F6;color:#6B7280}
+.tag.active{background:rgba(0,186,173,0.1);color:#00BAAD}
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:6px;border:1px solid #E5E7EB;background:#fff;color:#6B7280;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.filter-btn:hover{background:#F3F4F6}
+.filter-btn.active{background:#00BAAD;color:#fff;border-color:#00BAAD}
+.select-all-wrap{display:flex;align-items:center;gap:8px}
+.select-all-wrap input[type=checkbox]{width:16px;height:16px;accent-color:#00BAAD}
+.select-all-wrap label{font-size:13px;color:#6B7280;cursor:pointer}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);display:flex;align-items:center;gap:16px}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon svg{width:24px;height:24px;color:#fff}
+.stat-value{font-size:24px;font-weight:700;color:#1F2937;margin-bottom:2px}
+.stat-label{font-size:13px;color:#6B7280}
+</style>
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <span>体重管理</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">MAIN</div>
+                <a href="dashboard.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <span>数据概览</span>
+                </a>
+                <a href="statistics.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    <span>统计分析</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">CONTENT</div>
+                <a href="health-guide.html" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span>健康指导管理</span>
+                </a>
+                <a href="content.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span>个性化表单管理</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">SYSTEM</div>
+                <a href="points.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                    <span>积分激励管理</span>
+                </a>
+                <a href="system.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>系统管理</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">ACCOUNT</div>
+                <a href="profile.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>个人中心</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1>健康指导管理</h1>
+                <p>热量换算 · 营养数据库 · 特殊人群指导 · 健身减脂</p>
+            </div>
+        </div>
+
+        <!-- Tab导航 -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="overview">综合概览</button>
+            <button class="tab-btn" data-tab="calorie">热量换算配置</button>
+            <button class="tab-btn" data-tab="food">食物营养成分数据库</button>
+            <button class="tab-btn" data-tab="special">特殊人群饮食指导</button>
+            <button class="tab-btn" data-tab="fitness">健身减脂</button>
+        </div>
+
+        <!-- Tab1: 综合概览 -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#00BAAD,#00D4C8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <div class="kpi-trend up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+12.5%</div>
+                    </div>
+                    <div class="kpi-value">3,847</div>
+                    <div class="kpi-label">累计开具指导数</div>
+                    <div class="kpi-sub">本月新增 486</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <div class="kpi-trend up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+8.2%</div>
+                    </div>
+                    <div class="kpi-value">86.3%</div>
+                    <div class="kpi-label">平均执行率</div>
+                    <div class="kpi-sub">目标 90%</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#34D399)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="kpi-trend up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+15</div>
+                    </div>
+                    <div class="kpi-value">256</div>
+                    <div class="kpi-label">食物交换份配置数</div>
+                    <div class="kpi-sub">共8大类别</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
+                        <div class="kpi-trend down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>-3</div>
+                    </div>
+                    <div class="kpi-value">1,258</div>
+                    <div class="kpi-label">食物品种数</div>
+                    <div class="kpi-sub">覆盖全品类</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">指导开具趋势</div>
+                        <div class="chart-actions">
+                            <button class="chart-btn active" onclick="setCalorieRange(this,'week')">本周</button>
+                            <button class="chart-btn" onclick="setCalorieRange(this,'month')">本月</button>
+                            <button class="chart-btn" onclick="setCalorieRange(this,'year')">本年</button>
+                        </div>
+                    </div>
+                    <div class="chart-div" id="guide-trend"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">指导类型分布</div>
+                    </div>
+                    <div class="chart-div" id="guide-type"></div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">各科室指导开具量 TOP10</div>
+                    </div>
+                    <div class="chart-div" id="guide-dept"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">执行率分布</div>
+                    </div>
+                    <div class="chart-div" id="guide-exec"></div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">最新开具指导记录</div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" placeholder="搜索患者/医生..." id="overview-search">
+                        </div>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>患者姓名</th>
+                            <th>医生</th>
+                            <th>科室</th>
+                            <th>指导类型</th>
+                            <th>开具时间</th>
+                            <th>执行状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overview-tbody">
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="pagination-info">共 <strong>3,847</strong> 条，当前第 1/193 页</div>
+                    <div class="pagination-btns">
+                        <button class="page-btn" disabled>上一页</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">193</button>
+                        <button class="page-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab2: 热量换算配置 -->
+        <div class="tab-content" id="tab-calorie">
+            <div class="banner">
+                <div class="banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div class="banner-content">
+                    <h3>食物交换份法说明</h3>
+                    <p>基于《中国食物成分表》和中国营养学会发布的《食物交换份》标准，每份食物约含90kcal热量。同类食物可等量交换，帮助用户合理搭配饮食、控制每日总能量摄入，保证营养均衡同时避免能量过剩。</p>
+                </div>
+            </div>
+
+            <div class="kpi-grid" style="margin-bottom:20px">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#00BAAD,#00D4C8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">8</div>
+                    <div class="kpi-label">食物交换份大类</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">256</div>
+                    <div class="kpi-label">食物交换份品种</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#34D399)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">90 kcal</div>
+                    <div class="kpi-label">每份标准热量</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">12,847</div>
+                    <div class="kpi-label">累计换算次数</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">各类别食物交换份数量分布</div>
+                    </div>
+                    <div class="chart-div" id="exchange-pie"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">热量换算使用趋势</div>
+                    </div>
+                    <div class="chart-div" id="exchange-trend"></div>
+                </div>
+            </div>
+
+            <div class="filter-bar" id="calorie-filter-bar">
+                <button class="filter-btn active" data-category="全部">全部</button>
+                <button class="filter-btn" data-category="谷薯类">谷薯类</button>
+                <button class="filter-btn" data-category="蔬菜类">蔬菜类</button>
+                <button class="filter-btn" data-category="水果类">水果类</button>
+                <button class="filter-btn" data-category="肉蛋类">肉蛋类</button>
+                <button class="filter-btn" data-category="豆奶类">豆奶类</button>
+                <button class="filter-btn" data-category="油脂类">油脂类</button>
+                <button class="filter-btn" data-category="坚果类">坚果类</button>
+                <button class="filter-btn" data-category="调味品类">调味品类</button>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">食物交换份配置表</div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" placeholder="搜索食物名称...">
+                        </div>
+                        <button class="toolbar-btn primary" onclick="openAddExchangeModal()">+ 新增食物</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>食物名称</th>
+                            <th>类别</th>
+                            <th>每份重量(g)</th>
+                            <th>热量(kcal)</th>
+                            <th>蛋白质(g)</th>
+                            <th>脂肪(g)</th>
+                            <th>碳水(g)</th>
+                            <th>交换份数</th>
+                            <th>可替换食物</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exchange-tbody">
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="pagination-info">共 <strong>256</strong> 条，当前第 1/13 页</div>
+                    <div class="pagination-btns">
+                        <button class="page-btn" disabled>上一页</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">13</button>
+                        <button class="page-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab3: 食物营养成分数据库 -->
+        <div class="tab-content" id="tab-food">
+            <div class="kpi-grid" style="margin-bottom:20px">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#00BAAD,#00D4C8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">1,258</div>
+                    <div class="kpi-label">食物品种总数</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">4,826</div>
+                    <div class="kpi-label">累计查询次数</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#34D399)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">3.8</div>
+                    <div class="kpi-label">平均GI指数</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">99.6%</div>
+                    <div class="kpi-label">数据完整率</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">食物类别分布</div>
+                    </div>
+                    <div class="chart-div" id="food-category"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">各热量区间食物数量</div>
+                    </div>
+                    <div class="chart-div" id="food-calorie"></div>
+                </div>
+            </div>
+
+            <div class="filter-bar" id="food-filter-bar">
+                <button class="filter-btn active" data-category="全部">全部</button>
+                <button class="filter-btn" data-category="谷薯类">谷薯类</button>
+                <button class="filter-btn" data-category="蔬菜类">蔬菜类</button>
+                <button class="filter-btn" data-category="水果类">水果类</button>
+                <button class="filter-btn" data-category="肉蛋类">肉蛋类</button>
+                <button class="filter-btn" data-category="豆奶类">豆奶类</button>
+                <button class="filter-btn" data-category="油脂类">油脂类</button>
+                <button class="filter-btn" data-category="坚果类">坚果类</button>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">食物营养成分列表</div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" placeholder="搜索食物名称...">
+                        </div>
+                        <button class="toolbar-btn" onclick="showToast('导入成功','success')">批量导入</button>
+                        <button class="toolbar-btn primary" onclick="openAddFoodModal()">+ 新增食物</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>食物名称</th>
+                            <th>类别</th>
+                            <th>每100g热量(kcal)</th>
+                            <th>蛋白质(g)</th>
+                            <th>脂肪(g)</th>
+                            <th>碳水(g)</th>
+                            <th>膳食纤维(g)</th>
+                            <th>升糖指数(GI)</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="food-tbody">
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="pagination-info">共 <strong>1,258</strong> 条，当前第 1/63 页</div>
+                    <div class="pagination-btns">
+                        <button class="page-btn" disabled>上一页</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">63</button>
+                        <button class="page-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab4: 特殊人群饮食指导 -->
+        <div class="tab-content" id="tab-special">
+            <div class="banner" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA)">
+                <div class="banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="banner-content">
+                    <h3>特殊人群饮食指导说明</h3>
+                    <p>针对婴幼儿、老年人、孕产妇、慢性病患者等特殊人群，根据其生理特点和营养需求，制定个性化的饮食指导方案，帮助特殊人群科学合理地安排膳食，促进健康。</p>
+                </div>
+            </div>
+
+            <div class="kpi-grid" style="margin-bottom:20px">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">4</div>
+                    <div class="kpi-label">特殊人群类别</div>
+                    <div class="kpi-sub">婴幼儿/老年人/孕产妇/慢病患者</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#00BAAD,#00D4C8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">128</div>
+                    <div class="kpi-label">特殊食谱总数</div>
+                    <div class="kpi-sub">本月新增 12</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#34D399)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">96.8%</div>
+                    <div class="kpi-label">指导覆盖率</div>
+                    <div class="kpi-sub">覆盖目标人群</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">2,456</div>
+                    <div class="kpi-label">累计指导次数</div>
+                    <div class="kpi-sub">本月执行 328</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">特殊人群分布</div>
+                    </div>
+                    <div class="chart-div" id="special-population"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">各类人群食谱数量</div>
+                    </div>
+                    <div class="chart-div" id="special-recipe"></div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active">全部</button>
+                <button class="filter-btn">婴幼儿</button>
+                <button class="filter-btn">老年人</button>
+                <button class="filter-btn">孕产妇</button>
+                <button class="filter-btn">慢性病患者</button>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">特殊人群饮食指导配置</div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" placeholder="搜索指导名称...">
+                        </div>
+                        <button class="toolbar-btn primary" onclick="openSpecialModal()">+ 新增指导</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>指导名称</th>
+                            <th>人群类别</th>
+                            <th>适用年龄</th>
+                            <th>热量范围(kcal)</th>
+                            <th>核心营养素</th>
+                            <th>关联食谱</th>
+                            <th>更新时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="special-tbody">
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="pagination-info">共 <strong>128</strong> 条，当前第 1/7 页</div>
+                    <div class="pagination-btns">
+                        <button class="page-btn" disabled>上一页</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">7</button>
+                        <button class="page-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab5: 健身减脂 -->
+        <div class="tab-content" id="tab-fitness">
+            <div class="banner" style="background:linear-gradient(135deg,#EF4444,#F87171)">
+                <div class="banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                </div>
+                <div class="banner-content">
+                    <h3>健身减脂营养指导说明</h3>
+                    <p>针对需要控制热量摄入的健身减脂人群，提供科学的营养知识和饮食指导方案。普及营养知识，提高公众的营养意识，促进健康饮食，帮助健身人群科学管理体重。</p>
+                </div>
+            </div>
+
+            <div class="kpi-grid" style="margin-bottom:20px">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#EF4444,#F87171)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">86</div>
+                    <div class="kpi-label">健身减脂食谱</div>
+                    <div class="kpi-sub">本月新增 8</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#00BAAD,#00D4C8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">45</div>
+                    <div class="kpi-label">热量控制方案</div>
+                    <div class="kpi-sub">按BMI分级</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">12</div>
+                    <div class="kpi-label">营养知识专题</div>
+                    <div class="kpi-sub">持续更新</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#34D399)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">5,234</div>
+                    <div class="kpi-label">累计阅读量</div>
+                    <div class="kpi-sub">本月增长 12.5%</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">健身目标分布</div>
+                    </div>
+                    <div class="chart-div" id="fitness-goal"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">热量摄入区间分布</div>
+                    </div>
+                    <div class="chart-div" id="fitness-calorie"></div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active">全部</button>
+                <button class="filter-btn">减脂餐</button>
+                <button class="filter-btn">增肌餐</button>
+                <button class="filter-btn">维持餐</button>
+                <button class="filter-btn">高蛋白餐</button>
+                <button class="filter-btn">低GI餐</button>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">健身减脂食谱库</div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" placeholder="搜索食谱名称...">
+                        </div>
+                        <button class="toolbar-btn" onclick="showToast('导入成功','success')">批量导入</button>
+                        <button class="toolbar-btn primary" onclick="openFitnessModal()">+ 新增食谱</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>食谱名称</th>
+                            <th>餐次</th>
+                            <th>热量(kcal)</th>
+                            <th>蛋白质(g)</th>
+                            <th>碳水(g)</th>
+                            <th>脂肪(g)</th>
+                            <th>适用目标</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fitness-tbody">
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="pagination-info">共 <strong>86</strong> 条，当前第 1/5 页</div>
+                    <div class="pagination-btns">
+                        <button class="page-btn" disabled>上一页</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">5</button>
+                        <button class="page-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card" style="margin-top:24px">
+                <div class="table-header">
+                    <div class="table-title">营养知识科普文章</div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" placeholder="搜索文章标题...">
+                        </div>
+                        <button class="toolbar-btn primary" onclick="openKnowledgeModal()">+ 新增文章</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>文章标题</th>
+                            <th>分类</th>
+                            <th>阅读量</th>
+                            <th>收藏数</th>
+                            <th>发布时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="knowledge-tbody">
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="pagination-info">共 <strong>48</strong> 条，当前第 1/3 页</div>
+                    <div class="pagination-btns">
+                        <button class="page-btn" disabled>上一页</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- 新增食物弹窗 -->
+<div class="modal-overlay" id="food-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-title">新增食物</div>
+            <button class="modal-close" onclick="closeFoodModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">食物名称 *</label>
+                <input type="text" class="form-input" placeholder="请输入食物名称">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">食物类别 *</label>
+                    <select class="form-select">
+                        <option value="">请选择类别</option>
+                        <option>谷薯类</option>
+                        <option>蔬菜类</option>
+                        <option>水果类</option>
+                        <option>肉蛋类</option>
+                        <option>豆奶类</option>
+                        <option>油脂类</option>
+                        <option>坚果类</option>
+                        <option>调味品类</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">每100g热量(kcal) *</label>
+                    <input type="number" class="form-input" placeholder="如：120">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">蛋白质(g/100g)</label>
+                    <input type="number" class="form-input" placeholder="如：3.2">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">脂肪(g/100g)</label>
+                    <input type="number" class="form-input" placeholder="如：1.8">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">碳水(g/100g)</label>
+                    <input type="number" class="form-input" placeholder="如：25.6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">膳食纤维(g/100g)</label>
+                    <input type="number" class="form-input" placeholder="如：2.1">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">升糖指数(GI)</label>
+                    <input type="number" class="form-input" placeholder="如：55">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">交换份重量(g)</label>
+                    <input type="number" class="form-input" placeholder="如：50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">备注</label>
+                <textarea class="form-textarea" placeholder="可选填写备注信息"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeFoodModal()">取消</button>
+            <button class="btn-confirm" onclick="saveFood()">保存</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<!-- 特殊人群指导新增弹窗 -->
+<div class="modal-overlay" id="special-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">新增特殊人群饮食指导</div>
+            <button class="modal-close" onclick="closeSpecialModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">指导名称 *</label>
+                <input type="text" class="form-input" placeholder="请输入指导名称，如：老年人低盐低脂食谱">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">人群类别 *</label>
+                    <select class="form-select">
+                        <option value="">请选择</option>
+                        <option>婴幼儿</option>
+                        <option>老年人</option>
+                        <option>孕产妇</option>
+                        <option>慢性病患者</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">适用年龄</label>
+                    <input type="text" class="form-input" placeholder="如：60岁以上">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">每日热量范围(kcal)</label>
+                    <input type="text" class="form-input" placeholder="如：1500-1800">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">核心营养素</label>
+                    <input type="text" class="form-input" placeholder="如：低盐、高钙、优质蛋白">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">饮食原则</label>
+                <textarea class="form-textarea" placeholder="请输入饮食指导原则..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">推荐食物</label>
+                <input type="text" class="form-input" placeholder="请输入推荐食物，多个用逗号分隔">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeSpecialModal()">取消</button>
+            <button class="btn-confirm" onclick="saveSpecial()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 健身减脂食谱新增弹窗 -->
+<div class="modal-overlay" id="fitness-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">新增健身减脂食谱</div>
+            <button class="modal-close" onclick="closeFitnessModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">食谱名称 *</label>
+                <input type="text" class="form-input" placeholder="请输入食谱名称">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">餐次 *</label>
+                    <select class="form-select">
+                        <option value="">请选择</option>
+                        <option>早餐</option>
+                        <option>午餐</option>
+                        <option>晚餐</option>
+                        <option>加餐</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">适用目标 *</label>
+                    <select class="form-select">
+                        <option value="">请选择</option>
+                        <option>减脂餐</option>
+                        <option>增肌餐</option>
+                        <option>维持餐</option>
+                        <option>高蛋白餐</option>
+                        <option>低GI餐</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">热量(kcal)</label>
+                    <input type="number" class="form-input" placeholder="如：350">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">蛋白质(g)</label>
+                    <input type="number" class="form-input" placeholder="如：25">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">碳水(g)</label>
+                    <input type="number" class="form-input" placeholder="如：30">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">脂肪(g)</label>
+                    <input type="number" class="form-input" placeholder="如：12">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">食材明细</label>
+                <textarea class="form-textarea" placeholder="请输入食材明细，如：鸡胸肉100g、西兰花50g、糙米50g..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeFitnessModal()">取消</button>
+            <button class="btn-confirm" onclick="saveFitness()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 营养知识文章新增弹窗 -->
+<div class="modal-overlay" id="knowledge-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">新增营养知识文章</div>
+            <button class="modal-close" onclick="closeKnowledgeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">文章标题 *</label>
+                <input type="text" class="form-input" placeholder="请输入文章标题">
+            </div>
+            <div class="form-group">
+                <label class="form-label">文章分类 *</label>
+                <select class="form-select">
+                    <option value="">请选择</option>
+                    <option>膳食指南</option>
+                    <option>营养素作用</option>
+                    <option>食谱推荐</option>
+                    <option>节气养生</option>
+                    <option>疾病饮食禁忌</option>
+                    <option>热量控制</option>
+                    <option>运动营养</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">文章摘要</label>
+                <textarea class="form-textarea" placeholder="请输入文章摘要..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">文章内容</label>
+                <textarea class="form-textarea" style="min-height:120px" placeholder="请输入文章正文内容..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeKnowledgeModal()">取消</button>
+            <button class="btn-confirm" onclick="saveKnowledge()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 特殊人群食谱详情弹窗 -->
+<div class="modal-overlay" id="special-recipe-modal" onclick="if(event.target===this)closeSpecialRecipeModal()">
+    <div class="modal" style="max-width:900px">
+        <div class="modal-header">
+            <div class="modal-title" id="special-recipe-title">特殊人群食谱详情</div>
+            <button class="modal-close" onclick="closeSpecialRecipeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="special-recipe-content">
+            <!-- 动态填充 -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeSpecialRecipeModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 健身减脂食谱详情弹窗 -->
+<div class="modal-overlay" id="fitness-recipe-modal" onclick="if(event.target===this)closeFitnessRecipeModal()">
+    <div class="modal" style="max-width:900px">
+        <div class="modal-header">
+            <div class="modal-title" id="fitness-recipe-title">食谱详情</div>
+            <button class="modal-close" onclick="closeFitnessRecipeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="fitness-recipe-content">
+            <!-- 动态填充 -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeFitnessRecipeModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 指导详情弹窗 -->
+<div class="modal-overlay" id="guide-detail-modal" onclick="if(event.target===this)closeGuideDetailModal()">
+    <div class="modal" style="max-width:800px">
+        <div class="modal-header">
+            <div class="modal-title" id="guide-detail-title">指导详情</div>
+            <button class="modal-close" onclick="closeGuideDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="guide-detail-content">
+            <!-- 动态填充 -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeGuideDetailModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 指导详情弹窗样式 */
+.guide-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #F0FDFA 0%, #ECFDF5 100%);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+.guide-detail-patient {
+    flex: 1;
+}
+.guide-detail-patient h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #1F2937;
+}
+.guide-detail-patient p {
+    margin: 0;
+    font-size: 13px;
+    color: #6B7280;
+}
+.guide-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.guide-type-badge.diet {
+    background: #D1FAE5;
+    color: #059669;
+}
+.guide-type-badge.exercise {
+    background: #DBEAFE;
+    color: #2563EB;
+}
+.guide-type-badge.comprehensive {
+    background: #EDE9FE;
+    color: #7C3AED;
+}
+.guide-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.guide-meta-item {
+    background: #F9FAFB;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+.guide-meta-item .num {
+    font-size: 20px;
+    font-weight: 600;
+    color: #00BAAD;
+}
+.guide-meta-item .label {
+    font-size: 12px;
+    color: #6B7280;
+    margin-top: 4px;
+}
+.guide-detail-section {
+    margin-bottom: 20px;
+}
+.guide-detail-section h4 {
+    font-size: 14px;
+    color: #1F2937;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #E5E7EB;
+}
+.guide-meals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.guide-meal-item {
+    background: #F9FAFB;
+    border-radius: 10px;
+    padding: 14px;
+    border-left: 4px solid #00BAAD;
+}
+.guide-meal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.guide-meal-title {
+    font-weight: 600;
+    color: #1F2937;
+    font-size: 14px;
+}
+.guide-meal-cal {
+    font-size: 13px;
+    color: #10B981;
+    font-weight: 500;
+}
+.guide-meal-food {
+    color: #374151;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 6px;
+}
+.guide-meal-tips {
+    font-size: 12px;
+    color: #6B7280;
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+.guide-exercise-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.guide-exercise-item {
+    background: #F9FAFB;
+    border-radius: 10px;
+    padding: 14px;
+}
+.guide-exercise-item.exercise-main {
+    border-left: 4px solid #3B82F6;
+}
+.guide-exercise-title {
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 8px;
+}
+.guide-exercise-content {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+.guide-exercise-time {
+    font-size: 12px;
+    color: #6B7280;
+    margin-top: 6px;
+}
+.guide-tips-box {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-radius: 10px;
+    padding: 16px;
+}
+.guide-tips-box h5 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #92400E;
+}
+.guide-tips-box ul {
+    margin: 0;
+    padding-left: 18px;
+}
+.guide-tips-box li {
+    font-size: 13px;
+    color: #78350F;
+    line-height: 1.8;
+}
+</style>
+
+<script>
+// ===== 模拟数据 =====
+var guideData=[
+  {id:'G001',name:'张伟',doctor:'李医生',dept:'内分泌科',type:'饮食指导',date:'2026-04-09',status:'已执行',detail:{calorie:1600,target:'减重',duration:'30天',content:{breakfast:{food:'燕麦粥50g + 煮鸡蛋1个 + 牛奶200ml + 黄瓜100g',cal:350,tips:'燕麦富含膳食纤维，有助于控制血糖'},lunch:{food:'杂粮饭100g + 清蒸鱼120g + 蒜蓉西兰花200g + 紫菜蛋花汤',cal:520,tips:'鱼类富含优质蛋白，搭配蔬菜保证膳食平衡'},dinner:{food:'荞麦面80g + 鸡胸肉100g + 凉拌黄瓜150g + 番茄汤',cal:420,tips:'晚餐控制在总热量的25%左右，以蔬菜和优质蛋白为主'}},tips:['每日饮水不少于1500ml','细嚼慢咽，每餐不少于20分钟','避免油炸、甜饮料等高热量食物','餐后散步30分钟']}},
+  {id:'G002',name:'王芳',doctor:'王医生',dept:'营养科',type:'运动指导',date:'2026-04-09',status:'执行中',detail:{target:'增肌塑形',duration:'60天',frequency:'每周4-5次',content:{warmup:{exercise:'慢跑10分钟 + 动态拉伸5分钟',duration:'15分钟',tips:'充分热身预防运动损伤'},main:{exercise:'周一/周三/周五：胸背训练（哑铃卧推12x4组+引体向上8x4组）\n周二/周四：臀腿训练（深蹲15x4组+硬拉12x4组）',duration:'45-60分钟',tips:'每组间休息60-90秒'},cardio:{exercise:'跑步机匀速跑或椭圆机',duration:'20-30分钟',tips:'心率控制在最大心率的60-70%'},cooldown:{exercise:'静态拉伸10分钟',duration:'10分钟',tips:'重点拉伸训练部位'}},tips:['运动前补充适量碳水化合物','运动后30分钟内补充蛋白质','保证每天7-8小时充足睡眠','循序渐进，避免过度训练']}},
+  {id:'G003',name:'李明',doctor:'张医生',dept:'内分泌科',type:'综合指导',date:'2026-04-08',status:'已执行',detail:{calorie:1800,target:'控制血糖',duration:'90天',exerciseFreq:'每周5次',content:{diet:{breakfast:{food:'全麦面包2片 + 荷包蛋1个 + 牛奶250ml + 圣女果',cal:420,tips:'选择低GI主食，粗细搭配'},lunch:{food:'杂粮饭100g + 清蒸鲈鱼150g + 凉拌木耳200g + 冬瓜汤',cal:480,tips:'鱼类每周不少于3次，补充优质蛋白和Omega-3'},dinner:{food:'荞麦面80g + 牛肉80g + 绿叶蔬菜300g',cal:380,tips:'晚餐早吃，睡前3小时不进食'}},exercise:{type:'有氧+抗阻',duration:'每天30-60分钟',details:'快走/慢跑30分钟 + 力量训练20分钟',heartRate:'最大心率的50-70%'}},tips:['定期监测空腹血糖和餐后2小时血糖','遵医嘱按时服药','记录每日饮食和血糖数据','每周称重并记录体重变化']}},
+  {id:'G004',name:'赵丽',doctor:'刘医生',dept:'全科',type:'饮食指导',date:'2026-04-08',status:'待执行',detail:{calorie:1500,target:'孕晚期营养补充',duration:'持续至分娩',content:{breakfast:{food:'小米粥50g + 鸡蛋饼1个 + 芝麻酱拌菠菜 + 孕妇奶粉',cal:450,tips:'补充叶酸、铁和钙'},lunch:{food:'番茄牛腩面（面条100g + 牛肉100g + 番茄200g） + 凉拌海带',cal:550,tips:'牛肉补铁，预防孕期贫血'},dinner:{food:'鲈鱼粥100g + 虾仁炒西蓝花200g + 水果100g',cal:420,tips:'鱼类每周2-3次，补充DHA促进胎儿发育'},snack:{food:'核桃3个 + 红枣5颗 + 酸奶100g',cal:150,tips:'少食多餐，缓解胃部压迫感'}},tips:['少食多餐，每日5-6餐','避免生冷、辛辣刺激食物','补充叶酸、铁剂、钙剂','保持心情愉悦，适度运动']}},
+  {id:'G005',name:'孙强',doctor:'李医生',dept:'内分泌科',type:'运动指导',date:'2026-04-07',status:'已执行',detail:{target:'减脂增肌',duration:'90天',frequency:'每周5次',content:{week1:{name:'适应期',exercise:'快走40分钟或动感单车30分钟',target:'每天5000步以上'}},tips:['第1-2周以有氧运动为主','第3周起增加力量训练','每次运动前热身、运动后拉伸','配合饮食控制效果更佳']}},
+  {id:'G006',name:'周敏',doctor:'陈医生',dept:'营养科',type:'综合指导',date:'2026-04-07',status:'执行中',detail:{calorie:1700,target:'围绝经期调理',duration:'180天',content:{diet:{breakfast:{food:'豆浆300ml + 红枣糕50g + 煮鸡蛋1个',cal:380,tips:'豆制品补充植物雌激素'},lunch:{food:'杂粮饭100g + 豆腐烧鱼150g + 炒时蔬200g',cal:500,tips:'鱼类和豆制品双重补充优质蛋白'},dinner:{food:'银耳莲子羹1碗 + 素馅包子2个 + 凉拌豆芽',cal:420,tips:'银耳滋阴润燥，适合更年期调理'}},exercise:{type:'柔和有氧',duration:'每天30-45分钟',details:'太极拳/八段锦/散步',heartRate:'微微出汗即可'}},tips:['保持心情舒畅，避免情绪波动','适当补充钙剂预防骨质疏松','规律作息，保证充足睡眠','定期体检，关注骨密度变化']}},
+  {id:'G007',name:'吴涛',doctor:'王医生',dept:'内分泌科',type:'饮食指导',date:'2026-04-06',status:'已执行',detail:{calorie:2000,target:'增肌营养支持',duration:'持续进行',content:{breakfast:{food:'燕麦片80g + 鸡胸肉80g + 鸡蛋3个 + 牛奶300ml + 香蕉1根',cal:650,tips:'碳水+蛋白质+优质脂肪的完美组合'},lunch:{food:'米饭200g + 牛排150g + 土豆泥150g + 蔬菜沙拉',cal:720,tips:'训练前1-2小时进食，保证能量供应'},dinner:{food:'意面100g + 三文鱼150g + 西兰花200g + 橄榄油拌菜',cal:680,tips:'晚餐补充优质蛋白和复合碳水'},snack:{food:'蛋白粉1勺 + 全麦面包2片 + 花生酱30g',cal:380,tips:'训练后30分钟内补充'}},tips:['每天蛋白质摄入量达到1.6-2g/kg体重','碳水化合物是增肌的主要能量来源','保持充足睡眠，生长激素主要在睡眠时分泌','每周称重监测体脂变化']}},
+  {id:'G008',name:'郑雪',doctor:'张医生',dept:'全科',type:'运动指导',date:'2026-04-06',status:'已执行',detail:{target:'改善睡眠质量',duration:'60天',frequency:'每周3-4次',content:{exercise:{type:'有氧运动 + 放松训练',time:'傍晚17:00-19:00',details:'快走/慢跑40分钟 + 瑜伽冥想20分钟'},schedule:{day1:'有氧运动（跑步/游泳/骑行）40分钟',day2:'休息或轻度拉伸',day3:'瑜伽或普拉提60分钟',day4:'休息',day5:'有氧运动30分钟 + 八段锦20分钟',day6:'户外散步60分钟',day7:'完全休息'}},tips:['睡前2小时内避免剧烈运动','保持规律的运动习惯','营造舒适的睡眠环境','睡前避免使用电子设备']}}
+];
+var exchangeData=[
+  {name:'米饭(蒸)',category:'谷薯类',weight:50,calorie:87,protein:1.8,fat:0.1,carb:43.2,portion:0.6,replace:'馒头、面条、面包'},
+  {name:'馒头',category:'谷薯类',weight:50,calorie:103,protein:2.8,fat:0.2,carb:48.3,portion:0.6,replace:'米饭、面条'},
+  {name:'面条',category:'谷薯类',weight:50,calorie:67,protein:2.3,fat:0.2,carb:30.5,portion:0.6,replace:'米饭、馒头'},
+  {name:'土豆',category:'谷薯类',weight:100,calorie:76,protein:2.0,fat:0.1,carb:17.2,portion:0.8,replace:'红薯、芋头'},
+  {name:'红薯',category:'谷薯类',weight:100,calorie:99,protein:1.1,fat:0.2,carb:23.6,portion:0.8,replace:'土豆、芋头'},
+  {name:'白菜',category:'蔬菜类',weight:500,calorie:70,protein:3.5,fat:0.5,carb:7.5,portion:0.8,replace:'油菜、菠菜'},
+  {name:'油菜',category:'蔬菜类',weight:500,calorie:60,protein:3.2,fat:0.5,carb:5.8,portion:0.8,replace:'白菜、菠菜'},
+  {name:'菠菜',category:'蔬菜类',weight:500,calorie:70,protein:7.5,fat:0.8,carb:8.0,portion:0.8,replace:'白菜、油菜'},
+  {name:'苹果',category:'水果类',weight:200,calorie:104,protein:0.5,fat:0.3,carb:27.8,portion:1.2,replace:'梨、香蕉'},
+  {name:'梨',category:'水果类',weight:200,calorie:104,protein:0.4,fat:0.2,carb:27.8,portion:1.2,replace:'苹果、橙子'},
+  {name:'鸡蛋',category:'肉蛋类',weight:60,calorie:86,protein:7.6,fat:6.0,carb:0.7,portion:1.0,replace:'鸭蛋、鹌鹑蛋'},
+  {name:'鸡胸肉',category:'肉蛋类',weight:50,calorie:55,protein:11.5,fat:0.8,carb:0.1,portion:0.6,replace:'鱼肉、虾肉'},
+  {name:'牛奶',category:'豆奶类',weight:130,calorie:88,protein:4.5,fat:4.8,carb:5.5,portion:1.0,replace:'豆浆、酸奶'},
+  {name:'豆浆',category:'豆奶类',weight:400,calorie:90,protein:4.8,fat:2.0,carb:4.8,portion:1.0,replace:'牛奶、酸奶'},
+  {name:'花生油',category:'油脂类',weight:9,calorie:80,protein:0,fat:9.0,carb:0,portion:0.9,replace:'菜籽油、芝麻油'},
+  {name:'核桃',category:'坚果类',weight:15,calorie:88,protein:2.1,fat:8.4,carb:2.8,portion:1.0,replace:'杏仁、榛子'}
+];
+var foodData=[
+  {name:'米饭(蒸)',category:'谷薯类',calorie:116,protein:2.6,fat:0.2,carb:25.9,fiber:0.3,gi:73},
+  {name:'馒头',category:'谷薯类',calorie:223,protein:7.0,fat:1.1,carb:47.0,fiber:1.3,gi:85},
+  {name:'面条',category:'谷薯类',calorie:284,protein:8.3,fat:0.8,carb:59.5,fiber:2.0,gi:55},
+  {name:'土豆',category:'谷薯类',calorie:76,protein:2.0,fat:0.1,carb:17.2,fiber:0.7,gi:62},
+  {name:'红薯',category:'谷薯类',calorie:99,protein:1.1,fat:0.2,carb:23.6,fiber:1.6,gi:54},
+  {name:'玉米',category:'谷薯类',calorie:112,protein:4.0,fat:1.2,carb:22.8,fiber:2.9,gi:52},
+  {name:'小米',category:'谷薯类',calorie:361,protein:9.0,fat:3.1,carb:75.1,fiber:1.6,gi:61},
+  {name:'燕麦',category:'谷薯类',calorie:389,protein:16.9,fat:6.9,carb:66.9,fiber:10.6,gi:55},
+  {name:'白菜',category:'蔬菜类',calorie:17,protein:1.0,fat:0.1,carb:3.4,fiber:0.8,gi:15},
+  {name:'油菜',category:'蔬菜类',calorie:14,protein:1.3,fat:0.2,carb:2.8,fiber:1.1,gi:15},
+  {name:'菠菜',category:'蔬菜类',calorie:28,protein:2.6,fat:0.4,carb:5.1,fiber:1.7,gi:15},
+  {name:'西红柿',category:'蔬菜类',calorie:19,protein:0.9,fat:0.2,carb:4.0,fiber:1.0,gi:15},
+  {name:'黄瓜',category:'蔬菜类',calorie:15,protein:0.8,fat:0.2,carb:3.6,fiber:0.5,gi:15},
+  {name:'苹果',category:'水果类',calorie:52,protein:0.3,fat:0.2,carb:13.8,fiber:1.2,gi:36},
+  {name:'梨',category:'水果类',calorie:51,protein:0.2,fat:0.1,carb:13.3,fiber:1.1,gi:36},
+  {name:'香蕉',category:'水果类',calorie:93,protein:1.4,fat:0.2,carb:22.8,fiber:1.2,gi:52},
+  {name:'橙子',category:'水果类',calorie:47,protein:0.9,fat:0.1,carb:11.8,fiber:2.4,gi:43},
+  {name:'鸡蛋',category:'肉蛋类',calorie:144,protein:13.3,fat:9.5,carb:1.5,fiber:0,gi:0},
+  {name:'鸡胸肉',category:'肉蛋类',calorie:133,protein:31,fat:3.6,carb:0,fiber:0,gi:0},
+  {name:'牛肉',category:'肉蛋类',calorie:125,protein:26,fat:4.8,carb:0,fiber:0,gi:0},
+  {name:'鱼肉',category:'肉蛋类',calorie:90,protein:20,fat:1.5,carb:0,fiber:0,gi:0},
+  {name:'虾肉',category:'肉蛋类',calorie:85,protein:18,fat:0.6,carb:1.5,fiber:0,gi:0},
+  {name:'牛奶',category:'豆奶类',calorie:54,protein:3,fat:3.2,carb:3.4,fiber:0,gi:27},
+  {name:'豆浆',category:'豆奶类',calorie:33,protein:3,fat:1.2,carb:1.8,fiber:0.5,gi:0},
+  {name:'豆腐',category:'豆奶类',calorie:81,protein:8.1,fat:3.7,carb:3.8,fiber:0.4,gi:10},
+  {name:'酸奶',category:'豆奶类',calorie:72,protein:2.9,fat:2.7,carb:9.3,fiber:0,gi:36},
+  {name:'花生油',category:'油脂类',calorie:899,protein:0,fat:99.9,carb:0,fiber:0,gi:0},
+  {name:'橄榄油',category:'油脂类',calorie:884,protein:0,fat:100,carb:0,fiber:0,gi:0},
+  {name:'菜籽油',category:'油脂类',calorie:884,protein:0,fat:99.9,carb:0,fiber:0,gi:0},
+  {name:'芝麻油',category:'油脂类',calorie:898,protein:0,fat:99.7,carb:0,fiber:0,gi:0},
+  {name:'核桃',category:'坚果类',calorie:646,protein:14.9,fat:58.8,carb:13.7,fiber:6.1,gi:0},
+  {name:'杏仁',category:'坚果类',calorie:578,protein:22,fat:49.4,carb:10.3,fiber:8,gi:0},
+  {name:'花生',category:'坚果类',calorie:563,protein:25,fat:44.3,carb:12.7,fiber:5.5,gi:0},
+  {name:'腰果',category:'坚果类',calorie:552,protein:17.5,fat:44,carb:25.7,fiber:1.3,gi:0}
+];
+
+// ===== 特殊人群指导数据 =====
+var specialData=[
+  {name:'婴幼儿辅食添加指南',type:'婴幼儿',age:'6-12月',calorie:'80-100',nutrient:'高铁米粉、果蔬泥',recipe:8,update:'2026-04-08'},
+  {name:'老年人低盐低脂食谱',type:'老年人',age:'60岁以上',calorie:'1500-1800',nutrient:'低盐、高钙、优质蛋白',recipe:15,update:'2026-04-07'},
+  {name:'孕早期营养补充方案',type:'孕产妇',age:'孕1-3月',calorie:'1800-2000',nutrient:'叶酸、铁、钙',recipe:12,update:'2026-04-06'},
+  {name:'妊娠糖尿病饮食控制',type:'孕产妇',age:'孕4-9月',calorie:'1600-1800',nutrient:'低GI、适量碳水',recipe:10,update:'2026-04-05'},
+  {name:'高血压患者饮食指南',type:'慢性病患者',age:'18-80岁',calorie:'1600-1800',nutrient:'低盐、高钾、富纤维',recipe:18,update:'2026-04-04'},
+  {name:'痛风患者低嘌呤食谱',type:'慢性病患者',age:'30-70岁',calorie:'1500-1700',nutrient:'低嘌呤、低脂肪',recipe:14,update:'2026-04-03'},
+  {name:'儿童增高营养方案',type:'婴幼儿',age:'3-12岁',calorie:'1200-1600',nutrient:'高钙、优质蛋白',recipe:9,update:'2026-04-02'},
+  {name:'老年人补钙食谱',type:'老年人',age:'65岁以上',calorie:'1400-1600',nutrient:'高钙、维生素D',recipe:11,update:'2026-04-01'}
+];
+
+// ===== 健身减脂食谱数据 =====
+var fitnessData=[
+  {name:'鸡胸肉蔬菜沙拉',meal:'午餐',calorie:320,protein:35,carb:18,fat:12,goal:'减脂餐'},
+  {name:'牛油果鸡蛋吐司',meal:'早餐',calorie:380,protein:18,carb:28,fat:22,goal:'高蛋白餐'},
+  {name:'三文鱼藜麦碗',meal:'午餐',calorie:450,protein:38,carb:32,fat:18,goal:'增肌餐'},
+  {name:'希腊酸奶水果杯',meal:'加餐',calorie:180,protein:15,carb:20,fat:4,goal:'低GI餐'},
+  {name:'牛肉西兰花套餐',meal:'晚餐',calorie:380,protein:42,carb:15,fat:16,goal:'减脂餐'},
+  {name:'全麦香蕉松饼',meal:'早餐',calorie:320,protein:12,carb:52,fat:8,goal:'维持餐'},
+  {name:'虾仁牛油果沙拉',meal:'午餐',calorie:350,protein:28,carb:12,fat:22,goal:'高蛋白餐'},
+  {name:'烤鳕鱼配蔬菜',meal:'晚餐',calorie:280,protein:35,carb:8,fat:12,goal:'减脂餐'},
+  {name:'蛋白粉奶昔',meal:'加餐',calorie:220,protein:30,carb:15,fat:3,goal:'增肌餐'},
+  {name:'糙米鸡肉炒饭',meal:'午餐',calorie:420,protein:32,carb:48,fat:10,goal:'维持餐'}
+];
+
+// ===== 营养知识文章数据 =====
+var knowledgeData=[
+  {title:'科学减脂的正确打开方式',cat:'热量控制',read:1256,collect:328,date:'2026-04-08',status:'已发布'},
+  {title:'蛋白质摄入指南：健身人群必看',cat:'运动营养',read:986,collect:256,date:'2026-04-07',status:'已发布'},
+  {title:'低GI食物如何帮助控制血糖',cat:'膳食指南',read:856,collect:198,date:'2026-04-06',status:'已发布'},
+  {title:'增肌期碳水化合物的正确选择',cat:'运动营养',read:768,collect:185,date:'2026-04-05',status:'已发布'},
+  {title:'节后清肠：轻断食食谱推荐',cat:'食谱推荐',read:723,collect:165,date:'2026-04-04',status:'已发布'},
+  {title:'春季养生：这些食物要多吃',cat:'节气养生',read:645,collect:142,date:'2026-04-03',status:'已发布'},
+  {title:'高尿酸人群的饮食禁忌',cat:'疾病饮食禁忌',read:598,collect:128,date:'2026-04-02',status:'草稿'}
+];
+
+// ===== 特殊人群食谱详情数据 =====
+var specialRecipeDetail={
+  '婴幼儿':{
+    name:'婴幼儿辅食添加指南',
+    type:'婴幼儿',
+    age:'6-12月',
+    calorie:'80-100',
+    nutrient:'高铁米粉、果蔬泥',
+    totalCalorie:420,
+    protein:12,
+    carb:65,
+    fat:12,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:120,foods:'高铁米粉20g + 母乳/配方奶',tips:'米粉由少到多，由稀到稠'},
+      {title:'午餐',icon:'lunch',cal:150,foods:'胡萝卜泥30g + 土豆泥20g + 少许植物油',tips:'蔬菜单独添加，观察过敏反应'},
+      {title:'晚餐',icon:'dinner',cal:100,foods:'苹果泥50g + 配方奶',tips:'水果现做现吃，避免氧化'},
+      {title:'加餐',icon:'snack',cal:50,foods:'母乳/配方奶100ml',tips:'按需喂养'}
+    ],
+    steps:['1. 准备高铁米粉，按说明比例冲调','2. 蔬菜洗净去皮，蒸熟后用料理棒打成泥','3. 水果去皮去核，用勺子刮成泥状','4. 每次只添加一种新食物，观察3天无过敏反应后再添加下一种'],
+    tips:'6个月后宝宝对铁的需求增加，优先添加高铁米粉。引入新食物要遵循"一样一样来"的原则，观察3-5天确认无过敏反应后再添加下一种。'
+  },
+  '老年人':{
+    name:'老年人低盐低脂食谱',
+    type:'老年人',
+    age:'60岁以上',
+    calorie:'1500-1800',
+    nutrient:'低盐、高钙、优质蛋白',
+    totalCalorie:1650,
+    protein:68,
+    carb:220,
+    fat:48,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:450,foods:'燕麦粥50g + 煮鸡蛋1个 + 牛奶200ml + 凉拌木耳',tips:'燕麦富含膳食纤维，有助于控制血糖'},
+      {title:'午餐',icon:'lunch',cal:600,foods:'清蒸鱼100g + 蒜蓉西兰花200g + 杂粮饭100g + 紫菜蛋花汤',tips:'鱼类选择刺少的品种，如鲈鱼、鳕鱼'},
+      {title:'晚餐',icon:'dinner',cal:450,foods:'肉末豆腐150g + 素炒时蔬200g + 小米粥30g + 馒头50g',tips:'豆腐含钙量高，适合老年人补钙'},
+      {title:'加餐',icon:'snack',cal:150,foods:'猕猴桃1个 + 坚果15g',tips:'坚果要细嚼慢咽，防止呛噎'}
+    ],
+    steps:['1. 鱼类清蒸：姜片铺底，大火蒸8-10分钟','2. 绿叶蔬菜快炒：保持色泽翠绿，1-2分钟即可','3. 豆腐炖煮：加入肉末同煮，增加蛋白质吸收','4. 杂粮提前浸泡2小时以上，更易消化'],
+    tips:'老年人饮食宜清淡，每日盐摄入量不超过5克。多晒太阳补充维生素D，促进钙吸收。进食要慢，细嚼慢咽有助于消化吸收。'
+  },
+  '孕产妇':{
+    name:'孕早期营养补充方案',
+    type:'孕产妇',
+    age:'孕1-3月',
+    calorie:'1800-2000',
+    nutrient:'叶酸、铁、钙',
+    totalCalorie:1900,
+    protein:75,
+    carb:260,
+    fat:60,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:500,foods:'全麦面包2片 + 荷包蛋1个 + 牛奶250ml + 圣女果10颗',tips:'孕早期胃口不好可少量多餐'},
+      {title:'午餐',icon:'lunch',cal:650,foods:'番茄炖牛腩150g + 清炒菠菜250g + 米饭150g + 冬瓜排骨汤',tips:'牛肉富含铁质，预防孕期贫血'},
+      {title:'晚餐',icon:'dinner',cal:500,foods:'清蒸鲈鱼120g + 蒜蓉西兰花200g + 红薯100g + 银耳羹',tips:'鱼类每周2-3次，补充DHA'},
+      {title:'加餐',icon:'snack',cal:250,foods:'核桃3个 + 红枣5颗 + 酸奶100g',tips:'少食多餐，缓解孕吐不适'}
+    ],
+    steps:['1. 孕早期饮食以清淡易消化为主，少油少盐','2. 每日补充叶酸400微克，持续到孕3个月','3. 肉类充分加热煮熟，避免寄生虫风险','4. 蔬菜先洗后切，减少水溶性维生素流失'],
+    tips:'孕早期胎儿对营养需求不高，重点是补充叶酸预防神经管畸形。少食多餐、清淡饮食可以缓解孕吐反应。避免生冷、辛辣刺激性食物。'
+  },
+  '慢性病患者':{
+    name:'高血压患者饮食指南',
+    type:'慢性病患者',
+    age:'18-80岁',
+    calorie:'1600-1800',
+    nutrient:'低盐、高钾、富纤维',
+    totalCalorie:1700,
+    protein:72,
+    carb:210,
+    fat:52,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:450,foods:'芹菜粥50g + 煮鸡蛋1个 + 拌海带丝 + 无糖豆浆200ml',tips:'芹菜富含钾元素，有助于降压'},
+      {title:'午餐',icon:'lunch',cal:600,foods:'红烧瘦肉80g + 素炒洋葱200g + 凉拌紫甘蓝150g + 杂粮饭120g',tips:'肉类去皮去肥，选择瘦肉'},
+      {title:'晚餐',icon:'dinner',cal:480,foods:'香菇蒸鸡100g + 清炒苦瓜200g + 番茄蛋汤 + 玉米窝头1个',tips:'苦瓜性凉，脾胃虚寒者少食'},
+      {title:'加餐',icon:'snack',cal:170,foods:'香蕉1根 + 低脂牛奶150ml',tips:'香蕉含钾丰富，但注意控制量'}
+    ],
+    steps:['1. 每日盐摄入量控制在3-5克以内，可用低钠盐','2. 烹饪以蒸、煮、炖为主，少用煎炸','3. 蔬菜每天不少于500克，深色蔬菜占一半','4. 肉类每餐50-100克，优先选择鱼虾类'],
+    tips:'高血压患者饮食核心是"低盐高钾"。每日盐<5克，多吃富钾食物如香蕉、菠菜、蘑菇等。戒烟限酒，规律作息，保持情绪稳定。'
+  }
+};
+
+// ===== 健身减脂食谱详情数据 =====
+var fitnessRecipeDetail={
+  '鸡胸肉蔬菜沙拉':{name:'鸡胸肉蔬菜沙拉',meal:'午餐',calorie:320,protein:35,carb:18,fat:12,goal:'减脂餐',
+    meals:[{title:'主食',icon:'breakfast',cal:80,foods:'藜麦50g',tips:'藜麦属于优质碳水'}, {title:'主菜',icon:'lunch',cal:180,foods:'烤鸡胸肉120g（橄榄油、黑胡椒腌制）',tips:'鸡胸肉高蛋白低脂肪'}, {title:'配菜',icon:'dinner',cal:60,foods:'混合蔬菜沙拉200g（生菜、黄瓜、番茄、紫甘蓝）',tips:'彩虹蔬菜提供多种维生素'}],
+    steps:['1. 鸡胸肉用盐、黑胡椒、柠檬汁腌制15分钟','2. 烤箱预热200°C，烤制15-18分钟','3. 蔬菜洗净切好，淋上油醋汁（橄榄油+醋+芥末酱）','4. 鸡胸肉切片摆盘，搭配蔬菜沙拉即可'],
+    tips:'鸡胸肉是减脂期优质蛋白质来源，烤制比煎炸更健康。可提前一晚腌制好，放入冰箱冷藏，早上直接烤制节省时间。'
+  },
+  '牛油果鸡蛋吐司':{name:'牛油果鸡蛋吐司',meal:'早餐',calorie:380,protein:18,carb:28,fat:22,goal:'高蛋白餐',
+    meals:[{title:'主食',icon:'breakfast',cal:130,foods:'全麦吐司2片',tips:'选择无糖全麦吐司'}, {title:'主菜',icon:'lunch',cal:150,foods:'牛油果半个（约50g）+ 水煮蛋1个',tips:'牛油果提供健康脂肪'}, {title:'饮品',icon:'snack',cal:100,foods:'黑咖啡或绿茶1杯',tips:'无糖无奶的咖啡因饮品'}],
+    steps:['1. 全麦吐司放入烤箱或平底锅稍微烘烤至微脆','2. 牛油果去核挖出果肉，用叉子压成泥','3. 牛油果泥涂抹在吐司上，撒少许盐和黑胡椒','4. 水煮蛋切片或压碎放在牛油果吐司上'],
+    tips:'牛油果富含单不饱和脂肪酸，有助于心血管健康。搭配鸡蛋补充完整蛋白质，是一顿营养均衡的早餐。'
+  },
+  '三文鱼藜麦碗':{name:'三文鱼藜麦碗',meal:'午餐',calorie:450,protein:38,carb:32,fat:18,goal:'增肌餐',
+    meals:[{title:'主食',icon:'breakfast',cal:120,foods:'藜麦80g（熟重）',tips:'藜麦是完整蛋白质谷物'}, {title:'主菜',icon:'lunch',cal:220,foods:'香煎三文鱼150g',tips:'三文鱼富含Omega-3'}, {title:'配菜',icon:'dinner',cal:110,foods:'牛油果块50g + 毛豆30g + 玉米粒30g',tips:'优质脂肪和植物蛋白'}],
+    steps:['1. 藜麦洗净，加水1:2煮15分钟至软糯','2. 三文鱼用盐、胡椒、柠檬汁腌制10分钟','3. 平底锅刷薄油，中火煎三文鱼每面3-4分钟','4. 碗中铺上藜麦，放上三文鱼和蔬菜，淋上酱汁'],
+    tips:'三文鱼是增肌减脂期的完美蛋白质来源，Omega-3脂肪酸有助于恢复和减少炎症。每周建议食用2-3次深海鱼类。'
+  },
+  '希腊酸奶水果杯':{name:'希腊酸奶水果杯',meal:'加餐',calorie:180,protein:15,carb:20,fat:4,goal:'低GI餐',
+    meals:[{title:'主食',icon:'breakfast',cal:80,foods:'希腊酸奶150g（无糖）',tips:'蛋白质含量是普通酸奶2倍'}, {title:'水果',icon:'lunch',cal:60,foods:'混合浆果80g（蓝莓、草莓、树莓）',tips:'低GI水果，富含抗氧化剂'}, {title:'辅料',icon:'dinner',cal:40,foods:'坚果碎10g + 奇亚籽5g',tips:'添加健康脂肪和膳食纤维'}],
+    steps:['1. 杯底铺一层希腊酸奶','2. 放上一层混合浆果','3. 再铺一层酸奶，重复堆叠','4. 撒上坚果碎和奇亚籽，即可享用'],
+    tips:'希腊酸奶经过滤处理，去除了大部分乳糖和水分，蛋白质含量更高。搭配低GI水果作为加餐，既饱腹又不会引起血糖大幅波动。'
+  },
+  '牛肉西兰花套餐':{name:'牛肉西兰花套餐',meal:'晚餐',calorie:380,protein:42,carb:15,fat:16,goal:'减脂餐',
+    meals:[{title:'主食',icon:'dinner',cal:50,foods:'蒸土豆100g或红薯100g',tips:'根茎类蔬菜作为碳水来源'}, {title:'主菜',icon:'lunch',cal:200,foods:'瘦牛肉120g（牛里脊）',tips:'牛肉富含肌酸和铁'}, {title:'配菜',icon:'dinner',cal:130,foods:'清炒西兰花200g + 胡萝卜片50g',tips:'十字花科蔬菜有助抗癌'}],
+    steps:['1. 牛肉切薄片，用生抽、料酒、淀粉腌制15分钟','2. 西兰花切小朵，用盐水浸泡10分钟后焯水','3. 热锅冷油，大火快速翻炒牛肉至变色','4. 另起锅炒蔬菜，最后加少许盐调味'],
+    tips:'牛肉是红肉中蛋白质含量最高的，富含B族维生素和铁元素。搭配西兰花不仅增加膳食纤维，还能平衡酸性食物的酸碱度。'
+  },
+  '烤鳕鱼配蔬菜':{name:'烤鳕鱼配蔬菜',meal:'晚餐',calorie:280,protein:35,carb:8,fat:12,goal:'减脂餐',
+    meals:[{title:'主食',icon:'dinner',cal:0,foods:'无（可用魔芋丝替代）',tips:'低碳水晚餐方案'}, {title:'主菜',icon:'lunch',cal:150,foods:'烤鳕鱼150g',tips:'鳕鱼高蛋白低脂，极易消化'}, {title:'配菜',icon:'dinner',cal:130,foods:'烤南瓜100g + 烤芦笋100g + 柠檬角',tips:'南瓜富含β-胡萝卜素'}],
+    steps:['1. 鳕鱼用柠檬汁、盐、黑胡椒腌制10分钟','2. 烤盘铺锡纸，放上鳕鱼和蔬菜','3. 淋少许橄榄油，撒上蒜香调料','4. 烤箱200°C烤15-18分钟即可'],
+    tips:'鳕鱼肉质细嫩，蛋白质含量高，脂肪含量极低，是减脂期的理想蛋白质来源。烤制方式无需额外添加油脂，保持食材原味。'
+  }
+};
+
+// ===== Tab切换 =====
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+    document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active')});
+    this.classList.add('active');
+    var tab=this.getAttribute('data-tab');
+    document.getElementById('tab-'+tab).classList.add('active');
+    setTimeout(function(){window.dispatchEvent(new Event('resize'))},50);
+  });
+});
+
+// ===== 图表初始化 =====
+var charts={};
+function initChart(id,opts){
+  var dom=document.getElementById(id);
+  if(!dom)return;
+  if(charts[id]){charts[id].setOption(opts,true);return;}
+  var c=echarts.init(dom);
+  c.setOption(opts);
+  charts[id]=c;
+  window.addEventListener('resize',function(){c.resize()});
+}
+
+function initAllCharts(){
+  // 指导开具趋势
+  initChart('guide-trend',{
+    tooltip:{trigger:'axis'},
+    grid:{left:'3%',right:'4%',bottom:'3%',top:'10%',containLabel:true},
+    xAxis:{type:'category',boundaryGap:false,data:['周一','周二','周三','周四','周五','周六','周日'],axisLine:{lineStyle:{color:'#E5E7EB'}},axisLabel:{color:'#6B7280',fontSize:12}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280',fontSize:12}},
+    series:[
+      {name:'饮食指导',type:'line',smooth:true,data:[65,78,82,75,90,88,95],lineStyle:{width:2,color:'#00BAAD'},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(0,186,173,0.2)'},{offset:1,color:'rgba(0,186,173,0)'}]},},symbol:'circle',symbolSize:6,itemStyle:{color:'#00BAAD'}},
+      {name:'运动指导',type:'line',smooth:true,data:[45,52,58,61,68,72,78],lineStyle:{width:2,color:'#6366F1'},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(99,102,241,0.2)'},{offset:1,color:'rgba(99,102,241,0)'}]},},symbol:'circle',symbolSize:6,itemStyle:{color:'#6366F1'}},
+      {name:'综合指导',type:'line',smooth:true,data:[30,35,38,40,45,48,52],lineStyle:{width:2,color:'#10B981'},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(16,185,129,0.2)'},{offset:1,color:'rgba(16,185,129,0)'}]},},symbol:'circle',symbolSize:6,itemStyle:{color:'#10B981'}}
+    ]
+  });
+
+  // 指导类型分布
+  initChart('guide-type',{
+    tooltip:{trigger:'item',formatter:'{b}: {c} ({d}%)'},
+    legend:{bottom:'5%',left:'center'},
+    series:[{type:'pie',radius:['45%','75%'],avoidLabelOverlap:true,itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},label:{show:true,formatter:'{b}\n{d}%',fontSize:12,color:'#374151'},labelLine:{show:true},data:[
+      {value:1548,name:'饮食指导',itemStyle:{color:'#00BAAD'}},
+      {value:1230,name:'运动指导',itemStyle:{color:'#6366F1'}},
+      {value:869,name:'综合指导',itemStyle:{color:'#10B981'}},
+      {value:200,name:'体质指导',itemStyle:{color:'#F59E0B'}}
+    ]}]
+  });
+
+  // 各科室指导开具量
+  initChart('guide-dept',{
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    grid:{left:'3%',right:'4%',bottom:'3%',top:'5%',containLabel:true},
+    xAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280'}},
+    yAxis:{type:'category',data:['全科','中医科','营养科','内分泌科'].reverse(),axisLine:{lineStyle:{color:'#E5E7EB'}},axisLabel:{color:'#374151',fontSize:12}},
+    series:[{type:'bar',data:[320,456,580,780].reverse(),itemStyle:{color:(function(){
+      var colors=['#00D4C8','#00BAAD','#009E94','#008A81'];
+      return function(params){return colors[params.dataIndex]};
+    })(),borderRadius:[0,4,4,0]},barWidth:18}]
+  });
+
+  // 执行率分布
+  initChart('guide-exec',{
+    tooltip:{trigger:'item',formatter:'{b}: {c} ({d}%)'},
+    legend:{bottom:'5%',left:'center'},
+    series:[{type:'pie',radius:['50%','75%'],avoidLabelOverlap:true,itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},label:{show:true,formatter:'{b}\n{d}%',fontSize:12,color:'#374151'},data:[
+      {value:2580,name:'已执行',itemStyle:{color:'#10B981'}},
+      {value:680,name:'执行中',itemStyle:{color:'#00BAAD'}},
+      {value:320,name:'待执行',itemStyle:{color:'#F59E0B'}},
+      {value:267,name:'未执行',itemStyle:{color:'#EF4444'}}
+    ]}]
+  });
+
+  // 食物交换份分布
+  initChart('exchange-pie',{
+    tooltip:{trigger:'item',formatter:'{b}: {c}种 ({d}%)'},
+    legend:{bottom:'5%',left:'center'},
+    series:[{type:'pie',radius:['45%','70%'],avoidLabelOverlap:true,itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},label:{show:true,formatter:'{b}\n{d}%',fontSize:12,color:'#374151'},data:[
+      {value:35,name:'谷薯类',itemStyle:{color:'#00BAAD'}},
+      {value:28,name:'蔬菜类',itemStyle:{color:'#10B981'}},
+      {value:22,name:'水果类',itemStyle:{color:'#6366F1'}},
+      {value:38,name:'肉蛋类',itemStyle:{color:'#8B5CF6'}},
+      {value:18,name:'豆奶类',itemStyle:{color:'#F59E0B'}},
+      {value:12,name:'油脂类',itemStyle:{color:'#EF4444'}},
+      {value:15,name:'坚果类',itemStyle:{color:'#EC4899'}},
+      {value:88,name:'调味品类',itemStyle:{color:'#6B7280'}}
+    ]}]
+  });
+
+  // 热量换算趋势
+  initChart('exchange-trend',{
+    tooltip:{trigger:'axis'},
+    grid:{left:'3%',right:'4%',bottom:'3%',top:'10%',containLabel:true},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月'],axisLine:{lineStyle:{color:'#E5E7EB'}},axisLabel:{color:'#6B7280',fontSize:12}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280'}},
+    series:[
+      {name:'换算次数',type:'bar',data:[850,920,1100,1280,1350,1420],itemStyle:{color:'#00BAAD',borderRadius:[4,4,0,0]},barWidth:24},
+      {name:'查询次数',type:'line',yAxisIndex:0,smooth:true,data:[1200,1380,1650,1860,2100,2400],lineStyle:{width:2,color:'#F59E0B'},symbol:'circle',symbolSize:6,itemStyle:{color:'#F59E0B'}}
+    ]
+  });
+
+  // 食物类别分布
+  initChart('food-category',{
+    tooltip:{trigger:'item',formatter:'{b}: {c}种 ({d}%)'},
+    legend:{bottom:'5%',left:'center'},
+    series:[{type:'pie',radius:['45%','70%'],avoidLabelOverlap:true,itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},label:{show:true,formatter:'{b}\n{d}%',fontSize:12,color:'#374151'},data:[
+      {value:280,name:'谷薯类',itemStyle:{color:'#00BAAD'}},
+      {value:220,name:'蔬菜类',itemStyle:{color:'#10B981'}},
+      {value:180,name:'水果类',itemStyle:{color:'#6366F1'}},
+      {value:200,name:'肉蛋类',itemStyle:{color:'#8B5CF6'}},
+      {value:120,name:'豆奶类',itemStyle:{color:'#F59E0B'}},
+      {value:58,name:'油脂类',itemStyle:{color:'#EF4444'}},
+      {value:100,name:'坚果类',itemStyle:{color:'#EC4899'}},
+      {value:100,name:'其他',itemStyle:{color:'#6B7280'}}
+    ]}]
+  });
+
+  // 热量区间分布
+  initChart('food-calorie',{
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    grid:{left:'3%',right:'4%',bottom:'3%',top:'5%',containLabel:true},
+    xAxis:{type:'category',data:['0-50','51-100','101-200','201-300','301-400','>400'],axisLine:{lineStyle:{color:'#E5E7EB'}},axisLabel:{color:'#6B7280',fontSize:12}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280'}},
+    series:[{type:'bar',data:[280,350,320,180,80,48],itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#00D4C8'},{offset:1,color:'#00BAAD'}]},borderRadius:[4,4,0,0]},barWidth:32}]
+  });
+
+  // 特殊人群分布
+  initChart('special-population',{
+    tooltip:{trigger:'item',formatter:'{b}: {c}人 ({d}%)'},
+    legend:{bottom:'5%',left:'center'},
+    series:[{type:'pie',radius:['45%','70%'],avoidLabelOverlap:true,itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},label:{show:true,formatter:'{b}\n{d}%',fontSize:12,color:'#374151'},data:[
+      {value:428,name:'婴幼儿',itemStyle:{color:'#F59E0B'}},
+      {value:856,name:'老年人',itemStyle:{color:'#8B5CF6'}},
+      {value:312,name:'孕产妇',itemStyle:{color:'#EC4899'}},
+      {value:564,name:'慢性病患者',itemStyle:{color:'#00BAAD'}}
+    ]}]
+  });
+
+  // 特殊人群食谱数量
+  initChart('special-recipe',{
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    grid:{left:'3%',right:'4%',bottom:'3%',top:'5%',containLabel:true},
+    xAxis:{type:'category',data:['婴幼儿','老年人','孕产妇','慢性病患者'],axisLine:{lineStyle:{color:'#E5E7EB'}},axisLabel:{color:'#374151',fontSize:12}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280'}},
+    series:[{type:'bar',data:[35,48,42,52],itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#A78BFA'},{offset:1,color:'#8B5CF6'}]},borderRadius:[4,4,0,0]},barWidth:32}]
+  });
+
+  // 健身目标分布
+  initChart('fitness-goal',{
+    tooltip:{trigger:'item',formatter:'{b}: {c}人 ({d}%)'},
+    legend:{bottom:'5%',left:'center'},
+    series:[{type:'pie',radius:['45%','70%'],avoidLabelOverlap:true,itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},label:{show:true,formatter:'{b}\n{d}%',fontSize:12,color:'#374151'},data:[
+      {value:1256,name:'减脂',itemStyle:{color:'#EF4444'}},
+      {value:680,name:'增肌',itemStyle:{color:'#3B82F6'}},
+      {value:420,name:'维持',itemStyle:{color:'#10B981'}},
+      {value:280,name:'塑形',itemStyle:{color:'#8B5CF6'}}
+    ]}]
+  });
+
+  // 健身热量摄入分布
+  initChart('fitness-calorie',{
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    grid:{left:'3%',right:'4%',bottom:'3%',top:'5%',containLabel:true},
+    xAxis:{type:'category',data:['<1200','1200-1500','1500-1800','1800-2000','2000-2500','>2500'],axisLine:{lineStyle:{color:'#E5E7EB'}},axisLabel:{color:'#6B7280',fontSize:12}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280'}},
+    series:[{type:'bar',data:[85,186,328,256,145,42],itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#F87171'},{offset:1,color:'#EF4444'}]},borderRadius:[4,4,0,0]},barWidth:32}]
+  });
+}
+
+// ===== 表格渲染 =====
+function renderOverviewTable(){
+  var tbody=document.getElementById('overview-tbody');
+  var html='';
+  guideData.forEach(function(r){
+    var statusClass=r.status==='已执行'?'badge-success':r.status==='执行中'?'badge-info':r.status==='待执行'?'badge-warning':'badge-danger';
+    var typeClass=r.type==='饮食指导'?'badge-success':r.type==='运动指导'?'badge-info':'badge-gray';
+    html+='<tr>'+
+      '<td><strong>'+r.name+'</strong></td>'+
+      '<td>'+r.doctor+'</td>'+
+      '<td>'+r.dept+'</td>'+
+      '<td><span class="badge '+typeClass+'">'+r.type+'</span></td>'+
+      '<td>'+r.date+'</td>'+
+      '<td><span class="badge '+statusClass+'">'+r.status+'</span></td>'+
+      '<td><div class="action-btns"><button class="action-btn view guide-view-btn" data-id="'+r.id+'">查看</button><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button></div></td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+function renderExchangeTable(filter){
+  var tbody=document.getElementById('exchange-tbody');
+  var html='';
+  var data=filter&&filter!=='全部'?exchangeData.filter(function(r){return r.category===filter}):exchangeData;
+  if(data.length===0){
+    tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:#9CA3AF;padding:40px">暂无数据</td></tr>';
+    return;
+  }
+  data.forEach(function(r){
+    html+='<tr>'+
+      '<td><strong>'+r.name+'</strong></td>'+
+      '<td><span class="badge badge-gray">'+r.category+'</span></td>'+
+      '<td>'+r.weight+'g</td>'+
+      '<td>'+r.calorie+'</td>'+
+      '<td>'+r.protein+'</td>'+
+      '<td>'+r.fat+'</td>'+
+      '<td>'+r.carb+'</td>'+
+      '<td><span class="badge badge-success">'+r.portion+'份</span></td>'+
+      '<td style="color:#6B7280;font-size:12px">'+r.replace+'</td>'+
+      '<td><div class="action-btns"><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button><button class="action-btn delete" onclick="showToast(\'删除成功\',\'error\')">删除</button></div></td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+function renderFoodTable(filter){
+  var tbody=document.getElementById('food-tbody');
+  var html='';
+  var data=filter&&filter!=='全部'?foodData.filter(function(r){return r.category===filter}):foodData;
+  if(data.length===0){
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:#9CA3AF;padding:40px">暂无数据</td></tr>';
+    return;
+  }
+  data.forEach(function(r){
+    var giColor=r.gi<=55?'badge-success':r.gi<=70?'badge-warning':'badge-danger';
+    html+='<tr>'+
+      '<td><strong>'+r.name+'</strong></td>'+
+      '<td><span class="badge badge-gray">'+r.category+'</span></td>'+
+      '<td><strong style="color:#00BAAD">'+r.calorie+'</strong></td>'+
+      '<td>'+r.protein+'</td>'+
+      '<td>'+r.fat+'</td>'+
+      '<td>'+r.carb+'</td>'+
+      '<td>'+r.fiber+'</td>'+
+      '<td><span class="badge '+giColor+'">'+r.gi+'</span></td>'+
+      '<td><div class="action-btns"><button class="action-btn view" onclick="showToast(\'查看详情\',\'info\')">查看</button><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button><button class="action-btn delete" onclick="showToast(\'删除成功\',\'error\')">删除</button></div></td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+function renderSpecialTable(){
+  var tbody=document.getElementById('special-tbody');
+  var html='';
+  specialData.forEach(function(r){
+    var typeClass=r.type==='婴幼儿'?'badge-warning':r.type==='老年人'?'badge-info':r.type==='孕产妇'?'badge-success':'badge-gray';
+    html+='<tr>'+
+      '<td><strong>'+r.name+'</strong></td>'+
+      '<td><span class="badge '+typeClass+'">'+r.type+'</span></td>'+
+      '<td>'+r.age+'</td>'+
+      '<td>'+r.calorie+'</td>'+
+      '<td style="color:#6B7280;font-size:12px">'+r.nutrient+'</td>'+
+      '<td><a href="javascript:void(0)" class="recipe-link" data-type="'+r.type+'" style="color:#00BAAD;text-decoration:none;font-weight:500"><span class="badge badge-success">'+r.recipe+'个</span> 查看食谱</a></td>'+
+      '<td>'+r.update+'</td>'+
+      '<td><div class="action-btns"><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button><button class="action-btn delete" onclick="showToast(\'删除成功\',\'error\')">删除</button></div></td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+function renderFitnessTable(){
+  var tbody=document.getElementById('fitness-tbody');
+  var html='';
+  fitnessData.forEach(function(r){
+    var goalClass=r.goal==='减脂餐'?'badge-danger':r.goal==='增肌餐'?'badge-info':r.goal==='高蛋白餐'?'badge-success':'badge-gray';
+    html+='<tr>'+
+      '<td><strong>'+r.name+'</strong></td>'+
+      '<td>'+r.meal+'</td>'+
+      '<td><strong style="color:#EF4444">'+r.calorie+'</strong></td>'+
+      '<td style="color:#10B981">'+r.protein+'</td>'+
+      '<td>'+r.carb+'</td>'+
+      '<td>'+r.fat+'</td>'+
+      '<td><span class="badge '+goalClass+'">'+r.goal+'</span></td>'+
+      '<td><div class="action-btns"><button class="action-btn view" onclick="openFitnessRecipeModal(\''+r.name+'\')">查看</button><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button><button class="action-btn delete" onclick="showToast(\'删除成功\',\'error\')">删除</button></div></td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+function renderKnowledgeTable(){
+  var tbody=document.getElementById('knowledge-tbody');
+  var html='';
+  knowledgeData.forEach(function(r){
+    var statusClass=r.status==='已发布'?'badge-success':'badge-warning';
+    var catClass=r.cat==='膳食指南'?'badge-success':r.cat==='运动营养'?'badge-info':r.cat==='疾病饮食禁忌'?'badge-danger':'badge-gray';
+    html+='<tr>'+
+      '<td><strong>'+r.title+'</strong></td>'+
+      '<td><span class="badge '+catClass+'">'+r.cat+'</span></td>'+
+      '<td>'+r.read+'</td>'+
+      '<td>'+r.collect+'</td>'+
+      '<td>'+r.date+'</td>'+
+      '<td><span class="badge '+statusClass+'">'+r.status+'</span></td>'+
+      '<td><div class="action-btns"><button class="action-btn view" onclick="showToast(\'查看详情\',\'info\')">查看</button><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button><button class="action-btn delete" onclick="showToast(\'删除成功\',\'error\')">删除</button></div></td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+// ===== 弹窗 =====
+function openAddExchangeModal(){
+  openAddFoodModal();
+}
+function openAddFoodModal(){
+  document.getElementById('food-modal').classList.add('show');
+}
+function closeFoodModal(){
+  document.getElementById('food-modal').classList.remove('show');
+}
+function saveFood(){
+  closeFoodModal();
+  showToast('保存成功','success');
+}
+
+// ===== Toast =====
+function showToast(msg,type){
+  var container=document.getElementById('toast-container');
+  var toast=document.createElement('div');
+  toast.className='toast '+type;
+  toast.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+(type==='success'?'<polyline points="20 6 9 17 4 12"/>':type==='error'?'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>')+'</svg>'+msg;
+  container.appendChild(toast);
+  setTimeout(function(){toast.classList.add('show')},10);
+  setTimeout(function(){
+    toast.classList.remove('show');
+    setTimeout(function(){toast.remove()},300);
+  },2500);
+}
+
+// 点击遮罩关闭
+document.getElementById('food-modal').addEventListener('click',function(e){
+  if(e.target===this)closeFoodModal();
+});
+
+// 特殊人群指导弹窗
+function openSpecialModal(){
+  document.getElementById('special-modal').classList.add('show');
+}
+function closeSpecialModal(){
+  document.getElementById('special-modal').classList.remove('show');
+}
+function saveSpecial(){
+  closeSpecialModal();
+  showToast('保存成功','success');
+}
+
+// 健身减脂食谱弹窗
+function openFitnessModal(){
+  document.getElementById('fitness-modal').classList.add('show');
+}
+function closeFitnessModal(){
+  document.getElementById('fitness-modal').classList.remove('show');
+}
+function saveFitness(){
+  closeFitnessModal();
+  showToast('保存成功','success');
+}
+
+// 营养知识文章弹窗
+function openKnowledgeModal(){
+  document.getElementById('knowledge-modal').classList.add('show');
+}
+function closeKnowledgeModal(){
+  document.getElementById('knowledge-modal').classList.remove('show');
+}
+function saveKnowledge(){
+  closeKnowledgeModal();
+  showToast('保存成功','success');
+}
+
+// 指导详情弹窗
+function openGuideDetailModal(id){
+  var guide=guideData.find(function(r){return r.id===id;});
+  if(!guide || !guide.detail)return;
+  var detail=guide.detail;
+  var typeClass=guide.type==='饮食指导'?'diet':guide.type==='运动指导'?'exercise':'comprehensive';
+  var typeLabel=guide.type==='饮食指导'?'饮食指导':guide.type==='运动指导'?'运动指导':'综合指导';
+  var title='患者：'+guide.name+' | '+guide.type;
+  document.getElementById('guide-detail-title').textContent=title;
+  var html='<div class="guide-detail-header">'+
+    '<span class="guide-type-badge '+typeClass+'">'+typeLabel+'</span>'+
+    '<div class="guide-detail-patient">'+
+      '<h3>'+guide.name+'</h3>'+
+      '<p>医生：'+guide.doctor+' | 科室：'+guide.dept+' | 开具时间：'+guide.date+'</p>'+
+    '</div>'+
+  '</div>';
+
+  // 基础信息
+  if(detail.calorie || detail.target){
+    html+='<div class="guide-detail-meta">';
+    if(detail.calorie)html+='<div class="guide-meta-item"><div class="num">'+detail.calorie+'</div><div class="label">每日热量(kcal)</div></div>';
+    if(detail.target)html+='<div class="guide-meta-item"><div class="num">'+detail.target+'</div><div class="label">目标</div></div>';
+    if(detail.duration)html+='<div class="guide-meta-item"><div class="num">'+detail.duration+'</div><div class="label">周期</div></div>';
+    if(detail.frequency || detail.exerciseFreq)html+='<div class="guide-meta-item"><div class="num">'+(detail.frequency||detail.exerciseFreq||'')+'</div><div class="label">频次</div></div>';
+    html+='</div>';
+  } else if(detail.target){
+    html+='<div class="guide-detail-meta">';
+    html+='<div class="guide-meta-item"><div class="num">'+detail.target+'</div><div class="label">目标</div></div>';
+    if(detail.duration)html+='<div class="guide-meta-item"><div class="num">'+detail.duration+'</div><div class="label">周期</div></div>';
+    if(detail.frequency)html+='<div class="guide-meta-item"><div class="num">'+detail.frequency+'</div><div class="label">频次</div></div>';
+    html+='</div>';
+  }
+
+  // 饮食指导详情
+  if(guide.type==='饮食指导' && detail.content){
+    html+='<div class="guide-detail-section">'+
+      '<h4>每日饮食安排</h4>'+
+      '<div class="guide-meals-list">';
+    var mealTitles={breakfast:'早餐',lunch:'午餐',dinner:'晚餐',snack:'加餐'};
+    var mealKeys=['breakfast','lunch','dinner','snack'];
+    mealKeys.forEach(function(key){
+      if(detail.content[key]){
+        var m=detail.content[key];
+        html+='<div class="guide-meal-item">'+
+          '<div class="guide-meal-header">'+
+            '<span class="guide-meal-title">'+mealTitles[key]+'</span>'+
+            '<span class="guide-meal-cal">'+m.cal+' kcal</span>'+
+          '</div>'+
+          '<div class="guide-meal-food">'+m.food+'</div>'+
+          '<div class="guide-meal-tips">'+m.tips+'</div>'+
+        '</div>';
+      }
+    });
+    html+='</div></div>';
+    if(detail.tips && detail.tips.length){
+      html+='<div class="guide-tips-box"><h5>执行建议</h5><ul>';
+      detail.tips.forEach(function(t){html+='<li>'+t+'</li>';});
+      html+='</ul></div>';
+    }
+  }
+
+  // 运动指导详情
+  if(guide.type==='运动指导' && detail.content){
+    html+='<div class="guide-detail-section">'+
+      '<h4>运动方案</h4>'+
+      '<div class="guide-exercise-list">';
+    var exeKeys=['warmup','main','cardio','cooldown'];
+    var exeTitles={warmup:'热身准备',main:'主体训练',cardio:'有氧运动',cooldown:'放松拉伸'};
+    var exeKeys2=['exercise'];
+    if(detail.content.exercise && typeof detail.content.exercise==='object'){
+      // 运动方案对象格式
+      if(detail.content.exercise.type){
+        html+='<div class="guide-exercise-item exercise-main">'+
+          '<div class="guide-exercise-title">运动类型：'+detail.content.exercise.type+'</div>'+
+          '<div class="guide-exercise-content">'+detail.content.exercise.details+'</div>';
+        if(detail.content.exercise.duration)html+='<div class="guide-exercise-time">时长：'+detail.content.exercise.duration+'</div>';
+        html+='</div>';
+      }
+      if(detail.schedule){
+        html+='<div class="guide-exercise-item"><div class="guide-exercise-title">每周安排</div><div class="guide-exercise-content">';
+        ['day1','day2','day3','day4','day5','day6','day7'].forEach(function(d){
+          if(detail.schedule[d])html+=detail.schedule[d]+'\n';
+        });
+        html+='</div></div>';
+      }
+    }
+    html+='</div></div>';
+    if(detail.tips && detail.tips.length){
+      html+='<div class="guide-tips-box"><h5>执行建议</h5><ul>';
+      detail.tips.forEach(function(t){html+='<li>'+t+'</li>';});
+      html+='</ul></div>';
+    }
+  }
+
+  // 综合指导详情
+  if(guide.type==='综合指导'){
+    if(detail.diet && detail.diet.breakfast){
+      html+='<div class="guide-detail-section">'+
+        '<h4>饮食指导</h4>'+
+        '<div class="guide-meals-list">';
+      var mealTitles2={breakfast:'早餐',lunch:'午餐',dinner:'晚餐',snack:'加餐'};
+      ['breakfast','lunch','dinner','snack'].forEach(function(key){
+        if(detail.diet[key]){
+          var m=detail.diet[key];
+          html+='<div class="guide-meal-item">'+
+            '<div class="guide-meal-header">'+
+              '<span class="guide-meal-title">'+mealTitles2[key]+'</span>'+
+              '<span class="guide-meal-cal">'+m.cal+' kcal</span>'+
+            '</div>'+
+            '<div class="guide-meal-food">'+m.food+'</div>'+
+            '<div class="guide-meal-tips">'+m.tips+'</div>'+
+          '</div>';
+        }
+      });
+      html+='</div></div>';
+    }
+    if(detail.exercise){
+      html+='<div class="guide-detail-section">'+
+        '<h4>运动指导</h4>'+
+        '<div class="guide-exercise-list">'+
+          '<div class="guide-exercise-item exercise-main">'+
+            '<div class="guide-exercise-title">'+detail.exercise.type+'</div>'+
+            '<div class="guide-exercise-content">'+detail.exercise.details+'</div>'+
+            '<div class="guide-exercise-time">时长：'+detail.exercise.duration+' | 心率：'+detail.exercise.heartRate+'</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }
+    if(detail.tips && detail.tips.length){
+      html+='<div class="guide-tips-box"><h5>执行建议</h5><ul>';
+      detail.tips.forEach(function(t){html+='<li>'+t+'</li>';});
+      html+='</ul></div>';
+    }
+  }
+
+  document.getElementById('guide-detail-content').innerHTML=html;
+  document.getElementById('guide-detail-modal').classList.add('show');
+}
+function closeGuideDetailModal(){
+  document.getElementById('guide-detail-modal').classList.remove('show');
+}
+
+// 特殊人群食谱详情弹窗
+function openSpecialRecipeModal(type){
+  var data=specialRecipeDetail[type];
+  if(!data)return;
+  var typeClass=type==='婴幼儿'?'baby':type==='老年人'?'elder':type==='孕产妇'?'pregnant':'patient';
+  var html='<div class="recipe-detail-header">'+
+    '<span class="recipe-detail-badge '+typeClass+'">'+type+'</span>'+
+    '<div><strong>'+data.name+'</strong><br><span style="font-size:12px;color:#6B7280">适用年龄：'+data.age+' | 每日热量：'+data.calorie+' kcal</span></div>'+
+  '</div>'+
+  '<div class="recipe-nutrition-row">'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.totalCalorie+'</div><div class="unit">kcal</div><div class="label">每日总热量</div></div>'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.protein+'g</div><div class="unit">克</div><div class="label">蛋白质</div></div>'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.carb+'g</div><div class="unit">克</div><div class="label">碳水化合物</div></div>'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.fat+'g</div><div class="unit">克</div><div class="label">脂肪</div></div>'+
+  '</div>'+
+  '<h4 style="font-size:14px;color:#1F2937;margin-bottom:12px">每日三餐搭配</h4>'+
+  '<div class="recipe-meals-grid">';
+  data.meals.forEach(function(meal){
+    html+='<div class="recipe-meal-card">'+
+      '<div class="meal-title"><span class="meal-icon '+meal.icon+'">'+meal.title.charAt(0)+'</span>'+meal.title+'</div>'+
+      '<div class="meal-cal">热量：'+meal.cal+' kcal</div>'+
+      '<div class="meal-foods">'+meal.foods+'</div>'+
+      '<div class="meal-tips">'+meal.tips+'</div>'+
+    '</div>';
+  });
+  html+='</div>'+
+  '<div class="recipe-cooking-steps">'+
+    '<h4>制作要点</h4>'+
+    '<ol>';
+  data.steps.forEach(function(step){
+    html+='<li>'+step+'</li>';
+  });
+  html+='</ol></div>'+
+  '<div class="recipe-tips-box">'+
+    '<h4>营养师建议</h4>'+
+    '<p>'+data.tips+'</p>'+
+  '</div>'+
+  '<div class="recipe-detail-footer">'+
+    '<div class="recipe-detail-tags">'+
+      '<span class="recipe-tag">'+data.nutrient+'</span>'+
+      '<span class="recipe-tag">'+data.age+'</span>'+
+    '</div>'+
+  '</div>';
+  document.getElementById('special-recipe-content').innerHTML=html;
+  document.getElementById('special-recipe-modal').classList.add('show');
+}
+function closeSpecialRecipeModal(){
+  document.getElementById('special-recipe-modal').classList.remove('show');
+}
+
+// 健身减脂食谱详情弹窗
+function openFitnessRecipeModal(name){
+  var data=fitnessRecipeDetail[name];
+  if(!data)return;
+  var goalClass=data.goal==='减脂餐'?'fat':data.goal==='增肌餐'?'muscle':data.goal==='维持餐'?'maintain':data.goal==='高蛋白餐'?'protein':'lowgi';
+  var html='<div class="recipe-detail-header">'+
+    '<span class="recipe-detail-badge '+goalClass+'">'+data.goal+'</span>'+
+    '<div><strong>'+data.name+'</strong><br><span style="font-size:12px;color:#6B7280">适用餐次：'+data.meal+'</span></div>'+
+  '</div>'+
+  '<div class="recipe-nutrition-row">'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.calorie+'</div><div class="unit">kcal</div><div class="label">总热量</div></div>'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.protein+'g</div><div class="unit">克</div><div class="label">蛋白质</div></div>'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.carb+'g</div><div class="unit">克</div><div class="label">碳水</div></div>'+
+    '<div class="recipe-nutrition-item"><div class="num">'+data.fat+'g</div><div class="unit">克</div><div class="label">脂肪</div></div>'+
+  '</div>';
+  if(data.meals){
+    html+='<h4 style="font-size:14px;color:#1F2937;margin-bottom:12px">食材搭配</h4>'+
+      '<div class="recipe-meals-grid">';
+    data.meals.forEach(function(meal){
+      html+='<div class="recipe-meal-card">'+
+        '<div class="meal-title"><span class="meal-icon '+meal.icon+'">'+meal.title.charAt(0)+'</span>'+meal.title+'</div>'+
+        '<div class="meal-cal">热量：'+meal.cal+' kcal</div>'+
+        '<div class="meal-foods">'+meal.foods+'</div>'+
+        '<div class="meal-tips">'+meal.tips+'</div>'+
+      '</div>';
+    });
+    html+='</div>';
+  }
+  html+='<div class="recipe-cooking-steps">'+
+    '<h4>制作步骤</h4>'+
+    '<ol>';
+  data.steps.forEach(function(step){
+    html+='<li>'+step+'</li>';
+  });
+  html+='</ol></div>'+
+  '<div class="recipe-tips-box">'+
+    '<h4>营养师建议</h4>'+
+    '<p>'+data.tips+'</p>'+
+  '</div>';
+  document.getElementById('fitness-recipe-content').innerHTML=html;
+  document.getElementById('fitness-recipe-modal').classList.add('show');
+}
+function closeFitnessRecipeModal(){
+  document.getElementById('fitness-recipe-modal').classList.remove('show');
+}
+
+// 弹窗点击遮罩关闭
+document.getElementById('special-modal').addEventListener('click',function(e){
+  if(e.target===this)closeSpecialModal();
+});
+document.getElementById('fitness-modal').addEventListener('click',function(e){
+  if(e.target===this)closeFitnessModal();
+});
+document.getElementById('knowledge-modal').addEventListener('click',function(e){
+  if(e.target===this)closeKnowledgeModal();
+});
+document.getElementById('special-recipe-modal').addEventListener('click',function(e){
+  if(e.target===this)closeSpecialRecipeModal();
+});
+document.getElementById('fitness-recipe-modal').addEventListener('click',function(e){
+  if(e.target===this)closeFitnessRecipeModal();
+});
+
+// 特殊人群食谱详情 - 事件委托
+document.addEventListener('click',function(e){
+  if(e.target.classList.contains('recipe-link') || e.target.closest('.recipe-link')){
+    var link=e.target.classList.contains('recipe-link')?e.target:e.target.closest('.recipe-link');
+    var type=link.getAttribute('data-type');
+    if(type)openSpecialRecipeModal(type);
+  }
+});
+
+// 综合概览指导详情 - 事件委托
+document.addEventListener('click',function(e){
+  if(e.target.classList.contains('guide-view-btn')){
+    var id=e.target.getAttribute('data-id');
+    if(id)openGuideDetailModal(id);
+  }
+});
+
+// 指导详情弹窗遮罩关闭
+document.getElementById('guide-detail-modal').addEventListener('click',function(e){
+  if(e.target===this)closeGuideDetailModal();
+});
+
+// 热量换算趋势Tab按钮
+function setCalorieRange(el,range){
+  el.parentElement.querySelectorAll('.chart-btn').forEach(function(b){b.classList.remove('active')});
+  el.classList.add('active');
+  showToast('切换'+el.textContent+'数据','info');
+}
+
+// 热量换算配置 - 分类筛选
+document.getElementById('calorie-filter-bar').addEventListener('click',function(e){
+  if(e.target.classList.contains('filter-btn')){
+    this.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+    e.target.classList.add('active');
+    var category=e.target.getAttribute('data-category');
+    renderExchangeTable(category);
+  }
+});
+
+// 食物营养成分数据库 - 分类筛选
+document.getElementById('food-filter-bar').addEventListener('click',function(e){
+  if(e.target.classList.contains('filter-btn')){
+    this.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+    e.target.classList.add('active');
+    var category=e.target.getAttribute('data-category');
+    renderFoodTable(category);
+  }
+});
+
+// 页面加载
+document.addEventListener('DOMContentLoaded',function(){
+  initAllCharts();
+  renderOverviewTable();
+  renderExchangeTable();
+  renderFoodTable();
+  renderSpecialTable();
+  renderFitnessTable();
+  renderKnowledgeTable();
+});
+</script>
+</body>
+</html>
