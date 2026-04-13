@@ -1533,8 +1533,8 @@ var knowledgeData=[
 ];
 
 // ===== 特殊人群食谱详情数据 =====
-var specialRecipeDetail={
-  '婴幼儿':{
+var specialRecipeDetail=[
+  {
     name:'婴幼儿辅食添加指南',
     type:'婴幼儿',
     age:'6-12月',
@@ -1553,7 +1553,7 @@ var specialRecipeDetail={
     steps:['1. 准备高铁米粉，按说明比例冲调','2. 蔬菜洗净去皮，蒸熟后用料理棒打成泥','3. 水果去皮去核，用勺子刮成泥状','4. 每次只添加一种新食物，观察3天无过敏反应后再添加下一种'],
     tips:'6个月后宝宝对铁的需求增加，优先添加高铁米粉。引入新食物要遵循"一样一样来"的原则，观察3-5天确认无过敏反应后再添加下一种。'
   },
-  '老年人':{
+  {
     name:'老年人低盐低脂食谱',
     type:'老年人',
     age:'60岁以上',
@@ -1572,7 +1572,7 @@ var specialRecipeDetail={
     steps:['1. 鱼类清蒸：姜片铺底，大火蒸8-10分钟','2. 绿叶蔬菜快炒：保持色泽翠绿，1-2分钟即可','3. 豆腐炖煮：加入肉末同煮，增加蛋白质吸收','4. 杂粮提前浸泡2小时以上，更易消化'],
     tips:'老年人饮食宜清淡，每日盐摄入量不超过5克。多晒太阳补充维生素D，促进钙吸收。进食要慢，细嚼慢咽有助于消化吸收。'
   },
-  '孕产妇':{
+  {
     name:'孕早期营养补充方案',
     type:'孕产妇',
     age:'孕1-3月',
@@ -1591,7 +1591,26 @@ var specialRecipeDetail={
     steps:['1. 孕早期饮食以清淡易消化为主，少油少盐','2. 每日补充叶酸400微克，持续到孕3个月','3. 肉类充分加热煮熟，避免寄生虫风险','4. 蔬菜先洗后切，减少水溶性维生素流失'],
     tips:'孕早期胎儿对营养需求不高，重点是补充叶酸预防神经管畸形。少食多餐、清淡饮食可以缓解孕吐反应。避免生冷、辛辣刺激性食物。'
   },
-  '慢性病患者':{
+  {
+    name:'妊娠糖尿病饮食控制',
+    type:'孕产妇',
+    age:'孕4-9月',
+    calorie:'1600-1800',
+    nutrient:'低GI、适量碳水',
+    totalCalorie:1700,
+    protein:78,
+    carb:200,
+    fat:58,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:420,foods:'荞麦面馒头1个 + 水煮蛋1个 + 无糖豆浆200ml + 黄瓜100g',tips:'选择低GI主食，有助于血糖平稳'},
+      {title:'午餐',icon:'lunch',cal:580,foods:'清蒸鳕鱼120g + 凉拌莴笋200g + 杂粮饭80g + 冬瓜汤',tips:'鱼类富含优质蛋白和DHA，利于胎儿发育'},
+      {title:'晚餐',icon:'dinner',cal:480,foods:'去皮鸡腿肉100g + 西兰花炒香菇200g + 紫薯80g',tips:'控制主食量，少食多餐有助于血糖管理'},
+      {title:'加餐',icon:'snack',cal:220,foods:'无糖酸奶100g + 坚果10g + 柚子100g',tips:'两餐之间加餐，避免血糖波动过大'}
+    ],
+    steps:['1. 每日分6餐进食，避免一次性摄入大量碳水','2. 主食选择低GI食材，如荞麦、燕麦、糙米','3. 水果放在两餐之间，每次不超过100g','4. 每周监测血糖，记录饮食日记'],
+    tips:'妊娠糖尿病饮食核心是"低GI、少食多餐"。每日碳水化合物摄入占总热量的45-55%，蛋白质25-30%，脂肪20-25%。餐后散步30分钟有助于降低血糖。'
+  },
+  {
     name:'高血压患者饮食指南',
     type:'慢性病患者',
     age:'18-80岁',
@@ -1609,8 +1628,65 @@ var specialRecipeDetail={
     ],
     steps:['1. 每日盐摄入量控制在3-5克以内，可用低钠盐','2. 烹饪以蒸、煮、炖为主，少用煎炸','3. 蔬菜每天不少于500克，深色蔬菜占一半','4. 肉类每餐50-100克，优先选择鱼虾类'],
     tips:'高血压患者饮食核心是"低盐高钾"。每日盐<5克，多吃富钾食物如香蕉、菠菜、蘑菇等。戒烟限酒，规律作息，保持情绪稳定。'
+  },
+  {
+    name:'痛风患者低嘌呤食谱',
+    type:'慢性病患者',
+    age:'30-70岁',
+    calorie:'1500-1700',
+    nutrient:'低嘌呤、低脂肪',
+    totalCalorie:1600,
+    protein:65,
+    carb:200,
+    fat:55,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:400,foods:'牛奶250ml + 面包2片 + 鸡蛋1个 + 凉拌黄瓜',tips:'牛奶属于低嘌呤饮品，可每天饮用'},
+      {title:'午餐',icon:'lunch',cal:550,foods:'白菜炖豆腐200g + 米饭100g + 番茄蛋汤 + 水果拼盘',tips:'豆腐经过加工，嘌呤含量降低，可适量食用'},
+      {title:'晚餐',icon:'dinner',cal:450,foods:'蒸南瓜150g + 素炒卷心菜200g + 小米粥30g + 凉拌胡萝卜',tips:'选择碱性食物，有助于尿酸排泄'},
+      {title:'加餐',icon:'snack',cal:200,foods:'樱桃100g + 低脂酸奶100g',tips:'樱桃有降低尿酸的作用，可每天适量食用'}
+    ],
+    steps:['1. 避免动物内脏、海鲜、浓肉汤等高嘌呤食物','2. 每日饮水2000-3000毫升，促进尿酸排泄','3. 烹调方式以蒸、煮、炖、凉拌为主','4. 限制酒精摄入，尤其是啤酒'],
+    tips:'痛风患者饮食核心是"低嘌呤、多喝水"。急性发作期每日嘌呤摄入<150mg，缓解期可适当放宽。肥胖者需控制体重，但避免快速减重诱发痛风发作。'
+  },
+  {
+    name:'儿童增高营养方案',
+    type:'婴幼儿',
+    age:'3-12岁',
+    calorie:'1200-1600',
+    nutrient:'高钙、优质蛋白',
+    totalCalorie:1400,
+    protein:58,
+    carb:180,
+    fat:45,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:380,foods:'鲜牛奶200ml + 鸡蛋煎饼1个 + 水果拼盘',tips:'牛奶和鸡蛋是优质蛋白质和钙的最佳来源'},
+      {title:'午餐',icon:'lunch',cal:480,foods:'番茄炖牛肉80g + 虾皮炒青菜200g + 米饭80g + 紫菜虾皮汤',tips:'牛肉和虾皮都富含钙，有助于骨骼发育'},
+      {title:'晚餐',icon:'dinner',cal:360,foods:'清蒸鲈鱼100g + 蒜蓉西兰花200g + 杂粮粥30g + 水果沙拉',tips:'鱼类含有丰富的维生素D，促进钙吸收'},
+      {title:'加餐',icon:'snack',cal:180,foods:'奶酪20g + 小饼干2块 + 坚果10g',tips:'培养孩子规律进食习惯，避免偏食'}
+    ],
+    steps:['1. 每天保证300-500ml牛奶或等量奶制品','2. 蛋白质摄入量每公斤体重1.5-2克','3. 每天户外活动1-2小时，晒太阳补充维生素D','4. 保证充足睡眠，每晚9-10点前入睡'],
+    tips:'儿童增高黄金期是3-12岁。营养、睡眠、运动三管齐下。每日摄入富含钙、磷、蛋白质的食物，配合跳跃类运动效果更佳。避免碳酸饮料和零食影响正餐摄入。'
+  },
+  {
+    name:'老年人补钙食谱',
+    type:'老年人',
+    age:'65岁以上',
+    calorie:'1400-1600',
+    nutrient:'高钙、维生素D',
+    totalCalorie:1500,
+    protein:62,
+    carb:195,
+    fat:46,
+    meals:[
+      {title:'早餐',icon:'breakfast',cal:400,foods:'黑芝麻糊30g + 豆腐脑200g + 全麦馒头1个 + 拌小葱',tips:'黑芝麻含钙量极高，豆腐脑软嫩易消化'},
+      {title:'午餐',icon:'lunch',cal:520,foods:'虾仁炒西蓝花200g + 紫菜蛋花汤 + 米饭80g + 蒸山药100g',tips:'虾仁和紫菜都是高钙食材，搭配食用效果更好'},
+      {title:'晚餐',icon:'dinner',cal:400,foods:'三鲜馄饨15个 + 凉拌海带丝100g + 蔬菜粥30g',tips:'馄饨皮薄馅嫩，适合咀嚼功能下降的老年人'},
+      {title:'加餐',icon:'snack',cal:180,foods:'高钙奶粉25g + 钙奶饼干2块',tips:'睡前补钙效果更佳，配合维生素D促进吸收'}
+    ],
+    steps:['1. 每日钙摄入量不低于1000mg','2. 维生素D每日摄入800-1000IU，促进钙吸收','3. 每天晒太阳20-30分钟，上午10点前为宜','4. 烹饪少盐少油，胃酸分泌减少者可在医生指导下补充胃酸合剂'],
+    tips:'老年人补钙是预防骨质疏松的关键。食物补钙优于药物补钙，优先选择奶制品、豆制品、绿叶蔬菜、坚果等天然高钙食物。戒烟限酒，规律负重运动（如快走）可增强补钙效果。'
   }
-};
+];
 
 // ===== 健身减脂食谱详情数据 =====
 var fitnessRecipeDetail={
@@ -1913,7 +1989,7 @@ function renderFoodTable(filter){
 function renderSpecialTable(){
   var tbody=document.getElementById('special-tbody');
   var html='';
-  specialData.forEach(function(r){
+  specialData.forEach(function(r,idx){
     var typeClass=r.type==='婴幼儿'?'badge-warning':r.type==='老年人'?'badge-info':r.type==='孕产妇'?'badge-success':'badge-gray';
     html+='<tr>'+
       '<td><strong>'+r.name+'</strong></td>'+
@@ -1921,7 +1997,7 @@ function renderSpecialTable(){
       '<td>'+r.age+'</td>'+
       '<td>'+r.calorie+'</td>'+
       '<td style="color:#6B7280;font-size:12px">'+r.nutrient+'</td>'+
-      '<td><a href="javascript:void(0)" class="recipe-link" data-type="'+r.type+'" style="color:#00BAAD;text-decoration:none;font-weight:500"><span class="badge badge-success">'+r.recipe+'个</span> 查看食谱</a></td>'+
+      '<td><a href="javascript:void(0)" class="recipe-link" data-id="'+idx+'" style="color:#00BAAD;text-decoration:none;font-weight:500;cursor:pointer"><span class="badge badge-success">'+r.recipe+'个</span> 查看食谱</a></td>'+
       '<td>'+r.update+'</td>'+
       '<td><div class="action-btns"><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button><button class="action-btn delete" onclick="showToast(\'删除成功\',\'error\')">删除</button></div></td>'+
       '</tr>';
@@ -2180,12 +2256,12 @@ function closeGuideDetailModal(){
 }
 
 // 特殊人群食谱详情弹窗
-function openSpecialRecipeModal(type){
-  var data=specialRecipeDetail[type];
+function openSpecialRecipeModal(id){
+  var data=specialRecipeDetail[id];
   if(!data)return;
-  var typeClass=type==='婴幼儿'?'baby':type==='老年人'?'elder':type==='孕产妇'?'pregnant':'patient';
+  var typeClass=data.type==='婴幼儿'?'baby':data.type==='老年人'?'elder':data.type==='孕产妇'?'pregnant':'patient';
   var html='<div class="recipe-detail-header">'+
-    '<span class="recipe-detail-badge '+typeClass+'">'+type+'</span>'+
+    '<span class="recipe-detail-badge '+typeClass+'">'+data.type+'</span>'+
     '<div><strong>'+data.name+'</strong><br><span style="font-size:12px;color:#6B7280">适用年龄：'+data.age+' | 每日热量：'+data.calorie+' kcal</span></div>'+
   '</div>'+
   '<div class="recipe-nutrition-row">'+
@@ -2296,8 +2372,8 @@ document.getElementById('fitness-recipe-modal').addEventListener('click',functio
 document.addEventListener('click',function(e){
   if(e.target.classList.contains('recipe-link') || e.target.closest('.recipe-link')){
     var link=e.target.classList.contains('recipe-link')?e.target:e.target.closest('.recipe-link');
-    var type=link.getAttribute('data-type');
-    if(type)openSpecialRecipeModal(type);
+    var id=link.getAttribute('data-id');
+    if(id!==null)openSpecialRecipeModal(parseInt(id));
   }
 });
 
