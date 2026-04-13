@@ -94,6 +94,12 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
 .recipe-detail-footer{margin-top:16px;padding-top:16px;border-top:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center}
 .recipe-detail-tags{display:flex;gap:8px;flex-wrap:wrap}
 .recipe-tag{padding:4px 10px;background:#F3F4F6;color:#6B7280;border-radius:4px;font-size:12px}
+.recipe-tabs-row{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid #E5E7EB;margin-bottom:20px}
+.recipe-tab-btn{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;background:#F3F4F6;color:#6B7280;border:1px solid transparent;transition:all 0.2s}
+.recipe-tab-btn:hover{background:#E5E7EB;color:#374151}
+.recipe-tab-btn.active{background:#00BAAD;color:#FFFFFF}
+.recipe-tab-content{display:none}
+.recipe-tab-content.active{display:block}
 .recipe-person-info{display:flex;gap:20px}
 .recipe-person-info span{font-size:13px;color:#6B7280}
 .chart-div{height:280px}
@@ -251,7 +257,7 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
         <div class="page-header">
             <div class="page-header-left">
                 <h1>健康指导管理</h1>
-                <p>热量换算 · 营养数据库 · 特殊人群指导 · 健身减脂</p>
+                <p>热量换算 · 营养数据库 · 特殊人群指导 · 健身减脂 · 营养知识科普</p>
             </div>
         </div>
 
@@ -262,6 +268,7 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
             <button class="tab-btn" data-tab="food">食物营养成分数据库</button>
             <button class="tab-btn" data-tab="special">特殊人群饮食指导</button>
             <button class="tab-btn" data-tab="fitness">健身减脂</button>
+            <button class="tab-btn" data-tab="knowledge">营养知识科普</button>
         </div>
 
         <!-- Tab1: 综合概览 -->
@@ -691,12 +698,12 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
                 </div>
             </div>
 
-            <div class="filter-bar">
-                <button class="filter-btn active">全部</button>
-                <button class="filter-btn">婴幼儿</button>
-                <button class="filter-btn">老年人</button>
-                <button class="filter-btn">孕产妇</button>
-                <button class="filter-btn">慢性病患者</button>
+            <div class="filter-bar special-filter">
+                <button class="filter-btn active" data-type="全部">全部</button>
+                <button class="filter-btn" data-type="婴幼儿">婴幼儿</button>
+                <button class="filter-btn" data-type="老年人">老年人</button>
+                <button class="filter-btn" data-type="孕产妇">孕产妇</button>
+                <button class="filter-btn" data-type="慢性病患者">慢性病患者</button>
             </div>
 
             <div class="table-card">
@@ -714,7 +721,6 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
                     <thead>
                         <tr>
                             <th>指导名称</th>
-                            <th>人群类别</th>
                             <th>适用年龄</th>
                             <th>热量范围(kcal)</th>
                             <th>核心营养素</th>
@@ -862,7 +868,79 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
                 </div>
             </div>
 
-            <div class="table-card" style="margin-top:24px">
+        </div>
+
+        <!-- Tab6: 营养知识科普 -->
+        <div class="tab-content" id="tab-knowledge">
+            <div class="banner" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+                <div class="banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </div>
+                <div class="banner-content">
+                    <h3>营养知识科普</h3>
+                    <p>普及营养科学知识，提高公众健康意识，帮助更多人建立科学的饮食习惯和生活方式。</p>
+                </div>
+            </div>
+
+            <div class="kpi-grid" style="margin-bottom:20px">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">48</div>
+                    <div class="kpi-label">已发布文章</div>
+                    <div class="kpi-sub">本月新增 5</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#34D399)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">8,567</div>
+                    <div class="kpi-label">累计阅读量</div>
+                    <div class="kpi-sub">本月增长 18.2%</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">1,234</div>
+                    <div class="kpi-label">文章收藏数</div>
+                    <div class="kpi-sub">用户收藏总计</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#EF4444,#F87171)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">4</div>
+                    <div class="kpi-label">内容分类</div>
+                    <div class="kpi-sub">热量/运动/疾病/膳食</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">文章分类分布</div>
+                    </div>
+                    <div class="chart-div" id="knowledge-cat"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">月度发布趋势</div>
+                    </div>
+                    <div class="chart-div" id="knowledge-trend"></div>
+                </div>
+            </div>
+
+            <div class="table-card">
                 <div class="table-header">
                     <div class="table-title">营养知识科普文章</div>
                     <div class="table-toolbar">
@@ -1424,14 +1502,14 @@ var foodData=[
 
 // ===== 特殊人群指导数据 =====
 var specialData=[
-  {name:'婴幼儿辅食添加指南',type:'婴幼儿',age:'6-12月',calorie:'80-100',nutrient:'高铁米粉、果蔬泥',recipe:8,update:'2026-04-08'},
-  {name:'老年人低盐低脂食谱',type:'老年人',age:'60岁以上',calorie:'1500-1800',nutrient:'低盐、高钙、优质蛋白',recipe:15,update:'2026-04-07'},
-  {name:'孕早期营养补充方案',type:'孕产妇',age:'孕1-3月',calorie:'1800-2000',nutrient:'叶酸、铁、钙',recipe:12,update:'2026-04-06'},
-  {name:'妊娠糖尿病饮食控制',type:'孕产妇',age:'孕4-9月',calorie:'1600-1800',nutrient:'低GI、适量碳水',recipe:10,update:'2026-04-05'},
-  {name:'高血压患者饮食指南',type:'慢性病患者',age:'18-80岁',calorie:'1600-1800',nutrient:'低盐、高钾、富纤维',recipe:18,update:'2026-04-04'},
-  {name:'痛风患者低嘌呤食谱',type:'慢性病患者',age:'30-70岁',calorie:'1500-1700',nutrient:'低嘌呤、低脂肪',recipe:14,update:'2026-04-03'},
-  {name:'儿童增高营养方案',type:'婴幼儿',age:'3-12岁',calorie:'1200-1600',nutrient:'高钙、优质蛋白',recipe:9,update:'2026-04-02'},
-  {name:'老年人补钙食谱',type:'老年人',age:'65岁以上',calorie:'1400-1600',nutrient:'高钙、维生素D',recipe:11,update:'2026-04-01'}
+  {name:'婴幼儿辅食添加指南',type:'婴幼儿',age:'6-12月',calorie:'80-100',nutrient:'高铁米粉、果蔬泥',recipe:5,update:'2026-04-08'},
+  {name:'老年人低盐低脂食谱',type:'老年人',age:'60岁以上',calorie:'1500-1800',nutrient:'低盐、高钙、优质蛋白',recipe:6,update:'2026-04-07'},
+  {name:'孕早期营养补充方案',type:'孕产妇',age:'孕1-3月',calorie:'1800-2000',nutrient:'叶酸、铁、钙',recipe:5,update:'2026-04-06'},
+  {name:'妊娠糖尿病饮食控制',type:'孕产妇',age:'孕4-9月',calorie:'1600-1800',nutrient:'低GI、适量碳水',recipe:5,update:'2026-04-05'},
+  {name:'高血压患者饮食指南',type:'慢性病患者',age:'18-80岁',calorie:'1600-1800',nutrient:'低盐、高钾、富纤维',recipe:7,update:'2026-04-04'},
+  {name:'痛风患者低嘌呤食谱',type:'慢性病患者',age:'30-70岁',calorie:'1500-1700',nutrient:'低嘌呤、低脂肪',recipe:7,update:'2026-04-03'},
+  {name:'儿童增高营养方案',type:'婴幼儿',age:'3-12岁',calorie:'1200-1600',nutrient:'高钙、优质蛋白',recipe:5,update:'2026-04-02'},
+  {name:'老年人补钙食谱',type:'老年人',age:'65岁以上',calorie:'1400-1600',nutrient:'高钙、维生素D',recipe:6,update:'2026-04-01'}
 ];
 
 // ===== 健身减脂食谱数据 =====
@@ -1460,84 +1538,113 @@ var knowledgeData=[
 ];
 
 // ===== 特殊人群食谱详情数据 =====
-var specialRecipeDetail={
-  '婴幼儿':{
-    name:'婴幼儿辅食添加指南',
-    type:'婴幼儿',
-    age:'6-12月',
-    calorie:'80-100',
-    nutrient:'高铁米粉、果蔬泥',
-    totalCalorie:420,
-    protein:12,
-    carb:65,
-    fat:12,
-    meals:[
-      {title:'早餐',icon:'breakfast',cal:120,foods:'高铁米粉20g + 母乳/配方奶',tips:'米粉由少到多，由稀到稠'},
-      {title:'午餐',icon:'lunch',cal:150,foods:'胡萝卜泥30g + 土豆泥20g + 少许植物油',tips:'蔬菜单独添加，观察过敏反应'},
-      {title:'晚餐',icon:'dinner',cal:100,foods:'苹果泥50g + 配方奶',tips:'水果现做现吃，避免氧化'},
-      {title:'加餐',icon:'snack',cal:50,foods:'母乳/配方奶100ml',tips:'按需喂养'}
-    ],
-    steps:['1. 准备高铁米粉，按说明比例冲调','2. 蔬菜洗净去皮，蒸熟后用料理棒打成泥','3. 水果去皮去核，用勺子刮成泥状','4. 每次只添加一种新食物，观察3天无过敏反应后再添加下一种'],
-    tips:'6个月后宝宝对铁的需求增加，优先添加高铁米粉。引入新食物要遵循"一样一样来"的原则，观察3-5天确认无过敏反应后再添加下一种。'
-  },
-  '老年人':{
-    name:'老年人低盐低脂食谱',
-    type:'老年人',
-    age:'60岁以上',
-    calorie:'1500-1800',
-    nutrient:'低盐、高钙、优质蛋白',
-    totalCalorie:1650,
-    protein:68,
-    carb:220,
-    fat:48,
-    meals:[
-      {title:'早餐',icon:'breakfast',cal:450,foods:'燕麦粥50g + 煮鸡蛋1个 + 牛奶200ml + 凉拌木耳',tips:'燕麦富含膳食纤维，有助于控制血糖'},
-      {title:'午餐',icon:'lunch',cal:600,foods:'清蒸鱼100g + 蒜蓉西兰花200g + 杂粮饭100g + 紫菜蛋花汤',tips:'鱼类选择刺少的品种，如鲈鱼、鳕鱼'},
-      {title:'晚餐',icon:'dinner',cal:450,foods:'肉末豆腐150g + 素炒时蔬200g + 小米粥30g + 馒头50g',tips:'豆腐含钙量高，适合老年人补钙'},
-      {title:'加餐',icon:'snack',cal:150,foods:'猕猴桃1个 + 坚果15g',tips:'坚果要细嚼慢咽，防止呛噎'}
-    ],
-    steps:['1. 鱼类清蒸：姜片铺底，大火蒸8-10分钟','2. 绿叶蔬菜快炒：保持色泽翠绿，1-2分钟即可','3. 豆腐炖煮：加入肉末同煮，增加蛋白质吸收','4. 杂粮提前浸泡2小时以上，更易消化'],
-    tips:'老年人饮食宜清淡，每日盐摄入量不超过5克。多晒太阳补充维生素D，促进钙吸收。进食要慢，细嚼慢咽有助于消化吸收。'
-  },
-  '孕产妇':{
-    name:'孕早期营养补充方案',
-    type:'孕产妇',
-    age:'孕1-3月',
-    calorie:'1800-2000',
-    nutrient:'叶酸、铁、钙',
-    totalCalorie:1900,
-    protein:75,
-    carb:260,
-    fat:60,
-    meals:[
-      {title:'早餐',icon:'breakfast',cal:500,foods:'全麦面包2片 + 荷包蛋1个 + 牛奶250ml + 圣女果10颗',tips:'孕早期胃口不好可少量多餐'},
-      {title:'午餐',icon:'lunch',cal:650,foods:'番茄炖牛腩150g + 清炒菠菜250g + 米饭150g + 冬瓜排骨汤',tips:'牛肉富含铁质，预防孕期贫血'},
-      {title:'晚餐',icon:'dinner',cal:500,foods:'清蒸鲈鱼120g + 蒜蓉西兰花200g + 红薯100g + 银耳羹',tips:'鱼类每周2-3次，补充DHA'},
-      {title:'加餐',icon:'snack',cal:250,foods:'核桃3个 + 红枣5颗 + 酸奶100g',tips:'少食多餐，缓解孕吐不适'}
-    ],
-    steps:['1. 孕早期饮食以清淡易消化为主，少油少盐','2. 每日补充叶酸400微克，持续到孕3个月','3. 肉类充分加热煮熟，避免寄生虫风险','4. 蔬菜先洗后切，减少水溶性维生素流失'],
-    tips:'孕早期胎儿对营养需求不高，重点是补充叶酸预防神经管畸形。少食多餐、清淡饮食可以缓解孕吐反应。避免生冷、辛辣刺激性食物。'
-  },
-  '慢性病患者':{
-    name:'高血压患者饮食指南',
-    type:'慢性病患者',
-    age:'18-80岁',
-    calorie:'1600-1800',
-    nutrient:'低盐、高钾、富纤维',
-    totalCalorie:1700,
-    protein:72,
-    carb:210,
-    fat:52,
-    meals:[
-      {title:'早餐',icon:'breakfast',cal:450,foods:'芹菜粥50g + 煮鸡蛋1个 + 拌海带丝 + 无糖豆浆200ml',tips:'芹菜富含钾元素，有助于降压'},
-      {title:'午餐',icon:'lunch',cal:600,foods:'红烧瘦肉80g + 素炒洋葱200g + 凉拌紫甘蓝150g + 杂粮饭120g',tips:'肉类去皮去肥，选择瘦肉'},
-      {title:'晚餐',icon:'dinner',cal:480,foods:'香菇蒸鸡100g + 清炒苦瓜200g + 番茄蛋汤 + 玉米窝头1个',tips:'苦瓜性凉，脾胃虚寒者少食'},
-      {title:'加餐',icon:'snack',cal:170,foods:'香蕉1根 + 低脂牛奶150ml',tips:'香蕉含钾丰富，但注意控制量'}
-    ],
-    steps:['1. 每日盐摄入量控制在3-5克以内，可用低钠盐','2. 烹饪以蒸、煮、炖为主，少用煎炸','3. 蔬菜每天不少于500克，深色蔬菜占一半','4. 肉类每餐50-100克，优先选择鱼虾类'],
-    tips:'高血压患者饮食核心是"低盐高钾"。每日盐<5克，多吃富钾食物如香蕉、菠菜、蘑菇等。戒烟限酒，规律作息，保持情绪稳定。'
-  }
-};
+var specialRecipeDetail=[
+  // 婴幼儿 5个
+  {name:'婴幼儿辅食添加指南',type:'婴幼儿',age:'6-12月',calorie:'80-100',nutrient:'高铁米粉、果蔬泥',totalCalorie:420,protein:12,carb:65,fat:12,
+   meals:[{title:'早餐',icon:'breakfast',cal:120,foods:'高铁米粉20g + 母乳/配方奶',tips:'米粉由少到多，由稀到稠'},{title:'午餐',icon:'lunch',cal:150,foods:'胡萝卜泥30g + 土豆泥20g + 少许植物油',tips:'蔬菜单独添加，观察过敏反应'},{title:'晚餐',icon:'dinner',cal:100,foods:'苹果泥50g + 配方奶',tips:'水果现做现吃，避免氧化'},{title:'加餐',icon:'snack',cal:50,foods:'母乳/配方奶100ml',tips:'按需喂养'}],
+   steps:['1. 准备高铁米粉，按说明比例冲调','2. 蔬菜洗净去皮，蒸熟后用料理棒打成泥','3. 水果去皮去核，用勺子刮成泥状','4. 每次只添加一种新食物，观察3天无过敏后再添加下一种'],
+   tips:'6个月后宝宝对铁需求增加，优先添加高铁米粉。新食物遵循"一样一样来"原则，观察3-5天无过敏后再添加下一种。'},
+  {name:'儿童增高营养方案',type:'婴幼儿',age:'3-12岁',calorie:'1200-1600',nutrient:'高钙、优质蛋白',totalCalorie:1400,protein:58,carb:180,fat:45,
+   meals:[{title:'早餐',icon:'breakfast',cal:380,foods:'鲜牛奶200ml + 鸡蛋煎饼1个 + 水果拼盘',tips:'牛奶和鸡蛋是优质蛋白质和钙的最佳来源'},{title:'午餐',icon:'lunch',cal:480,foods:'番茄炖牛肉80g + 虾皮炒青菜200g + 米饭80g + 紫菜虾皮汤',tips:'牛肉和虾皮都富含钙，有助于骨骼发育'},{title:'晚餐',icon:'dinner',cal:380,foods:'三鲜水饺12个 + 紫菜蛋花汤 + 凉拌黄瓜',tips:'水饺营养全面，适合儿童胃口'},{title:'加餐',icon:'snack',cal:160,foods:'奶酪20g + 小番茄10颗',tips:'奶酪钙含量高，是优质的钙来源'}],
+   steps:['1. 牛奶每天300-500ml，可分早晚两次饮用','2. 鸡蛋每天1-2个，蒸煮为佳，避免煎炸','3. 每天户外运动1小时，晒太阳促进维生素D合成','4. 睡眠充足，学龄儿童每日睡9-11小时'],
+   tips:'儿童增高关键期是3-12岁，此阶段保证充足睡眠（每晚9点前入睡）、均衡营养、适量运动。牛奶、鸡蛋、豆腐、虾皮是增高"四大金刚"。'},
+  {name:'婴儿蛋白质补充方案',type:'婴幼儿',age:'6-24月',calorie:'600-900',nutrient:'优质蛋白、锌',totalCalorie:720,protein:28,carb:90,fat:24,
+   meals:[{title:'早餐',icon:'breakfast',cal:180,foods:'蛋黄泥1个 + 婴儿米粉30g + 母乳',tips:'从蛋黄开始添加，每次1/4个，逐渐加量'},{title:'午餐',icon:'lunch',cal:200,foods:'鱼肉泥30g + 南瓜泥50g + 植物油2ml',tips:'选择刺少的淡水鱼，如鲈鱼、鳜鱼'},{title:'晚餐',icon:'dinner',cal:180,foods:'豆腐脑30g + 青菜泥50g + 米粉20g',tips:'豆腐富含植物蛋白和钙，细腻易消化'},{title:'加餐',icon:'snack',cal:160,foods:'配方奶150ml + 香蕉泥30g',tips:'水果在两餐之间喂食，不要加糖'}],
+   steps:['1. 蛋白质食物从少到多，观察大便情况','2. 鱼肉要剔去所有鱼刺，蒸熟后打成泥','3. 蛋黄从1/4个开始，逐渐加至1个','4. 如出现皮疹、腹泻应立即停止新食物并就医'],
+   tips:'婴儿期是生长发育的第一个高峰期，蛋白质需求大但消化能力弱。优选动物蛋白，豆腐、鸡蛋、鱼肉搭配，保证8种必需氨基酸。'},
+  {name:'幼儿补铁营养餐',type:'婴幼儿',age:'1-3岁',calorie:'1000-1200',nutrient:'铁、维生素C',totalCalorie:1100,protein:42,carb:150,fat:32,
+   meals:[{title:'早餐',icon:'breakfast',cal:280,foods:'猪肝粉粥50g + 煮鸡蛋1个 + 橙子半个',tips:'橙子富含维生素C，促进铁吸收'},{title:'午餐',icon:'lunch',cal:360,foods:'红肉泥50g + 西红柿炒鸡蛋 + 米饭50g',tips:'红肉（猪牛羊）是最佳血红素铁来源'},{title:'晚餐',icon:'dinner',cal:280,foods:'菠菜猪血汤 + 馒头50g + 蒸蛋羹',tips:'菠菜先焯水去草酸，否则影响铁吸收'},{title:'加餐',icon:'snack',cal:180,foods:'红枣小米粥100ml + 猕猴桃泥30g',tips:'红枣和猕猴桃都富含铁和维生素C'}],
+   steps:['1. 动物肝脏每周1-2次，每次不超过20g','2. 补铁同时补充维生素C，可提高吸收率3-6倍','3. 避免与茶、咖啡同食，影响铁吸收','4. 定期检测血红蛋白，预防缺铁性贫血'],
+   tips:'1-3岁幼儿每日铁需求约9mg，母乳喂养的足月儿从4-6个月开始需额外补铁。早产儿、低出生体重儿更易缺铁，应在医生指导下预防性补铁。'},
+  {name:'幼儿护眼营养餐',type:'婴幼儿',age:'1-6岁',calorie:'1100-1300',nutrient:'叶黄素、维生素A',totalCalorie:1200,protein:45,carb:160,fat:35,
+   meals:[{title:'早餐',icon:'breakfast',cal:300,foods:'胡萝卜小米粥 + 煮鸡蛋1个 + 蓝莓10颗',tips:'蓝莓富含花青素，保护视网膜'},{title:'午餐',icon:'lunch',cal:400,foods:'猪肝菠菜汤 + 玉米粒炒肉末 + 米饭60g',tips:'猪肝富含维生素A，菠菜富含叶黄素，护眼黄金组合'},{title:'晚餐',icon:'dinner',cal:320,foods:'三文鱼蒸蛋 + 蒜蓉西兰花 + 糙米饭50g',tips:'三文鱼含DHA和维生素A，有助视网膜发育'},{title:'加餐',icon:'snack',cal:180,foods:'枸杞菊花茶50ml + 原味酸奶50g',tips:'枸杞含玉米黄质，杭白菊清肝明目'}],
+   steps:['1. 动物肝脏每周1-2次，每次15-20g即足够','2. 深色蔬菜富含叶黄素，每天应占蔬菜总量1/3','3. 鱼类每周2-3次，补充DHA和维生素A','4. 严格控制电子产品使用时间，每天不超过1小时'],
+   tips:'0-6岁是孩子视力发育关键期。此阶段需保证充足维生素A、叶黄素和DHA。少看电子屏幕，每天户外活动2小时以上，是预防近视最有效的方法。'},
+  // 老年人 6个
+  {name:'老年人低盐低脂食谱',type:'老年人',age:'60岁以上',calorie:'1500-1800',nutrient:'低盐、高钙、优质蛋白',totalCalorie:1650,protein:68,carb:220,fat:48,
+   meals:[{title:'早餐',icon:'breakfast',cal:450,foods:'燕麦粥50g + 煮鸡蛋1个 + 牛奶200ml + 凉拌木耳',tips:'燕麦富含膳食纤维，有助于控制血糖'},{title:'午餐',icon:'lunch',cal:600,foods:'清蒸鱼100g + 蒜蓉西兰花200g + 杂粮饭100g + 紫菜蛋花汤',tips:'鱼类选择刺少的品种，如鲈鱼、鳕鱼'},{title:'晚餐',icon:'dinner',cal:450,foods:'肉末豆腐150g + 素炒时蔬200g + 小米粥30g + 馒头50g',tips:'豆腐含钙量高，适合老年人补钙'},{title:'加餐',icon:'snack',cal:150,foods:'猕猴桃1个 + 坚果15g',tips:'坚果要细嚼慢咽，防止呛噎'}],
+   steps:['1. 鱼类清蒸：姜片铺底，大火蒸8-10分钟','2. 绿叶蔬菜快炒：保持色泽翠绿，1-2分钟即可','3. 豆腐炖煮：加入肉末同煮，增加蛋白质吸收','4. 杂粮提前浸泡2小时以上，更易消化'],
+   tips:'老年人饮食宜清淡，每日盐摄入量不超过5克。多晒太阳补充维生素D，促进钙吸收。'},
+  {name:'老年人补钙食谱',type:'老年人',age:'65岁以上',calorie:'1400-1600',nutrient:'高钙、维生素D',totalCalorie:1500,protein:62,carb:195,fat:46,
+   meals:[{title:'早餐',icon:'breakfast',cal:400,foods:'黑芝麻糊30g + 豆腐脑200g + 全麦馒头1个 + 拌小葱',tips:'黑芝麻含钙量极高，豆腐脑软嫩易消化'},{title:'午餐',icon:'lunch',cal:520,foods:'虾仁炒西兰花200g + 紫菜蛋花汤 + 米饭80g + 蒸山药100g',tips:'虾仁和紫菜都是高钙食材，搭配食用效果更好'},{title:'晚餐',icon:'dinner',cal:400,foods:'三鲜馄饨15个 + 凉拌海带丝100g + 蔬菜粥30g',tips:'馄饨皮薄馅嫩，适合咀嚼功能下降的老年人'},{title:'加餐',icon:'snack',cal:180,foods:'高钙奶粉25g + 钙奶饼干2块',tips:'睡前补钙效果更佳，配合维生素D促进吸收'}],
+   steps:['1. 每日钙摄入量不低于1000mg','2. 维生素D每日摄入800-1000IU，促进钙吸收','3. 每天晒太阳20-30分钟，上午10点前为宜','4. 烹饪少盐少油，胃酸分泌减少者可在医生指导下补充胃酸合剂'],
+   tips:'老年人补钙是预防骨质疏松的关键。食物补钙优于药物补钙，优先选择奶制品、豆制品、绿叶蔬菜、坚果等天然高钙食物。'},
+  {name:'老年人控血糖食谱',type:'老年人',age:'60-80岁',calorie:'1400-1700',nutrient:'低GI、膳食纤维',totalCalorie:1550,protein:60,carb:195,fat:44,
+   meals:[{title:'早餐',icon:'breakfast',cal:380,foods:'燕麦麸粥50g + 煮鸡蛋1个 + 牛奶200ml + 黄瓜100g',tips:'燕麦麸皮比燕麦片GI更低，控糖效果更好'},{title:'午餐',icon:'lunch',cal:520,foods:'清蒸鳕鱼120g + 凉拌苦瓜200g + 杂粮饭80g + 番茄蛋汤',tips:'苦瓜含类胰岛素物质，有助降低餐后血糖'},{title:'晚餐',icon:'dinner',cal:450,foods:'山药枸杞炖鸡腿肉100g + 素炒西葫芦200g + 糙米饭60g',tips:'山药黏液蛋白可延缓糖分吸收，降低餐后血糖峰值'},{title:'加餐',icon:'snack',cal:200,foods:'柚子100g + 坚果10g',tips:'柚子含类似胰岛素成分，但服用降糖药者需咨询医生'}],
+   steps:['1. 主食选择低GI食材：燕麦、糙米、荞麦、山药','2. 每餐先吃蔬菜，再吃蛋白质，最后吃主食','3. 避免粥类（高GI），稀饭煮成杂粮粥可改善','4. 餐后散步20-30分钟，有助于降低餐后血糖'],
+   tips:'老年糖尿病患者血糖控制目标宜放宽：空腹<7.8mmol/L，餐后<10mmol/L。过度控糖反而增加低血糖风险，危害更大。'},
+  {name:'老年人护心食谱',type:'老年人',age:'65岁以上',calorie:'1500-1700',nutrient:'Omega-3、不饱和脂肪酸',totalCalorie:1600,protein:65,carb:200,fat:50,
+   meals:[{title:'早餐',icon:'breakfast',cal:400,foods:'三文鱼寿司（自制）30g + 纳豆20g + 味噌汤 + 糙米饭60g',tips:'纳豆含纳豆激酶，有预防血栓形成的作用'},{title:'午餐',icon:'lunch',cal:550,foods:'清蒸海鲈鱼120g + 蒜蓉木耳200g + 杂粮饭80g + 紫菜汤',tips:'海鱼富含Omega-3，每周吃2-3次有助保护心血管'},{title:'晚餐',icon:'dinner',cal:450,foods:'黑木耳炒洋葱150g + 山楂决明子茶 + 蔬菜粥50g',tips:'洋葱含前列腺素A，扩张血管；山楂活血化瘀'},{title:'加餐',icon:'snack',cal:200,foods:'核桃3个 + 牛油果半个',tips:'坚果和牛油果含不饱和脂肪酸，替代动物油食用'}],
+   steps:['1. 烹调油以橄榄油、茶籽油、亚麻籽油为主','2. 每周至少2次深海鱼类，每次100-150g','3. 严格控制饱和脂肪：肥肉、内脏、奶油每日不超过10g','4. 每天饮用绿茶或山楂茶，有抗氧化作用'],
+   tips:'老年人心血管疾病发病率超过50%。Omega-3脂肪酸（EPA/DHA）有抗炎、降脂、护心作用。建议每周吃深海鱼2-3次。'},
+  {name:'老年人通便食谱',type:'老年人',age:'60岁以上',calorie:'1400-1600',nutrient:'膳食纤维、益生元',totalCalorie:1500,protein:55,carb:200,fat:38,
+   meals:[{title:'早餐',icon:'breakfast',cal:380,foods:'红薯燕麦粥 + 酸奶100g + 奇亚籽10g + 蒸南瓜100g',tips:'奇亚籽富含膳食纤维和Omega-3，润肠通便效果显著'},{title:'午餐',icon:'lunch',cal:500,foods:'菠菜猪血汤 + 芹菜香干150g + 糙米饭80g',tips:'猪血和菠菜都富含铁和膳食纤维，双重补铁又通便'},{title:'晚餐',icon:'dinner',cal:420,foods:'木耳银耳羹200ml + 玉米面窝头1个 + 凉拌海带丝',tips:'银耳含植物胶质，可软化粪便；木耳菌菇类通便效果好'},{title:'加餐',icon:'snack',cal:200,foods:'火龙果半个 + 酸奶100g',tips:'火龙果的黑籽富含膳食纤维，促进肠蠕动'}],
+   steps:['1. 每日饮水不少于1500ml，晨起喝温开水300ml','2. 膳食纤维每日25-30g，分3次摄入避免腹胀','3. 养成定时排便习惯，早餐后30分钟是最佳时间','4. 顺时针按摩腹部100圈，每天2次，有助排便'],
+   tips:'老年人便秘发病率超过60%，与肠蠕动减慢、膳食纤维不足、饮水量少密切相关。功能性便秘首选饮食调理。'},
+  {name:'老年人健脑食谱',type:'老年人',age:'70岁以上',calorie:'1300-1500',nutrient:'Omega-3、胆碱、卵磷脂',totalCalorie:1400,protein:58,carb:175,fat:42,
+   meals:[{title:'早餐',icon:'breakfast',cal:350,foods:'核桃芝麻糊 + 煮鸡蛋2个 + 牛奶200ml + 蓝莓30g',tips:'鸡蛋蛋黄富含胆碱，是合成神经递质乙酰胆碱的原料'},{title:'午餐',icon:'lunch',cal:480,foods:'清蒸黄花鱼100g + 蒜蓉西兰花200g + 糙米饭80g + 蘑菇汤',tips:'黄花鱼含丰富蛋白质和DHA，有助改善记忆力'},{title:'晚餐',icon:'dinner',cal:380,foods:'肉末豆腐150g + 洋葱炒鸡蛋 + 小米粥 + 凉拌紫甘蓝',tips:'洋葱含硫化物，可改善大脑血液循环，延缓认知衰退'},{title:'加餐',icon:'snack',cal:190,foods:'黑巧克力15g + 碧根果2个',tips:'黑巧克力含类黄酮，改善大脑血流；坚果补脑又护心'}],
+   steps:['1. 每天1个鸡蛋（含蛋黄），不要弃蛋黄','2. 深海鱼类（黄花鱼、三文鱼）每周3次以上','3. 绿叶蔬菜每天300g以上，深色占一半','4. 坚持学习新事物，大脑越用越灵活'],
+   tips:'阿尔茨海默病65岁以上患病率约5%，85岁以上超过30%。Omega-3（深海鱼、核桃）、胆碱（蛋黄、肝脏）均有保护作用。每天动脑和社交也非常重要。'},
+  {name:'老年人增重营养餐',type:'老年人',age:'60-75岁',calorie:'2000-2200',nutrient:'高蛋白、高热量',totalCalorie:2100,protein:82,carb:270,fat:72,
+   meals:[{title:'早餐',icon:'breakfast',cal:550,foods:'花生酱吐司2片 + 煎鸡蛋2个 + 全脂牛奶300ml + 牛油果半个',tips:'花生酱和牛油果是高热量健康脂肪来源，适合增重'},{title:'午餐',icon:'lunch',cal:700,foods:'红烧牛腩150g + 番茄炒蛋200g + 米饭120g + 骨头汤',tips:'牛腩富含蛋白质和脂肪，红烧做法增加适口性'},{title:'晚餐',icon:'dinner',cal:580,foods:'清蒸鲈鱼120g + 腰果炒鸡丁80g + 土豆泥100g + 馒头1个',tips:'鱼类易消化，配合坚果增加热量密度'},{title:'加餐',icon:'snack',cal:270,foods:'营养配方奶200ml + 香蕉1根 + 饼干2片',tips:'两餐之间加餐，每日可加2-3次，防止总热量不足'}],
+   steps:['1. 少食多餐，每日5-6餐替代传统三餐','2. 烹调适当多放植物油和优质蛋白，增加热量密度','3. 牛奶+鸡蛋+肉类+豆制品，保证每日蛋白质摄入','4. 饭后适度活动，勿立即平卧，促进消化吸收'],
+   tips:'老年人消瘦多因食欲减退、消化吸收功能下降、慢性疾病消耗等原因。体重过低（BMI<18.5）会增加跌倒、骨折、感染和死亡风险。'},
+  {name:'老年人护眼食谱',type:'老年人',age:'65岁以上',calorie:'1400-1600',nutrient:'叶黄素、花青素、维生素A',totalCalorie:1500,protein:58,carb:195,fat:42,
+   meals:[{title:'早餐',icon:'breakfast',cal:380,foods:'枸杞叶猪肝粥 + 煮鸡蛋1个 + 蒸南瓜100g',tips:'枸杞叶和猪肝均富含叶黄素和维生素A，双重护眼'},{title:'午餐',icon:'lunch',cal:500,foods:'清蒸鲈鱼100g + 蒜蓉菠菜250g + 糙米饭80g + 胡萝卜玉米汤',tips:'胡萝卜含β-胡萝卜素，在体内转化为维生素A'},{title:'晚餐',icon:'dinner',cal:420,foods:'蓝莓山药泥100g + 三文鱼刺身50g + 小米粥 + 凉拌紫甘蓝',tips:'蓝莓花青素含量高，保护视网膜黄斑区抗光氧化'},{title:'加餐',icon:'snack',cal:200,foods:'猕猴桃1个 + 黑加仑30g + 原味酸奶100g',tips:'猕猴桃维生素C含量极高，有助于胶原蛋白合成'}],
+   steps:['1. 每周吃1-2次动物肝脏，每次不超过20g','2. 深色绿叶蔬菜（菠菜、苋菜）每天200g以上','3. 橙黄色蔬果（胡萝卜、南瓜、玉米）每天100g','4. 户外活动戴防紫外线太阳镜，减少蓝光伤害'],
+   tips:'老年黄斑变性（AMD）是老年人致盲首位原因，65岁以上患病率超过10%。叶黄素和玉米黄质是黄斑色素的核心成分，人体无法合成，只能从食物中获取。'},
+  // 孕产妇 5个
+  {name:'孕早期营养补充方案',type:'孕产妇',age:'孕1-3月',calorie:'1800-2000',nutrient:'叶酸、铁、钙',totalCalorie:1900,protein:75,carb:260,fat:60,
+   meals:[{title:'早餐',icon:'breakfast',cal:500,foods:'全麦面包2片 + 荷包蛋1个 + 牛奶250ml + 圣女果10颗',tips:'孕早期胃口不好可少量多餐'},{title:'午餐',icon:'lunch',cal:650,foods:'番茄炖牛腩150g + 清炒菠菜250g + 米饭150g + 冬瓜排骨汤',tips:'牛肉富含铁质，预防孕期贫血'},{title:'晚餐',icon:'dinner',cal:500,foods:'清蒸鲈鱼120g + 蒜蓉西兰花200g + 红薯100g + 银耳羹',tips:'鱼类每周2-3次，补充DHA'},{title:'加餐',icon:'snack',cal:250,foods:'核桃3个 + 红枣5颗 + 酸奶100g',tips:'少食多餐，缓解孕吐不适'}],
+   steps:['1. 孕早期饮食以清淡易消化为主，少油少盐','2. 每日补充叶酸400微克，持续到孕3个月','3. 肉类充分加热煮熟，避免寄生虫风险','4. 蔬菜先洗后切，减少水溶性维生素流失'],
+   tips:'孕早期胎儿对营养需求不高，重点是补充叶酸预防神经管畸形。少食多餐、清淡饮食可以缓解孕吐反应。'},
+  {name:'妊娠糖尿病饮食控制',type:'孕产妇',age:'孕4-9月',calorie:'1600-1800',nutrient:'低GI、适量碳水',totalCalorie:1700,protein:78,carb:200,fat:58,
+   meals:[{title:'早餐',icon:'breakfast',cal:420,foods:'荞麦面馒头1个 + 水煮蛋1个 + 无糖豆浆200ml + 黄瓜100g',tips:'选择低GI主食，有助于血糖平稳'},{title:'午餐',icon:'lunch',cal:580,foods:'清蒸鳕鱼120g + 凉拌莴笋200g + 杂粮饭80g + 冬瓜汤',tips:'鱼类富含优质蛋白和DHA，利于胎儿发育'},{title:'晚餐',icon:'dinner',cal:480,foods:'去皮鸡腿肉100g + 西兰花炒香菇200g + 紫薯80g',tips:'控制主食量，少食多餐有助于血糖管理'},{title:'加餐',icon:'snack',cal:220,foods:'无糖酸奶100g + 坚果10g + 柚子100g',tips:'两餐之间加餐，避免血糖波动过大'}],
+   steps:['1. 每日分6餐进食，避免一次性摄入大量碳水','2. 主食选择低GI食材，如荞麦、燕麦、糙米','3. 水果放在两餐之间，每次不超过100g','4. 每周监测血糖，记录饮食日记'],
+   tips:'妊娠糖尿病饮食核心是"低GI、少食多餐"。餐后散步30分钟有助于降低血糖。'},
+  {name:'孕中期营养方案',type:'孕产妇',age:'孕4-6月',calorie:'2100-2300',nutrient:'蛋白质、钙、DHA',totalCalorie:2200,protein:85,carb:280,fat:72,
+   meals:[{title:'早餐',icon:'breakfast',cal:550,foods:'三鲜水饺8个 + 牛奶300ml + 坚果15g + 苹果1个',tips:'孕中期胃口好转，适当增加蛋白质摄入'},{title:'午餐',icon:'lunch',cal:720,foods:'红烧排骨150g + 清炒油麦菜250g + 米饭120g + 虾皮紫菜汤',tips:'排骨富含钙和蛋白质，孕中期钙需求大增'},{title:'晚餐',icon:'dinner',cal:600,foods:'清蒸多宝鱼120g + 豆腐鲫鱼汤200ml + 糙米饭100g',tips:'鱼类和豆腐同食，蛋白质互补，钙吸收更好'},{title:'加餐',icon:'snack',cal:330,foods:'孕妇配方奶粉200ml + 苏打饼干2片 + 红枣5颗',tips:'孕妇奶粉强化了叶酸、铁、DHA等孕期关键营养'}],
+   steps:['1. 孕中期钙需求增至每日1000mg，比孕前增加300mg','2. 每周至少2次深海鱼类，补充DHA促进胎儿大脑发育','3. 铁的需求量在孕中晚期翻倍，注意红肉和动物肝脏摄入','4. 水果每日200-300g，过量易导致血糖升高和体重增长过快'],
+   tips:'孕中期是胎儿生长发育加速期，体重每周增长约300-500g。此阶段应增加蛋白质、钙和热量摄入。'},
+  {name:'产妇月子餐第一周',type:'孕产妇',age:'产后1-7天',calorie:'2000-2200',nutrient:'补气血、排恶露',totalCalorie:2100,protein:88,carb:265,fat:68,
+   meals:[{title:'早餐',icon:'breakfast',cal:520,foods:'红糖小米粥 + 煮鸡蛋2个 + 红枣桂圆汤100ml',tips:'红糖活血化瘀，第一周适量食用，帮助排尽恶露'},{title:'午餐',icon:'lunch',cal:700,foods:'麻油猪肝100g + 清炒时蔬200g + 糙米饭100g + 生化汤200ml',tips:'麻油猪肝补铁补血，生化汤促子宫恢复'},{title:'晚餐',icon:'dinner',cal:580,foods:'鲫鱼豆腐汤300ml + 素炒藕片200g + 红枣饭80g',tips:'鲫鱼汤下奶效果好，豆腐补充优质蛋白'},{title:'加餐',icon:'snack',cal:300,foods:'红豆汤200ml + 蒸苹果1个',tips:'红豆利水消肿，帮助消除产后水肿'}],
+   steps:['1. 产后第一周以清淡易消化为主，忌油腻大补','2. 少食多餐，每天5-6餐，减轻胃肠负担','3. 每日饮水不少于2000ml，母乳喂养需额外补水','4. 忌食生冷辛辣，多吃温热食物促进子宫恢复'],
+   tips:'产后第一周是身体恢复关键期，子宫从1000g缩小到孕前50g。传统"月子里要大补"的观念是错误的，第一周应以排恶露、恢复胃肠功能为主。'},
+  {name:'产妇催乳食谱',type:'孕产妇',age:'产后哺乳期',calorie:'2300-2500',nutrient:'优质蛋白、发奶食材',totalCalorie:2400,protein:98,carb:300,fat:82,
+   meals:[{title:'早餐',icon:'breakfast',cal:600,foods:'花生猪蹄汤200ml + 鸡蛋煎饼2个 + 牛奶250ml',tips:'花生猪蹄是经典催乳汤，花生富含蛋白质和油脂'},{title:'午餐',icon:'lunch',cal:800,foods:'黄豆焖猪蹄200g + 清炒莴笋250g + 米饭120g + 通草鲫鱼汤300ml',tips:'通草是中医传统催乳药材，安全有效'},{title:'晚餐',icon:'dinner',cal:660,foods:'公鸡汤300ml + 番茄炒鸡蛋 + 糙米饭100g + 虾皮紫菜汤',tips:'公鸡含雄激素，可对抗雌激素促进乳汁分泌（母鸡回奶）'},{title:'加餐',icon:'snack',cal:340,foods:'酒酿鸡蛋100ml + 坚果20g + 香蕉1根',tips:'酒酿有轻微发奶作用，哺乳期妈妈可适量食用'}],
+   steps:['1. 每次哺乳前喝200ml温开水，有助于泌乳反射','2. 让宝宝多吸吮，是最有效的催乳方法','3. 睡眠充足、心情愉快，催乳素分泌更旺盛','4. 如奶量不足，可添加通草、王不留行等中药炖汤'],
+   tips:'乳汁分泌量与宝宝的吸吮频率正相关。健康足月儿每日需母乳8-12次，每次15-20分钟。哺乳期每日热量比平时增加500kcal。'},
+  // 慢性病患者 7个导致神经管畸形（无脑儿、脊柱裂）、早产、低出生体重等严重后果。建议备孕前3个月开始补充叶酸，每日400微克，持续至孕12周。'},
+  // 慢性病患者 7个
+  {name:'高血压患者饮食指南',type:'慢性病患者',age:'18-80岁',calorie:'1600-1800',nutrient:'低盐、高钾、富纤维',totalCalorie:1700,protein:72,carb:210,fat:52,
+   meals:[{title:'早餐',icon:'breakfast',cal:450,foods:'芹菜粥50g + 煮鸡蛋1个 + 拌海带丝 + 无糖豆浆200ml',tips:'芹菜富含钾元素，有助于降压'},{title:'午餐',icon:'lunch',cal:600,foods:'红烧瘦肉80g + 素炒洋葱200g + 凉拌紫甘蓝150g + 杂粮饭120g',tips:'肉类去皮去肥，选择瘦肉'},{title:'晚餐',icon:'dinner',cal:480,foods:'香菇蒸鸡100g + 清炒苦瓜200g + 番茄蛋汤 + 玉米窝头1个',tips:'苦瓜性凉，脾胃虚寒者少食'},{title:'加餐',icon:'snack',cal:170,foods:'香蕉1根 + 低脂牛奶150ml',tips:'香蕉含钾丰富，但注意控制量'}],
+   steps:['1. 每日盐摄入量控制在3-5克以内，可用低钠盐','2. 烹饪以蒸、煮、炖为主，少用煎炸','3. 蔬菜每天不少于500克，深色蔬菜占一半','4. 肉类每餐50-100克，优先选择鱼虾类'],
+   tips:'高血压患者饮食核心是"低盐高钾"。每日盐<5克，多吃富钾食物如香蕉、菠菜、蘑菇等。戒烟限酒，规律作息。'},
+  {name:'痛风患者低嘌呤食谱',type:'慢性病患者',age:'30-70岁',calorie:'1500-1700',nutrient:'低嘌呤、低脂肪',totalCalorie:1600,protein:65,carb:200,fat:55,
+   meals:[{title:'早餐',icon:'breakfast',cal:400,foods:'牛奶250ml + 面包2片 + 鸡蛋1个 + 凉拌黄瓜',tips:'牛奶属于低嘌呤饮品，可每天饮用'},{title:'午餐',icon:'lunch',cal:550,foods:'白菜炖豆腐200g + 米饭100g + 番茄蛋汤 + 水果拼盘',tips:'豆腐经过加工，嘌呤含量降低，可适量食用'},{title:'晚餐',icon:'dinner',cal:450,foods:'蒸南瓜150g + 素炒卷心菜200g + 小米粥30g + 凉拌胡萝卜',tips:'选择碱性食物，有助于尿酸排泄'},{title:'加餐',icon:'snack',cal:200,foods:'樱桃100g + 低脂酸奶100g',tips:'樱桃有降低尿酸的作用，可每天适量食用'}],
+   steps:['1. 避免动物内脏、海鲜、浓肉汤等高嘌呤食物','2. 每日饮水2000-3000毫升，促进尿酸排泄','3. 烹调方式以蒸、煮、炖、凉拌为主','4. 限制酒精摄入，尤其是啤酒'],
+   tips:'痛风患者饮食核心是"低嘌呤、多喝水"。急性发作期每日嘌呤摄入<150mg，缓解期可适当放宽。'},
+  {name:'高血脂患者饮食指南',type:'慢性病患者',age:'35-75岁',calorie:'1600-1800',nutrient:'降脂、膳食纤维',totalCalorie:1700,protein:70,carb:205,fat:52,
+   meals:[{title:'早餐',icon:'breakfast',cal:420,foods:'燕麦粥50g + 煮鸡蛋1个 + 脱脂牛奶200ml + 凉拌木耳',tips:'燕麦β-葡聚糖可降低总胆固醇和LDL-C'},{title:'午餐',icon:'lunch',cal:580,foods:'清蒸三文鱼100g + 蒜蓉西兰花200g + 糙米饭100g + 紫菜汤',tips:'深海鱼Omega-3脂肪酸可显著降低甘油三酯'},{title:'晚餐',icon:'dinner',cal:480,foods:'香菇蒸鸡腿肉（去皮）100g + 洋葱炒蛋 + 杂粮饭80g',tips:'洋葱含硫化物，可降低血液黏稠度'},{title:'加餐',icon:'snack',cal:220,foods:'山楂茶200ml + 苹果半个',tips:'山楂含黄酮类化合物，有降脂护血管作用'}],
+   steps:['1. 每日胆固醇摄入<200mg（1个鸡蛋黄含量），严格控制','2. 烹调油以橄榄油、茶籽油为主，每日不超过20g','3. 植物甾醇每天2g，可降低LDL-C约10%','4. 坚持有氧运动，每周150分钟中等强度'],
+   tips:'高血脂是动脉粥样硬化的根本原因。甘油三酯高者（>2.3mmol/L）首要任务是减重和戒酒。LDL-C是降脂治疗的首要靶点。'},
+  {name:'糖尿病患者饮食指南',type:'慢性病患者',age:'40-80岁',calorie:'1500-1800',nutrient:'低GI、低碳水',totalCalorie:1650,protein:72,carb:200,fat:55,
+   meals:[{title:'早餐',icon:'breakfast',cal:400,foods:'荞麦面饼1个 + 煮鸡蛋1个 + 无糖豆浆200ml + 黄瓜100g',tips:'荞麦GI仅54，比白面馒头（88）低很多'},{title:'午餐',icon:'lunch',cal:560,foods:'清蒸鳕鱼120g + 凉拌苦瓜200g + 杂粮饭80g + 冬瓜汤',tips:'苦瓜含类胰岛素肽，是天然的血糖调节物质'},{title:'晚餐',icon:'dinner',cal:480,foods:'去皮鸡肉100g + 素炒芦笋250g + 魔芋丝100g + 糙米饭60g',tips:'魔芋含葡甘聚糖，延缓糖分吸收，GI几乎为0'},{title:'加餐',icon:'snack',cal:210,foods:'坚果15g + 柚子100g',tips:'坚果选择杏仁、核桃，含不饱和脂肪酸有益心血管'}],
+   steps:['1. 计算每日碳水化合物总量，每餐控制在45-60g','2. 使用食物血糖生成指数（GI）和血糖负荷（GL）选择食物','3. 先吃蔬菜，再吃蛋白质，最后吃主食，血糖更平稳','4. 餐后血糖>10mmol/L时，餐后运动15-30分钟'],
+   tips:'糖尿病饮食不是"少吃"而是"会吃"。碳水化合物是必需营养素，每公斤体重至少需要3-4g/d，过度限制碳水反而有害。'},
+  {name:'脂肪肝患者饮食指南',type:'慢性病患者',age:'25-65岁',calorie:'1600-1800',nutrient:'减脂、保肝',totalCalorie:1700,protein:78,carb:200,fat:48,
+   meals:[{title:'早餐',icon:'breakfast',cal:420,foods:'燕麦小米粥 + 煮鸡蛋1个 + 脱脂牛奶200ml + 玉米半根',tips:'燕麦和小米都是优质粗粮，帮助代谢脂肪'},{title:'午餐',icon:'lunch',cal:580,foods:'清蒸海鲈鱼120g + 蒜蓉西兰花200g + 糙米饭100g + 海带汤',tips:'海带含碘和膳食纤维，有促进肝脏脂肪代谢作用'},{title:'晚餐',icon:'dinner',cal:500,foods:'山楂决明子炖鸡胸肉100g + 素炒紫甘蓝250g + 魔芋凉面',tips:'山楂和决明子均有清肝降脂功效，适合脂肪肝'},{title:'加餐',icon:'snack',cal:200,foods:'山楂茶200ml + 无糖酸奶100g',tips:'山楂含解脂酶，是减脂的天然帮手'}],
+   steps:['1. 每日脂肪摄入不超过总热量25%，优选不饱和脂肪酸','2. 主食粗细搭配，增加燕麦、荞麦、糙米等低GI食材','3. 绝对戒酒，酒精性脂肪肝必须戒酒才能逆转','4. 快步走或慢跑每天40分钟，每周5次，有效减脂'],
+   tips:'脂肪肝分为酒精性脂肪肝和非酒精性脂肪肝（NAFLD）。单纯性脂肪肝是可逆的，通过饮食控制和运动，80%的患者可以在6个月内实现脂肪肝消退。'},
+  {name:'慢性胃炎患者食谱',type:'慢性病患者',age:'20-70岁',calorie:'1600-1800',nutrient:'养胃、易消化',totalCalorie:1700,protein:65,carb:225,fat:48,
+   meals:[{title:'早餐',icon:'breakfast',cal:420,foods:'猴头菇小米粥 + 蒸蛋羹1个 + 苏打饼干2片',tips:'猴头菇含多糖，有修复胃黏膜作用'},{title:'午餐',icon:'lunch',cal:580,foods:'山药排骨汤 + 软米饭80g + 清炒嫩南瓜150g',tips:'山药健脾养胃，南瓜富含果胶保护胃黏膜'},{title:'晚餐',icon:'dinner',cal:480,foods:'猴头菇炖鸡腿肉100g + 素炒卷心菜200g + 烤馒头片2片',tips:'烤馒头片（面包干）是传统的胃黏膜保护食品'},{title:'加餐',icon:'snack',cal:220,foods:'猴头菇饼干20g + 温热牛奶200ml',tips:'少食多餐，每天5-6餐，减轻胃的负担'}],
+   steps:['1. 饮食定时定量，三餐规律，避免过饥过饱','2. 食物切碎煮烂，粗粮细做，减轻胃的研磨负担','3. 避免刺激性食物：辛辣、浓茶、咖啡、酒、过烫过冷','4. 萎缩性胃炎伴有胃酸过少者，可适当食用酸味食物助消化'],
+   tips:'慢性胃炎分为浅表性、萎缩性和肥厚性。萎缩性胃炎有癌变风险，需定期复查胃镜。胃病"三分治七分养"，规律饮食比吃药更重要。'},
+  {name:'冠心病患者护心餐',type:'慢性病患者',age:'50-80岁',calorie:'1600-1800',nutrient:'护心、低脂、低盐',totalCalorie:1700,protein:70,carb:210,fat:50,
+   meals:[{title:'早餐',icon:'breakfast',cal:420,foods:'燕麦粥 + 煮鸡蛋1个 + 脱脂牛奶200ml + 亚麻籽5g',tips:'亚麻籽含α-亚麻酸，在体内转化为EPA/DHA护心'},{title:'午餐',icon:'lunch',cal:580,foods:'清蒸三文鱼100g + 凉拌黑木耳200g + 糙米饭80g',tips:'三文鱼Omega-3降低甘油三酯，黑木耳活血化瘀'},{title:'晚餐',icon:'dinner',cal:480,foods:'山楂红枣炖鸡胸肉100g + 蒜蓉菜心200g + 蒸山药80g',tips:'山楂活血降脂，红枣补气血，适合心脏病患者'},{title:'加餐',icon:'snack',cal:220,foods:'核桃3个 + 山楂茶200ml',tips:'核桃含不饱和脂肪酸，山楂扩张冠状动脉'}],
+   steps:['1. 终身服用他汀类降脂药，低密度脂蛋白（LDL-C）<1.8mmol/L','2. 严格控制反式脂肪：人造奶油、植脂末、油炸食品全戒','3. 每天盐<5克，多用醋、柠檬汁、香草调味','4. 随身携带硝酸甘油，胸前区不适时立即含服并就医'],
+   tips:'冠心病患者饮食的核心是抗动脉粥样硬化。地中海饮食模式（橄榄油、深海鱼、全谷物、蔬菜水果、坚果）被证实可将心血管事件风险降低30%。'}
+];
 
 // ===== 健身减脂食谱详情数据 =====
 var fitnessRecipeDetail={
@@ -1741,6 +1848,30 @@ function initAllCharts(){
     yAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280'}},
     series:[{type:'bar',data:[85,186,328,256,145,42],itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#F87171'},{offset:1,color:'#EF4444'}]},borderRadius:[4,4,0,0]},barWidth:32}]
   });
+
+  // 营养知识文章分类分布
+  initChart('knowledge-cat',{
+    tooltip:{trigger:'item'},
+    legend:{bottom:0,textStyle:{color:'#6B7280',fontSize:12}},
+    series:[{type:'pie',radius:['40%','70%'],avoidLabelOverlap:false,itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:2},label:{show:false},emphasis:{label:{show:true,fontSize:14,fontWeight:'bold'}},data:[
+      {value:18,name:'热量控制',itemStyle:{color:'#00BAAD'}},
+      {value:15,name:'运动营养',itemStyle:{color:'#6366F1'}},
+      {value:10,name:'疾病饮食禁忌',itemStyle:{color:'#EF4444'}},
+      {value:5,name:'膳食指南',itemStyle:{color:'#10B981'}}
+    ]}]
+  });
+
+  // 营养知识月度发布趋势
+  initChart('knowledge-trend',{
+    tooltip:{trigger:'axis'},
+    grid:{left:'3%',right:'4%',bottom:'3%',top:'10%',containLabel:true},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月'],axisLine:{lineStyle:{color:'#E5E7EB'}},axisLabel:{color:'#6B7280',fontSize:12}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#F3F4F6'}},axisLine:{show:false},axisLabel:{color:'#6B7280',fontSize:12}},
+    series:[
+      {name:'发布数',type:'bar',data:[6,8,7,9,11,12],itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#6366F1'},{offset:1,color:'#818CF8'}]},borderRadius:[4,4,0,0]},barWidth:24},
+      {name:'阅读量',type:'line',smooth:true,data:[320,456,512,688,820,1056],lineStyle:{width:2,color:'#10B981'},symbol:'circle',symbolSize:6,itemStyle:{color:'#10B981'}}
+    ]
+  });
 }
 
 // ===== 表格渲染 =====
@@ -1813,18 +1944,22 @@ function renderFoodTable(filter){
   tbody.innerHTML=html;
 }
 
+var currentSpecialFilter='全部';
 function renderSpecialTable(){
   var tbody=document.getElementById('special-tbody');
   var html='';
-  specialData.forEach(function(r){
+  var filtered=specialData.filter(function(r){
+    return currentSpecialFilter==='全部'||r.type===currentSpecialFilter;
+  });
+  filtered.forEach(function(r,idx){
     var typeClass=r.type==='婴幼儿'?'badge-warning':r.type==='老年人'?'badge-info':r.type==='孕产妇'?'badge-success':'badge-gray';
+    var realIdx=specialData.indexOf(r);
     html+='<tr>'+
-      '<td><strong>'+r.name+'</strong></td>'+
-      '<td><span class="badge '+typeClass+'">'+r.type+'</span></td>'+
+      '<td><strong>'+r.name+'</strong><span class="badge '+typeClass+'" style="margin-left:8px;font-size:11px">'+r.type+'</span></td>'+
       '<td>'+r.age+'</td>'+
       '<td>'+r.calorie+'</td>'+
       '<td style="color:#6B7280;font-size:12px">'+r.nutrient+'</td>'+
-      '<td><a href="javascript:void(0)" class="recipe-link" data-type="'+r.type+'" style="color:#00BAAD;text-decoration:none;font-weight:500"><span class="badge badge-success">'+r.recipe+'个</span> 查看食谱</a></td>'+
+      '<td><a href="javascript:void(0)" class="recipe-link" data-id="'+realIdx+'" style="color:#00BAAD;text-decoration:none;font-weight:500;cursor:pointer"><span class="badge badge-success">'+r.recipe+'个</span> 查看食谱</a></td>'+
       '<td>'+r.update+'</td>'+
       '<td><div class="action-btns"><button class="action-btn edit" onclick="showToast(\'编辑成功\',\'success\')">编辑</button><button class="action-btn delete" onclick="showToast(\'删除成功\',\'error\')">删除</button></div></td>'+
       '</tr>';
@@ -2083,50 +2218,71 @@ function closeGuideDetailModal(){
 }
 
 // 特殊人群食谱详情弹窗
-function openSpecialRecipeModal(type){
-  var data=specialRecipeDetail[type];
-  if(!data)return;
-  var typeClass=type==='婴幼儿'?'baby':type==='老年人'?'elder':type==='孕产妇'?'pregnant':'patient';
-  var html='<div class="recipe-detail-header">'+
-    '<span class="recipe-detail-badge '+typeClass+'">'+type+'</span>'+
-    '<div><strong>'+data.name+'</strong><br><span style="font-size:12px;color:#6B7280">适用年龄：'+data.age+' | 每日热量：'+data.calorie+' kcal</span></div>'+
-  '</div>'+
-  '<div class="recipe-nutrition-row">'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.totalCalorie+'</div><div class="unit">kcal</div><div class="label">每日总热量</div></div>'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.protein+'g</div><div class="unit">克</div><div class="label">蛋白质</div></div>'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.carb+'g</div><div class="unit">克</div><div class="label">碳水化合物</div></div>'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.fat+'g</div><div class="unit">克</div><div class="label">脂肪</div></div>'+
-  '</div>'+
-  '<h4 style="font-size:14px;color:#1F2937;margin-bottom:12px">每日三餐搭配</h4>'+
-  '<div class="recipe-meals-grid">';
-  data.meals.forEach(function(meal){
-    html+='<div class="recipe-meal-card">'+
-      '<div class="meal-title"><span class="meal-icon '+meal.icon+'">'+meal.title.charAt(0)+'</span>'+meal.title+'</div>'+
-      '<div class="meal-cal">热量：'+meal.cal+' kcal</div>'+
-      '<div class="meal-foods">'+meal.foods+'</div>'+
-      '<div class="meal-tips">'+meal.tips+'</div>'+
+function openSpecialRecipeModal(id){
+  var row=specialData[id];
+  if(!row)return;
+  var type=row.type;
+  // 找出同类型的所有食谱
+  var recipes=[];
+  specialRecipeDetail.forEach(function(r){if(r.type===type)recipes.push(r);});
+  if(recipes.length===0)return;
+  // 生成食谱标签
+  var tabsHtml='';
+  recipes.forEach(function(r,i){
+    tabsHtml+='<span class="recipe-tab-btn'+(i===0?' active':'')+'" onclick="switchRecipeTab(this,\''+type+'\','+i+')">'+r.name+'</span>';
+  });
+  var html='<div class="recipe-tabs-row">'+tabsHtml+'</div>';
+  // 生成食谱内容（多个）
+  recipes.forEach(function(r,i){
+    var typeClass=r.type==='婴幼儿'?'baby':r.type==='老年人'?'elder':r.type==='孕产妇'?'pregnant':'patient';
+    html+='<div class="recipe-tab-content'+(i===0?' active':'')+'" id="recipe-tab-'+type.replace(/\s/g,'')+'-'+i+'">'+
+      '<div class="recipe-detail-header">'+
+        '<span class="recipe-detail-badge '+typeClass+'">'+r.type+'</span>'+
+        '<div><strong>'+r.name+'</strong><br><span style="font-size:12px;color:#6B7280">适用年龄：'+r.age+' | 每日热量：'+r.calorie+' kcal</span></div>'+
+      '</div>'+
+      '<div class="recipe-nutrition-row">'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.totalCalorie+'</div><div class="unit">kcal</div><div class="label">每日总热量</div></div>'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.protein+'g</div><div class="unit">克</div><div class="label">蛋白质</div></div>'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.carb+'g</div><div class="unit">克</div><div class="label">碳水化合物</div></div>'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.fat+'g</div><div class="unit">克</div><div class="label">脂肪</div></div>'+
+      '</div>'+
+      '<h4 style="font-size:14px;color:#1F2937;margin-bottom:12px">每日三餐搭配</h4>'+
+      '<div class="recipe-meals-grid">';
+    r.meals.forEach(function(meal){
+      html+='<div class="recipe-meal-card">'+
+        '<div class="meal-title"><span class="meal-icon '+meal.icon+'">'+meal.title.charAt(0)+'</span>'+meal.title+'</div>'+
+        '<div class="meal-cal">热量：'+meal.cal+' kcal</div>'+
+        '<div class="meal-foods">'+meal.foods+'</div>'+
+        '<div class="meal-tips">'+meal.tips+'</div>'+
+      '</div>';
+    });
+    html+='</div>'+
+      '<div class="recipe-cooking-steps">'+
+        '<h4>制作要点</h4><ol>';
+    r.steps.forEach(function(step){html+='<li>'+step+'</li>';});
+    html+='</ol></div>'+
+      '<div class="recipe-tips-box">'+
+        '<h4>营养师建议</h4><p>'+r.tips+'</p>'+
+      '</div>'+
+      '<div class="recipe-detail-footer">'+
+        '<div class="recipe-detail-tags">'+
+          '<span class="recipe-tag">'+r.nutrient+'</span>'+
+          '<span class="recipe-tag">'+r.age+'</span>'+
+        '</div>'+
+      '</div>'+
     '</div>';
   });
-  html+='</div>'+
-  '<div class="recipe-cooking-steps">'+
-    '<h4>制作要点</h4>'+
-    '<ol>';
-  data.steps.forEach(function(step){
-    html+='<li>'+step+'</li>';
-  });
-  html+='</ol></div>'+
-  '<div class="recipe-tips-box">'+
-    '<h4>营养师建议</h4>'+
-    '<p>'+data.tips+'</p>'+
-  '</div>'+
-  '<div class="recipe-detail-footer">'+
-    '<div class="recipe-detail-tags">'+
-      '<span class="recipe-tag">'+data.nutrient+'</span>'+
-      '<span class="recipe-tag">'+data.age+'</span>'+
-    '</div>'+
-  '</div>';
   document.getElementById('special-recipe-content').innerHTML=html;
   document.getElementById('special-recipe-modal').classList.add('show');
+}
+// 食谱标签切换
+function switchRecipeTab(btn,type,idx){
+  document.querySelectorAll('.recipe-tab-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.querySelectorAll('.recipe-tab-content').forEach(function(c){c.classList.remove('active')});
+  var id='recipe-tab-'+type.replace(/\s/g,'')+'-'+idx;
+  var el=document.getElementById(id);
+  if(el)el.classList.add('active');
 }
 function closeSpecialRecipeModal(){
   document.getElementById('special-recipe-modal').classList.remove('show');
@@ -2199,8 +2355,8 @@ document.getElementById('fitness-recipe-modal').addEventListener('click',functio
 document.addEventListener('click',function(e){
   if(e.target.classList.contains('recipe-link') || e.target.closest('.recipe-link')){
     var link=e.target.classList.contains('recipe-link')?e.target:e.target.closest('.recipe-link');
-    var type=link.getAttribute('data-type');
-    if(type)openSpecialRecipeModal(type);
+    var id=link.getAttribute('data-id');
+    if(id!==null)openSpecialRecipeModal(parseInt(id));
   }
 });
 
@@ -2241,6 +2397,16 @@ document.getElementById('food-filter-bar').addEventListener('click',function(e){
     e.target.classList.add('active');
     var category=e.target.getAttribute('data-category');
     renderFoodTable(category);
+  }
+});
+
+// 特殊人群饮食指导 - 人群分类筛选
+document.querySelector('.special-filter').addEventListener('click',function(e){
+  if(e.target.classList.contains('filter-btn')){
+    this.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+    e.target.classList.add('active');
+    currentSpecialFilter=e.target.getAttribute('data-type');
+    renderSpecialTable();
   }
 });
 
