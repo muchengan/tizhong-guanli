@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>积分激励管理 - 银川市卫健委体重管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F8FAFC}
+        .dashboard{display:flex;min-height:100vh}
+        .sidebar{width:260px;background:#FFFFFF;border-right:1px solid #E5E7EB;position:fixed;height:100vh;overflow-y:auto}
+        .sidebar-logo{padding:24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E5E7EB}
+        .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#00BAAD,#00D4C8);border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:24px;height:24px;color:#FFFFFF}
+        .sidebar-logo span{font-size:16px;font-weight:600;color:#1F2937}
+        .sidebar-nav{padding:16px 12px}
+        .nav-section{margin-bottom:24px}
+        .nav-section-title{font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;padding:0 12px;margin-bottom:8px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;color:#6B7280;cursor:pointer;transition:all 0.2s;text-decoration:none}
+        .nav-item:hover{background:#F3F4F6;color:#1F2937}
+        .nav-item.active{background:linear-gradient(135deg,rgba(0,186,173,0.1),rgba(0,212,200,0.1));color:#00BAAD}
+        .nav-item svg{width:20px;height:20px;flex-shrink:0}
+        .nav-item span{font-size:14px;font-weight:500}
+        .main{margin-left:260px;flex:1;padding:24px}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+        .header-left h1{font-size:24px;font-weight:700;color:#1F2937;margin-bottom:4px}
+        .header-left p{font-size:14px;color:#6B7280}
+        .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.2s}
+        .btn-primary{background:#00BAAD;color:#FFFFFF}
+        .btn-primary:hover{background:#00A195}
+        .btn-secondary{background:#FFFFFF;border:1px solid #E5E7EB;color:#6B7280}
+        .btn-secondary:hover{border-color:#00BAAD;color:#00BAAD}
+        .btn-sm{padding:6px 12px;font-size:13px}
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
+        .stat-card{background:#FFFFFF;border-radius:16px;padding:24px;border:1px solid #E5E7EB}
+        .stat-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+        .stat-card-icon svg{width:24px;height:24px}
+        .stat-card-icon.teal{background:linear-gradient(135deg,rgba(0,186,173,0.15),rgba(0,212,200,0.15));color:#00BAAD}
+        .stat-card-icon.green{background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.1));color:#10B981}
+        .stat-card-icon.amber{background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.1));color:#F59E0B}
+        .stat-card-icon.purple{background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(139,92,246,0.1));color:#8B5CF6}
+        .stat-value{font-size:32px;font-weight:700;color:#1F2937;margin-bottom:4px}
+        .stat-label{font-size:14px;color:#6B7280}
+        .stat-trend{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:4px 8px;border-radius:20px;margin-top:8px}
+        .stat-trend.up{color:#10B981;background:rgba(16,185,129,0.1)}
+        .card{background:#FFFFFF;border-radius:16px;border:1px solid #E5E7EB;margin-bottom:24px}
+        .card-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #F3F4F6}
+        .card-title{font-size:16px;font-weight:600;color:#1F2937}
+        .card-body{padding:24px}
+        .tab-nav{display:flex;gap:8px;margin-bottom:24px;background:#FFFFFF;border-radius:16px;padding:8px;border:1px solid #E5E7EB}
+        .tab-btn{padding:12px 24px;border-radius:10px;font-size:14px;font-weight:500;color:#6B7280;cursor:pointer;border:none;background:transparent;transition:all 0.2s}
+        .tab-btn:hover{color:#1F2937;background:#F3F4F6}
+        .tab-btn.active{background:#00BAAD;color:#FFFFFF}
+        .tab-pane{display:none}
+        .tab-pane.active{display:block}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+        .form-group{margin-bottom:20px}
+        .form-label{display:block;font-size:14px;font-weight:500;color:#1F2937;margin-bottom:8px}
+        .form-label .required{color:#EF4444;margin-left:4px}
+        .form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:14px;color:#1F2937;transition:all 0.2s}
+        .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:#00BAAD;box-shadow:0 0 0 3px rgba(0,186,173,0.1)}
+        .form-textarea{resize:vertical;min-height:80px}
+        .form-hint{font-size:12px;color:#9CA3AF;margin-top:6px}
+        .rule-card{background:#F9FAFB;border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid #E5E7EB}
+        .rule-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+        .rule-title{display:flex;align-items:center;gap:12px}
+        .rule-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .rule-icon.teal{background:linear-gradient(135deg,rgba(0,186,173,0.15),rgba(0,212,200,0.15));color:#00BAAD}
+        .rule-icon.green{background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.1));color:#10B981}
+        .rule-icon.amber{background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.1));color:#F59E0B}
+        .rule-name{font-size:15px;font-weight:600;color:#1F2937}
+        .rule-points{font-size:14px;color:#00BAAD;font-weight:600}
+        .rule-desc{font-size:13px;color:#6B7280;margin-bottom:16px}
+        .rule-edit{display:flex;align-items:center;gap:12px}
+        .rule-input{width:80px;padding:6px 10px;border:1px solid #E5E7EB;border-radius:6px;font-size:14px;text-align:center}
+        .switch{position:relative;width:44px;height:24px}
+        .switch input{opacity:0;width:0;height:0}
+        .slider{position:absolute;cursor:pointer;inset:0;background:#D1D5DB;border-radius:24px;transition:0.3s}
+        .slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#FFFFFF;border-radius:50%;transition:0.3s}
+        input:checked+.slider{background:#00BAAD}
+        input:checked+.slider:before{transform:translateX(20px)}
+        .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+        .search-box{display:flex;align-items:center;gap:8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:10px 14px;flex:1;max-width:320px}
+        .search-box input{border:none;background:transparent;outline:none;font-size:14px;color:#1F2937;width:100%}
+        .search-box svg{color:#9CA3AF;width:18px;height:18px}
+        .form-select{padding:10px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:14px;color:#1F2937;background:#FFFFFF;cursor:pointer}
+        .table-wrapper{overflow-x:auto}
+        table{width:100%;border-collapse:collapse}
+        th,td{text-align:left;padding:14px 16px;border-bottom:1px solid #F3F4F6}
+        th{background:#F9FAFB;font-size:13px;font-weight:600;color:#6B7280}
+        td{font-size:14px;color:#1F2937}
+        tr:hover{background:#F9FAFB}
+        .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+        .badge-success{background:rgba(16,185,129,0.1);color:#10B981}
+        .badge-warning{background:rgba(245,158,11,0.1);color:#F59E0B}
+        .badge-danger{background:rgba(239,68,68,0.1);color:#EF4444}
+        .badge-info{background:rgba(99,102,241,0.1);color:#6366F1}
+        .badge-amber{background:rgba(245,158,11,0.1);color:#F59E0B}
+        .product-cell{display:flex;align-items:center;gap:12px}
+        .product-img{width:48px;height:48px;border-radius:8px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;color:#9CA3AF}
+        .product-img img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+        .product-name{font-weight:500}
+        .product-type{font-size:12px;color:#9CA3AF}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1000;opacity:0;transition:opacity 0.2s}
+        .modal-overlay.show{display:flex;opacity:1}
+        .modal{background:#FFFFFF;border-radius:16px;width:90%;max-width:600px;max-height:90vh;overflow:hidden;transform:scale(0.95);transition:transform 0.2s}
+        .modal-overlay.show .modal{transform:scale(1)}
+        .modal-header{padding:20px 24px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between}
+        .modal-title{font-size:18px;font-weight:600;color:#1F2937}
+        .modal-close{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9CA3AF;transition:all 0.2s}
+        .modal-close:hover{background:#F3F4F6;color:#1F2937}
+        .modal-body{padding:24px;max-height:60vh;overflow-y:auto}
+        .modal-footer{padding:16px 24px;border-top:1px solid #F3F4F6;display:flex;justify-content:flex-end;gap:12px}
+        .exchange-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+        .exchange-item{background:#F9FAFB;border-radius:10px;padding:16px;text-align:center;border:1px solid #E5E7EB}
+        .exchange-value{font-size:24px;font-weight:700;color:#00BAAD;margin-bottom:4px}
+        .exchange-label{font-size:12px;color:#6B7280}
+        .toast{position:fixed;bottom:24px;right:24px;background:#1F2937;color:#FFFFFF;padding:12px 20px;border-radius:10px;font-size:14px;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:2000}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.success{background:#10B981}
+        .toast.error{background:#EF4444}
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <span>体重管理</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">MAIN</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        <span>数据概览</span>
+                    </a>
+                    <a href="statistics.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <span>统计分析</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">CONTENT</div>
+                    <a href="health-guide.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>健康指导管理</span>
+                    </a>
+                    <a href="content.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>个性化表单管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">SYSTEM</div>
+                    <a href="points.html" class="nav-item active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                        <span>积分激励管理</span>
+                    </a>
+                    <a href="system.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span>系统管理</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">ACCOUNT</div>
+                    <a href="profile.html" class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>个人中心</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容 -->
+        <main class="main">
+            <div class="header">
+                <div class="header-left">
+                    <h1>积分激励管理</h1>
+                    <p>配置积分规则，管理积分商城和兑换审核</p>
+                </div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-icon teal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                    </div>
+                    <div class="stat-value">2,586</div>
+                    <div class="stat-label">本周积分发放</div>
+                    <div class="stat-trend up">+15%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+                    </div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">本周兑换订单</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon amber">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <div class="stat-value">38</div>
+                    <div class="stat-label">待审核订单</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    </div>
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">在架商品</div>
+                </div>
+            </div>
+
+            <!-- Tab切换 -->
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="rules">积分规则配置</button>
+                <button class="tab-btn" data-tab="mall">积分商城管理</button>
+                <button class="tab-btn" data-tab="audit">兑换审核</button>
+            </div>
+
+            <!-- Tab1: 积分规则配置 -->
+            <div class="tab-pane active" id="rules">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">积分获取规则</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="rule-card">
+                            <div class="rule-card-header">
+                                <div class="rule-title">
+                                    <div class="rule-icon teal">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="rule-name">提交健康记录</div>
+                                        <div class="rule-desc">用户每日提交体重、运动、饮食等健康记录</div>
+                                    </div>
+                                </div>
+                                <div class="rule-edit">
+                                    <input type="number" class="rule-input" id="rule-record" value="5">
+                                    <span>分/次</span>
+                                    <label class="switch">
+                                        <input type="checkbox" checked onchange="updateRule('record')">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule-card">
+                            <div class="rule-card-header">
+                                <div class="rule-title">
+                                    <div class="rule-icon green">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="rule-name">完成健康指导</div>
+                                        <div class="rule-desc">用户完成医生下发的健康指导任务</div>
+                                    </div>
+                                </div>
+                                <div class="rule-edit">
+                                    <input type="number" class="rule-input" id="rule-guide" value="10">
+                                    <span>分/次</span>
+                                    <label class="switch">
+                                        <input type="checkbox" checked onchange="updateRule('guide')">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule-card">
+                            <div class="rule-card-header">
+                                <div class="rule-title">
+                                    <div class="rule-icon amber">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="rule-name">邀请好友注册</div>
+                                        <div class="rule-desc">成功邀请新用户注册并完成首单</div>
+                                    </div>
+                                </div>
+                                <div class="rule-edit">
+                                    <input type="number" class="rule-input" id="rule-invite" value="20">
+                                    <span>分/次</span>
+                                    <label class="switch">
+                                        <input type="checkbox" checked onchange="updateRule('invite')">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rule-card">
+                            <div class="rule-card-header">
+                                <div class="rule-title">
+                                    <div class="rule-icon teal">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="rule-name">连续签到</div>
+                                        <div class="rule-desc">每日签到，连续天数越多积分越高</div>
+                                    </div>
+                                </div>
+                                <div class="rule-edit">
+                                    <input type="number" class="rule-input" id="rule-checkin" value="3">
+                                    <span>分/天</span>
+                                    <label class="switch">
+                                        <input type="checkbox" checked onchange="updateRule('checkin')">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">积分兑换规则</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">积分兑换比例</label>
+                                <div style="display:flex;align-items:center;gap:8px">
+                                    <input type="number" class="form-input" style="width:100px" id="exchange-ratio" value="100">
+                                    <span>积分 =</span>
+                                    <input type="number" class="form-input" style="width:100px" id="exchange-yuan" value="1">
+                                    <span>元</span>
+                                </div>
+                                <div class="form-hint">100积分可抵扣1元，0表示关闭积分抵扣</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">单笔最高抵扣</label>
+                                <div style="display:flex;align-items:center;gap:8px">
+                                    <input type="number" class="form-input" style="width:120px" id="max-deduct" value="10">
+                                    <span>元/笔订单</span>
+                                </div>
+                                <div class="form-hint">每笔订单最多使用积分抵扣的金额</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">积分有效期</label>
+                                <select class="form-select" id="points-expire">
+                                    <option value="365">1年</option>
+                                    <option value="180">6个月</option>
+                                    <option value="90" selected>3个月</option>
+                                    <option value="0">永久有效</option>
+                                </select>
+                                <div class="form-hint">从获得之日起计算</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">最低兑换门槛</label>
+                                <div style="display:flex;align-items:center;gap:8px">
+                                    <input type="number" class="form-input" style="width:120px" id="min-exchange" value="500">
+                                    <span>积分</span>
+                                </div>
+                                <div class="form-hint">积分达到此数值才能进行兑换</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:24px">
+                            <button class="btn btn-primary" onclick="saveRules()">保存规则配置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab2: 积分商城管理 -->
+            <div class="tab-pane" id="mall">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">商品列表</div>
+                        <button class="btn btn-primary" onclick="openProductModal()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            添加商品
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="toolbar">
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <input type="text" placeholder="搜索商品名称..." id="searchProduct" oninput="filterProducts()">
+                            </div>
+                            <select class="form-select" style="width:140px" id="typeFilter" onchange="filterProducts()">
+                                <option value="">全部类型</option>
+                                <option value="physical">实物</option>
+                                <option value="virtual">虚拟权益</option>
+                            </select>
+                            <select class="form-select" style="width:140px" id="statusFilter2" onchange="filterProducts()">
+                                <option value="">全部状态</option>
+                                <option value="on">上架</option>
+                                <option value="off">下架</option>
+                            </select>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>商品信息</th>
+                                        <th>商品类型</th>
+                                        <th>所需积分</th>
+                                        <th>库存</th>
+                                        <th>已兑换</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab3: 兑换审核 -->
+            <div class="tab-pane" id="audit">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">兑换订单列表</div>
+                        <div style="display:flex;gap:12px">
+                            <select class="form-select" style="width:140px" id="auditStatus" onchange="filterAudit()">
+                                <option value="">全部状态</option>
+                                <option value="pending">待审核</option>
+                                <option value="approved">已通过</option>
+                                <option value="rejected">已拒绝</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>订单编号</th>
+                                        <th>用户信息</th>
+                                        <th>兑换商品</th>
+                                        <th>消耗积分</th>
+                                        <th>申请时间</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 商品弹窗 -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="productModalTitle">添加商品</div>
+                <div class="modal-close" onclick="closeProductModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label class="form-label">商品名称<span class="required">*</span></label>
+                    <input type="text" class="form-input" id="productName" placeholder="如：体重秤">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">商品类型<span class="required">*</span></label>
+                        <select class="form-select" id="productType">
+                            <option value="physical">实物商品</option>
+                            <option value="virtual">虚拟权益</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">所需积分<span class="required">*</span></label>
+                        <input type="number" class="form-input" id="productPoints" placeholder="如：500">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">库存数量</label>
+                        <input type="number" class="form-input" id="productStock" placeholder="如：100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">每人限兑</label>
+                        <input type="number" class="form-input" id="productLimit" placeholder="0表示不限">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">商品描述</label>
+                    <textarea class="form-textarea" id="productDesc" placeholder="描述商品详情、兑换说明..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeProductModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveProduct()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 审核详情弹窗 -->
+    <div class="modal-overlay" id="auditModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">兑换订单详情</div>
+                <div class="modal-close" onclick="closeAuditModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+            </div>
+            <div class="modal-body" id="auditDetail"></div>
+            <div class="modal-footer" id="auditActions"></div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 商品数据
+        let products = [
+            { id: 1, name: '智能体脂秤', type: 'physical', typeName: '实物', points: 2000, stock: 50, exchanged: 28, status: 'on', desc: '精准测量体脂、肌肉量等18项数据' },
+            { id: 2, name: '运动手环', type: 'physical', typeName: '实物', points: 5000, stock: 20, exchanged: 12, status: 'on', desc: '心率监测、睡眠追踪、防水设计' },
+            { id: 3, name: '健康体检套餐', type: 'virtual', typeName: '虚拟', points: 3000, stock: 999, exchanged: 156, status: 'on', desc: '三甲医院体检套餐，可线下核销' },
+            { id: 4, name: '营养师咨询券', type: 'virtual', typeName: '虚拟', points: 800, stock: 200, exchanged: 89, status: 'on', desc: '专业营养师一对一咨询30分钟' },
+            { id: 5, name: '健身月卡', type: 'virtual', typeName: '虚拟', points: 1500, stock: 100, exchanged: 45, status: 'on', desc: '合作健身房月卡会员' },
+            { id: 6, name: '运动水壶', type: 'physical', typeName: '实物', points: 500, stock: 0, exchanged: 200, status: 'off', desc: '便携运动水杯，600ml容量' }
+        ];
+
+        // 审核数据
+        let auditOrders = [
+            { id: 'EX20260410001', user: '张女士', phone: '138****5678', product: '智能体脂秤', points: 2000, time: '2026-04-10 09:32', status: 'pending' },
+            { id: 'EX20260410002', user: '李先生', phone: '139****1234', product: '营养师咨询券', points: 800, time: '2026-04-10 10:15', status: 'pending' },
+            { id: 'EX20260410003', user: '王女士', phone: '136****9876', product: '健康体检套餐', points: 3000, time: '2026-04-10 11:28', status: 'pending' },
+            { id: 'EX20260409001', user: '赵先生', phone: '137****5432', product: '运动手环', points: 5000, time: '2026-04-09 14:20', status: 'approved' },
+            { id: 'EX20260409002', user: '刘女士', phone: '135****8765', product: '健身月卡', points: 1500, time: '2026-04-09 16:45', status: 'approved' },
+            { id: 'EX20260408001', user: '陈先生', phone: '158****2345', product: '智能体脂秤', points: 2000, time: '2026-04-08 10:30', status: 'rejected' }
+        ];
+
+        // Tab切换
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // 渲染商品列表
+        function renderProducts(data) {
+            const tbody = document.getElementById('productTableBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">暂无数据</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(p => `
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-img">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            </div>
+                            <div>
+                                <div class="product-name">${p.name}</div>
+                                <div class="product-type">${p.desc}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge ${p.type === 'physical' ? 'badge-info' : 'badge-amber'}">${p.typeName}</span></td>
+                    <td><strong style="color:#00BAAD">${p.points}</strong> 积分</td>
+                    <td>${p.stock}</td>
+                    <td>${p.exchanged}</td>
+                    <td><span class="badge ${p.status === 'on' ? 'badge-success' : 'badge-danger'}">${p.status === 'on' ? '上架' : '下架'}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})">编辑</button>
+                        <button class="btn btn-sm" style="${p.status === 'on' ? 'background:rgba(239,68,68,0.1);color:#EF4444' : 'background:#00BAAD;color:#FFF'}" onclick="toggleProduct(${p.id})">
+                            ${p.status === 'on' ? '下架' : '上架'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterProducts() {
+            const keyword = document.getElementById('searchProduct').value.toLowerCase();
+            const type = document.getElementById('typeFilter').value;
+            const status = document.getElementById('statusFilter2').value;
+            const filtered = products.filter(p => {
+                return p.name.toLowerCase().includes(keyword) && (!type || p.type === type) && (!status || p.status === status);
+            });
+            renderProducts(filtered);
+        }
+
+        // 渲染审核列表
+        function renderAudit(data) {
+            const tbody = document.getElementById('auditTableBody');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">暂无数据</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(o => `
+                <tr>
+                    <td><strong>${o.id}</strong></td>
+                    <td>
+                        <div>${o.user}</div>
+                        <div style="font-size:12px;color:#9CA3AF">${o.phone}</div>
+                    </td>
+                    <td>${o.product}</td>
+                    <td><strong style="color:#00BAAD">${o.points}</strong></td>
+                    <td>${o.time}</td>
+                    <td><span class="badge ${o.status === 'pending' ? 'badge-warning' : o.status === 'approved' ? 'badge-success' : 'badge-danger'}">${o.status === 'pending' ? '待审核' : o.status === 'approved' ? '已通过' : '已拒绝'}</span></td>
+                    <td>
+                        ${o.status === 'pending' ? `
+                            <button class="btn btn-primary btn-sm" onclick="showAuditDetail('${o.id}', 'approve')">通过</button>
+                            <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:#EF4444" onclick="showAuditDetail('${o.id}', 'reject')">拒绝</button>
+                        ` : `
+                            <button class="btn btn-secondary btn-sm" onclick="showAuditDetail('${o.id}')">详情</button>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterAudit() {
+            const status = document.getElementById('auditStatus').value;
+            const filtered = auditOrders.filter(o => !status || o.status === status);
+            renderAudit(filtered);
+        }
+
+        function showAuditDetail(id, action = null) {
+            const order = auditOrders.find(o => o.id === id);
+            const detail = document.getElementById('auditDetail');
+            const actions = document.getElementById('auditActions');
+            
+            detail.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">订单编号</label>
+                        <div style="padding:10px;background:#F9FAFB;border-radius:8px">${order.id}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">申请时间</label>
+                        <div style="padding:10px;background:#F9FAFB;border-radius:8px">${order.time}</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">用户姓名</label>
+                        <div style="padding:10px;background:#F9FAFB;border-radius:8px">${order.user}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">手机号</label>
+                        <div style="padding:10px;background:#F9FAFB;border-radius:8px">${order.phone}</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">兑换商品</label>
+                        <div style="padding:10px;background:#F9FAFB;border-radius:8px">${order.product}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">消耗积分</label>
+                        <div style="padding:10px;background:#F9FAFB;border-radius:8px;color:#00BAAD;font-weight:600">${order.points} 积分</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">当前状态</label>
+                    <span class="badge ${order.status === 'pending' ? 'badge-warning' : order.status === 'approved' ? 'badge-success' : 'badge-danger'}">${order.status === 'pending' ? '待审核' : order.status === 'approved' ? '已通过' : '已拒绝'}</span>
+                </div>
+            `;
+
+            if (action === 'approve') {
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="closeAuditModal()">取消</button>
+                    <button class="btn btn-primary" onclick="auditOrder('${id}', 'approved')">确认通过</button>
+                `;
+            } else if (action === 'reject') {
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="closeAuditModal()">取消</button>
+                    <button class="btn" style="background:#EF4444;color:#FFF" onclick="auditOrder('${id}', 'rejected')">确认拒绝</button>
+                `;
+            } else {
+                actions.innerHTML = `<button class="btn btn-secondary" onclick="closeAuditModal()">关闭</button>`;
+            }
+
+            document.getElementById('auditModal').classList.add('show');
+        }
+
+        function closeAuditModal() {
+            document.getElementById('auditModal').classList.remove('show');
+        }
+
+        function auditOrder(id, status) {
+            const order = auditOrders.find(o => o.id === id);
+            if (order) {
+                order.status = status;
+                renderAudit(auditOrders);
+                closeAuditModal();
+                showToast(status === 'approved' ? '订单已通过' : '订单已拒绝', 'success');
+            }
+        }
+
+        // 商品弹窗
+        function openProductModal(id = null) {
+            const modal = document.getElementById('productModal');
+            if (id) {
+                document.getElementById('productModalTitle').textContent = '编辑商品';
+                const p = products.find(pro => pro.id === id);
+                document.getElementById('productId').value = p.id;
+                document.getElementById('productName').value = p.name;
+                document.getElementById('productType').value = p.type;
+                document.getElementById('productPoints').value = p.points;
+                document.getElementById('productStock').value = p.stock;
+                document.getElementById('productLimit').value = p.limit || 0;
+                document.getElementById('productDesc').value = p.desc;
+            } else {
+                document.getElementById('productModalTitle').textContent = '添加商品';
+                document.getElementById('productId').value = '';
+                document.getElementById('productName').value = '';
+                document.getElementById('productType').value = 'physical';
+                document.getElementById('productPoints').value = '';
+                document.getElementById('productStock').value = '';
+                document.getElementById('productLimit').value = '0';
+                document.getElementById('productDesc').value = '';
+            }
+            modal.classList.add('show');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('show');
+        }
+
+        function editProduct(id) { openProductModal(id); }
+
+        function toggleProduct(id) {
+            const p = products.find(pro => pro.id === id);
+            if (p) {
+                p.status = p.status === 'on' ? 'off' : 'on';
+                filterProducts();
+                showToast(`商品已${p.status === 'on' ? '上架' : '下架'}`, 'success');
+            }
+        }
+
+        function saveProduct() {
+            const id = document.getElementById('productId').value;
+            const name = document.getElementById('productName').value.trim();
+            const type = document.getElementById('productType').value;
+            const points = parseInt(document.getElementById('productPoints').value);
+            const stock = parseInt(document.getElementById('productStock').value) || 0;
+            const desc = document.getElementById('productDesc').value.trim();
+
+            if (!name) { showToast('请输入商品名称', 'error'); return; }
+            if (!points || points <= 0) { showToast('请输入正确的积分数量', 'error'); return; }
+
+            const typeName = type === 'physical' ? '实物' : '虚拟';
+
+            if (id) {
+                const p = products.find(pro => pro.id === parseInt(id));
+                p.name = name; p.type = type; p.typeName = typeName;
+                p.points = points; p.stock = stock; p.desc = desc;
+                showToast('商品已更新', 'success');
+            } else {
+                products.unshift({
+                    id: Date.now(), name, type, typeName, points, stock,
+                    exchanged: 0, status: 'on', desc
+                });
+                showToast('商品已添加', 'success');
+            }
+            filterProducts();
+            closeProductModal();
+        }
+
+        function updateRule(key) {
+            showToast('规则已更新', 'success');
+        }
+
+        function saveRules() {
+            showToast('规则配置已保存', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // 初始化
+        renderProducts(products);
+        renderAudit(auditOrders);
+    </script>
+</body>
+</html>
