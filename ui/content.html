@@ -261,9 +261,11 @@
                     <div class="form-group">
                         <label class="form-label">表单类型<span class="required">*</span></label>
                         <select class="form-select" id="formType">
-                            <option value="review">复盘类</option>
-                            <option value="survey">调查类</option>
-                            <option value="record">记录类</option>
+                            <option value="tcm">中医体质类</option>
+                            <option value="tongue">舌苔识别类</option>
+                            <option value="lifestyle">生活方式评估类</option>
+                            <option value="exercise">运动能力评估类</option>
+                            <option value="medical">医学检查评估类</option>
                         </select>
                     </div>
                 </div>
@@ -345,60 +347,91 @@
     <script>
         let formData = [
             {
-                id: 1, name: '周减重复盘表', type: 'review', typeName: '复盘类', description: '每周减重数据进行复盘总结',
+                id: 1, name: '中医体质识别问卷', type: 'tcm', typeName: '中医体质类', description: '依据《中医体质分类与判定》标准，通过选项问答识别平和质、气虚质、阳虚质等九种体质类型',
                 fields: [
-                    { name: '本周起始体重', type: 'number', required: true, placeholder: '单位：kg' },
-                    { name: '本周结束体重', type: 'number', required: true, placeholder: '单位：kg' },
-                    { name: '本周运动情况', type: 'textarea', required: false, placeholder: '描述本周运动情况' },
-                    { name: '本周饮食情况', type: 'textarea', required: false, placeholder: '描述本周饮食情况' },
-                    { name: '遇到的问题', type: 'text', required: false, placeholder: '本周遇到哪些困难' },
-                    { name: '下周计划', type: 'textarea', required: false, placeholder: '下周减重计划' }
+                    { name: '您是否经常感到手脚心发热？', type: 'radio', required: true, options: ['从不', '很少', '有时', '经常', '总是'] },
+                    { name: '您是否容易疲乏、气短懒言？', type: 'radio', required: true, options: ['从不', '很少', '有时', '经常', '总是'] },
+                    { name: '您是否畏寒怕冷、手脚冰凉？', type: 'radio', required: true, options: ['从不', '很少', '有时', '经常', '总是'] },
+                    { name: '您是否情绪不稳定、容易焦虑？', type: 'radio', required: true, options: ['从不', '很少', '有时', '经常', '总是'] },
+                    { name: '您的体型属于哪种？', type: 'radio', required: true, options: ['偏瘦', '正常', '偏胖', '肥胖'] },
+                    { name: '您是否经常失眠、多梦？', type: 'radio', required: false, options: ['从不', '很少', '有时', '经常', '总是'] },
+                    { name: '您的面色属于哪种？', type: 'select', required: true, options: ['红润', '偏白', '偏黄', '偏青', '偏红', '晦暗'] },
+                    { name: '您的大便情况如何？', type: 'select', required: true, options: ['正常', '稀溏', '干结', '黏腻', '先干后稀'] },
+                    { name: '中医体质自评补充说明', type: 'textarea', required: false, placeholder: '如有其他不适症状请在此描述' }
                 ],
-                usageCount: 156, status: 'active', createTime: '2026-03-15'
+                usageCount: 412, status: 'active', createTime: '2026-03-01'
             },
             {
-                id: 2, name: '饮食依从性调查表', type: 'survey', typeName: '调查类', description: '调查患者饮食执行情况',
+                id: 2, name: '舌苔识别评估表', type: 'tongue', typeName: '舌苔识别类', description: '通过舌象特征选项问答，辅助判断体内寒热、虚实、湿燥等病理状态',
                 fields: [
-                    { name: '是否按计划饮食', type: 'radio', required: true, options: ['完全按计划', '偶尔偏离', '经常偏离'] },
-                    { name: '每日主食摄入量', type: 'select', required: true, options: ['过多', '适量', '过少'] },
-                    { name: '每日蔬果摄入量', type: 'select', required: true, options: ['过多', '适量', '过少'] },
-                    { name: '高热量食物摄入频率', type: 'radio', required: true, options: ['从不', '偶尔', '经常'] },
-                    { name: '饮食习惯改进建议', type: 'textarea', required: false, placeholder: '您的改进建议' }
+                    { name: '舌质颜色属于哪种？', type: 'radio', required: true, options: ['淡红', '淡白', '红', '绛红', '紫暗', '青紫'] },
+                    { name: '舌体形态如何？', type: 'radio', required: true, options: ['正常大小', '舌体胖大', '舌体瘦小', '舌体有齿痕', '舌体裂纹'] },
+                    { name: '舌苔颜色属于哪种？', type: 'radio', required: true, options: ['薄白苔', '白苔', '黄苔', '灰黑苔', '其他'] },
+                    { name: '舌苔厚薄程度？', type: 'radio', required: true, options: ['薄苔', '略厚', '厚苔', '腻苔', '剥落苔'] },
+                    { name: '舌下络脉颜色？', type: 'select', required: true, options: ['淡红', '紫暗', '青紫', '曲张增粗', '正常'] },
+                    { name: '是否伴有口干口苦？', type: 'radio', required: false, options: ['无', '轻度', '中度', '重度'] },
+                    { name: '晨起舌苔观察补充', type: 'textarea', required: false, placeholder: '晨起未刷牙前舌苔状态补充说明' }
                 ],
-                usageCount: 89, status: 'active', createTime: '2026-03-10'
+                usageCount: 328, status: 'active', createTime: '2026-03-05'
             },
             {
-                id: 3, name: '月度体测记录表', type: 'record', typeName: '记录类', description: '记录每月体测各项指标',
+                id: 3, name: '生活方式评估问卷', type: 'lifestyle', typeName: '生活方式评估类', description: '全面评估饮食、睡眠、情绪、烟酒等生活习惯，为个性化健康指导提供依据',
                 fields: [
-                    { name: '身高', type: 'number', required: true, placeholder: '单位：cm' },
-                    { name: '体重', type: 'number', required: true, placeholder: '单位：kg' },
-                    { name: '体脂率', type: 'number', required: true, placeholder: '单位：%' },
-                    { name: '腰围', type: 'number', required: false, placeholder: '单位：cm' },
-                    { name: '臀围', type: 'number', required: false, placeholder: '单位：cm' },
-                    { name: '测量日期', type: 'date', required: true }
+                    { name: '您的饮食习惯以哪种为主？', type: 'radio', required: true, options: ['清淡素食', '荤素均衡', '偏肉食', '重口味', '不定时暴食'] },
+                    { name: '每日睡眠时长？', type: 'radio', required: true, options: ['<6小时', '6-7小时', '7-8小时', '>8小时'] },
+                    { name: '睡眠质量如何？', type: 'radio', required: true, options: ['很好', '较好', '一般', '较差', '很差'] },
+                    { name: '每周运动频率？', type: 'radio', required: true, options: ['从不运动', '1-2次', '3-4次', '5次以上'] },
+                    { name: '平均每日久坐时长？', type: 'radio', required: true, options: ['<2小时', '2-4小时', '4-6小时', '>6小时'] },
+                    { name: '是否吸烟？', type: 'radio', required: true, options: ['从不', '偶尔', '每天少量', '每天一包以上'] },
+                    { name: '饮酒频率？', type: 'radio', required: true, options: ['从不', '偶尔聚会', '每周1-2次', '每周3次以上'] },
+                    { name: '近期最大压力来源？', type: 'select', required: false, options: ['工作', '家庭', '经济', '健康', '人际关系', '无明显压力'] },
+                    { name: '生活习惯改进计划', type: 'textarea', required: false, placeholder: '您计划如何改善生活习惯？' }
                 ],
-                usageCount: 45, status: 'active', createTime: '2026-03-08'
+                usageCount: 276, status: 'active', createTime: '2026-03-08'
             },
             {
-                id: 4, name: '运动日志表', type: 'record', typeName: '记录类', description: '记录每日运动详情',
+                id: 4, name: '运动能力评估表', type: 'exercise', typeName: '运动能力评估类', description: '评估心肺功能、柔韧性、肌力、平衡能力等，制定安全有效的运动方案',
                 fields: [
-                    { name: '运动日期', type: 'date', required: true },
-                    { name: '运动类型', type: 'select', required: true, options: ['有氧运动', '力量训练', '柔韧性训练', '其他'] },
-                    { name: '运动时长', type: 'number', required: true, placeholder: '单位：分钟' },
-                    { name: '运动强度', type: 'radio', required: true, options: ['低强度', '中强度', '高强度'] },
-                    { name: '完成情况', type: 'textarea', required: false, placeholder: '描述完成情况' }
+                    { name: '6分钟步行测试距离（米）？', type: 'number', required: true, placeholder: '请输入测试距离' },
+                    { name: '静息心率（次/分）？', type: 'number', required: true, placeholder: '安静状态下测量' },
+                    { name: '血压情况？', type: 'select', required: true, options: ['正常', '正常高值', '1级高血压', '2级高血压', '不详'] },
+                    { name: '心肺功能等级？', type: 'radio', required: true, options: ['优秀', '良好', '中等', '较差', '差'] },
+                    { name: '柔韧性测试（坐位体前屈 cm）？', type: 'number', required: false, placeholder: '指尖前伸距离' },
+                    { name: '握力测试（公斤）？', type: 'number', required: false, placeholder: '优势手测量' },
+                    { name: '平衡能力测试', type: 'radio', required: true, options: ['单脚站立>60秒', '单脚站立30-60秒', '单脚站立<30秒', '无法完成'] },
+                    { name: '是否有运动禁忌症？', type: 'radio', required: true, options: ['无', '心脏病', '骨关节疾病', '高血压', '其他'] },
+                    { name: '运动能力评估备注', type: 'textarea', required: false, placeholder: '其他运动能力相关说明' }
                 ],
-                usageCount: 203, status: 'active', createTime: '2026-02-28'
+                usageCount: 189, status: 'active', createTime: '2026-03-10'
             },
             {
-                id: 5, name: '减重目标评估表', type: 'survey', typeName: '调查类', description: '评估患者减重目标设定情况',
+                id: 5, name: '医学检查评估表', type: 'medical', typeName: '医学检查评估类', description: '录入血常规、生化、影像等医学检查指标，评估肥胖相关代谢异常',
                 fields: [
-                    { name: '目标体重', type: 'number', required: true, placeholder: '单位：kg' },
-                    { name: '目标周期', type: 'select', required: true, options: ['1个月', '3个月', '6个月', '12个月'] },
-                    { name: '减重动力', type: 'checkbox', required: true, options: ['健康原因', '外形美观', '医生建议', '其他'] },
-                    { name: '预期困难', type: 'textarea', required: false, placeholder: '预计会遇到哪些困难' }
+                    { name: '空腹血糖（mmol/L）？', type: 'number', required: true, placeholder: '请输入空腹血糖值' },
+                    { name: '糖化血红蛋白（%）？', type: 'number', required: false, placeholder: 'HbA1c 值' },
+                    { name: '总胆固醇（mmol/L）？', type: 'number', required: true, placeholder: 'TC 值' },
+                    { name: '甘油三酯（mmol/L）？', type: 'number', required: true, placeholder: 'TG 值' },
+                    { name: '高密度脂蛋白（mmol/L）？', type: 'number', required: false, placeholder: 'HDL-C 值' },
+                    { name: '低密度脂蛋白（mmol/L）？', type: 'number', required: false, placeholder: 'LDL-C 值' },
+                    { name: '谷丙转氨酶（U/L）？', type: 'number', required: false, placeholder: 'ALT 值' },
+                    { name: '尿酸（μmol/L）？', type: 'number', required: false, placeholder: 'UA 值' },
+                    { name: '肝胆脾胰B超结果？', type: 'select', required: false, options: ['正常', '脂肪肝（轻度）', '脂肪肝（中度）', '脂肪肝（重度）', '其他异常', '未做'] },
+                    { name: '医学检查综合评估', type: 'textarea', required: true, placeholder: '医生综合评估意见与建议' }
                 ],
-                usageCount: 67, status: 'inactive', createTime: '2026-02-20'
+                usageCount: 157, status: 'active', createTime: '2026-03-12'
+            },
+            {
+                id: 6, name: '综合健康风险评估表', type: 'tcm', typeName: '中医体质类', description: '整合体质、舌象、生活方式、检查指标等多维度数据，综合评估健康风险等级',
+                fields: [
+                    { name: 'BMI 值（kg/m²）？', type: 'number', required: true, placeholder: '体重÷身高²' },
+                    { name: '腰围（cm）？', type: 'number', required: true, placeholder: '脐平面水平周长' },
+                    { name: '体质类型初步判定？', type: 'select', required: true, options: ['平和质', '气虚质', '阳虚质', '阴虚质', '痰湿质', '湿热质', '血瘀质', '气郁质', '特禀质'] },
+                    { name: '舌象综合评估？', type: 'select', required: true, options: ['正常', '偏热象', '偏寒象', '偏虚象', '偏实象', '湿浊内蕴', '气血两虚', '瘀血阻络'] },
+                    { name: '生活方式评分（0-100）？', type: 'number', required: false, placeholder: '根据问卷综合打分' },
+                    { name: '代谢综合征风险等级？', type: 'radio', required: true, options: ['低风险', '中风险', '高风险', '极高风险'] },
+                    { name: '综合健康风险评估结论', type: 'textarea', required: true, placeholder: '综合以上指标，给出健康管理建议' }
+                ],
+                usageCount: 94, status: 'active', createTime: '2026-03-15'
             }
         ];
 
@@ -578,7 +611,7 @@
             const description = document.getElementById('formDesc').value.trim();
             if (!name) { showToast('请输入表单名称', 'error'); return; }
             if (currentFields.length === 0) { showToast('请至少添加一个字段', 'error'); return; }
-            const typeNames = { 'review': '复盘类', 'survey': '调查类', 'record': '记录类' };
+            const typeNames = { 'tcm': '中医体质类', 'tongue': '舌苔识别类', 'lifestyle': '生活方式评估类', 'exercise': '运动能力评估类', 'medical': '医学检查评估类' };
             if (id) {
                 const form = formData.find(f => f.id === parseInt(id));
                 form.name = name; form.type = type; form.typeName = typeNames[type];
