@@ -94,6 +94,12 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
 .recipe-detail-footer{margin-top:16px;padding-top:16px;border-top:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center}
 .recipe-detail-tags{display:flex;gap:8px;flex-wrap:wrap}
 .recipe-tag{padding:4px 10px;background:#F3F4F6;color:#6B7280;border-radius:4px;font-size:12px}
+.recipe-tabs-row{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid #E5E7EB;margin-bottom:20px}
+.recipe-tab-btn{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;background:#F3F4F6;color:#6B7280;border:1px solid transparent;transition:all 0.2s}
+.recipe-tab-btn:hover{background:#E5E7EB;color:#374151}
+.recipe-tab-btn.active{background:#00BAAD;color:#FFFFFF}
+.recipe-tab-content{display:none}
+.recipe-tab-content.active{display:block}
 .recipe-person-info{display:flex;gap:20px}
 .recipe-person-info span{font-size:13px;color:#6B7280}
 .chart-div{height:280px}
@@ -2257,49 +2263,70 @@ function closeGuideDetailModal(){
 
 // 特殊人群食谱详情弹窗
 function openSpecialRecipeModal(id){
-  var data=specialRecipeDetail[id];
-  if(!data)return;
-  var typeClass=data.type==='婴幼儿'?'baby':data.type==='老年人'?'elder':data.type==='孕产妇'?'pregnant':'patient';
-  var html='<div class="recipe-detail-header">'+
-    '<span class="recipe-detail-badge '+typeClass+'">'+data.type+'</span>'+
-    '<div><strong>'+data.name+'</strong><br><span style="font-size:12px;color:#6B7280">适用年龄：'+data.age+' | 每日热量：'+data.calorie+' kcal</span></div>'+
-  '</div>'+
-  '<div class="recipe-nutrition-row">'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.totalCalorie+'</div><div class="unit">kcal</div><div class="label">每日总热量</div></div>'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.protein+'g</div><div class="unit">克</div><div class="label">蛋白质</div></div>'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.carb+'g</div><div class="unit">克</div><div class="label">碳水化合物</div></div>'+
-    '<div class="recipe-nutrition-item"><div class="num">'+data.fat+'g</div><div class="unit">克</div><div class="label">脂肪</div></div>'+
-  '</div>'+
-  '<h4 style="font-size:14px;color:#1F2937;margin-bottom:12px">每日三餐搭配</h4>'+
-  '<div class="recipe-meals-grid">';
-  data.meals.forEach(function(meal){
-    html+='<div class="recipe-meal-card">'+
-      '<div class="meal-title"><span class="meal-icon '+meal.icon+'">'+meal.title.charAt(0)+'</span>'+meal.title+'</div>'+
-      '<div class="meal-cal">热量：'+meal.cal+' kcal</div>'+
-      '<div class="meal-foods">'+meal.foods+'</div>'+
-      '<div class="meal-tips">'+meal.tips+'</div>'+
+  var row=specialData[id];
+  if(!row)return;
+  var type=row.type;
+  // 找出同类型的所有食谱
+  var recipes=[];
+  specialRecipeDetail.forEach(function(r){if(r.type===type)recipes.push(r);});
+  if(recipes.length===0)return;
+  // 生成食谱标签
+  var tabsHtml='';
+  recipes.forEach(function(r,i){
+    tabsHtml+='<span class="recipe-tab-btn'+(i===0?' active':'')+'" onclick="switchRecipeTab(this,\''+type+'\','+i+')">'+r.name+'</span>';
+  });
+  var html='<div class="recipe-tabs-row">'+tabsHtml+'</div>';
+  // 生成食谱内容（多个）
+  recipes.forEach(function(r,i){
+    var typeClass=r.type==='婴幼儿'?'baby':r.type==='老年人'?'elder':r.type==='孕产妇'?'pregnant':'patient';
+    html+='<div class="recipe-tab-content'+(i===0?' active':'')+'" id="recipe-tab-'+type.replace(/\s/g,'')+'-'+i+'">'+
+      '<div class="recipe-detail-header">'+
+        '<span class="recipe-detail-badge '+typeClass+'">'+r.type+'</span>'+
+        '<div><strong>'+r.name+'</strong><br><span style="font-size:12px;color:#6B7280">适用年龄：'+r.age+' | 每日热量：'+r.calorie+' kcal</span></div>'+
+      '</div>'+
+      '<div class="recipe-nutrition-row">'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.totalCalorie+'</div><div class="unit">kcal</div><div class="label">每日总热量</div></div>'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.protein+'g</div><div class="unit">克</div><div class="label">蛋白质</div></div>'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.carb+'g</div><div class="unit">克</div><div class="label">碳水化合物</div></div>'+
+        '<div class="recipe-nutrition-item"><div class="num">'+r.fat+'g</div><div class="unit">克</div><div class="label">脂肪</div></div>'+
+      '</div>'+
+      '<h4 style="font-size:14px;color:#1F2937;margin-bottom:12px">每日三餐搭配</h4>'+
+      '<div class="recipe-meals-grid">';
+    r.meals.forEach(function(meal){
+      html+='<div class="recipe-meal-card">'+
+        '<div class="meal-title"><span class="meal-icon '+meal.icon+'">'+meal.title.charAt(0)+'</span>'+meal.title+'</div>'+
+        '<div class="meal-cal">热量：'+meal.cal+' kcal</div>'+
+        '<div class="meal-foods">'+meal.foods+'</div>'+
+        '<div class="meal-tips">'+meal.tips+'</div>'+
+      '</div>';
+    });
+    html+='</div>'+
+      '<div class="recipe-cooking-steps">'+
+        '<h4>制作要点</h4><ol>';
+    r.steps.forEach(function(step){html+='<li>'+step+'</li>';});
+    html+='</ol></div>'+
+      '<div class="recipe-tips-box">'+
+        '<h4>营养师建议</h4><p>'+r.tips+'</p>'+
+      '</div>'+
+      '<div class="recipe-detail-footer">'+
+        '<div class="recipe-detail-tags">'+
+          '<span class="recipe-tag">'+r.nutrient+'</span>'+
+          '<span class="recipe-tag">'+r.age+'</span>'+
+        '</div>'+
+      '</div>'+
     '</div>';
   });
-  html+='</div>'+
-  '<div class="recipe-cooking-steps">'+
-    '<h4>制作要点</h4>'+
-    '<ol>';
-  data.steps.forEach(function(step){
-    html+='<li>'+step+'</li>';
-  });
-  html+='</ol></div>'+
-  '<div class="recipe-tips-box">'+
-    '<h4>营养师建议</h4>'+
-    '<p>'+data.tips+'</p>'+
-  '</div>'+
-  '<div class="recipe-detail-footer">'+
-    '<div class="recipe-detail-tags">'+
-      '<span class="recipe-tag">'+data.nutrient+'</span>'+
-      '<span class="recipe-tag">'+data.age+'</span>'+
-    '</div>'+
-  '</div>';
   document.getElementById('special-recipe-content').innerHTML=html;
   document.getElementById('special-recipe-modal').classList.add('show');
+}
+// 食谱标签切换
+function switchRecipeTab(btn,type,idx){
+  document.querySelectorAll('.recipe-tab-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.querySelectorAll('.recipe-tab-content').forEach(function(c){c.classList.remove('active')});
+  var id='recipe-tab-'+type.replace(/\s/g,'')+'-'+idx;
+  var el=document.getElementById(id);
+  if(el)el.classList.add('active');
 }
 function closeSpecialRecipeModal(){
   document.getElementById('special-recipe-modal').classList.remove('show');
