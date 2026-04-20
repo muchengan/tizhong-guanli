@@ -32,7 +32,7 @@
         .time-filter button{padding:8px 16px;border:none;background:none;border-radius:8px;font-size:13px;color:#6B7280;cursor:pointer;transition:all 0.2s;font-family:inherit}
         .time-filter button:hover{color:#1F2937}
         .time-filter button.active{background:#00BAAD;color:#FFFFFF;font-weight:500}
-        .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-bottom:24px}
+        .stats-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:16px;margin-bottom:24px}
         .stat-card{background:#FFFFFF;border-radius:16px;padding:24px;border:1px solid #E5E7EB;transition:all 0.3s}
         .stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.06);transform:translateY(-2px)}
         .stat-card-header{display:flex;justify-content:space-between;margin-bottom:16px}
@@ -43,6 +43,8 @@
         .stat-card-icon.amber{background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.1));color:#F59E0B}
         .stat-card-icon.red{background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.1));color:#EF4444}
         .stat-card-icon.purple{background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(139,92,246,0.1));color:#8B5CF6}
+        .stat-card-icon.indigo{background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(99,102,241,0.1));color:#6366F1}
+        .stat-card-icon.sky{background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(14,165,233,0.1));color:#0EA5E9}
         .stat-trend{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:4px 8px;border-radius:20px}
         .stat-trend.up{color:#10B981;background:rgba(16,185,129,0.1)}
         .stat-trend.down{color:#EF4444;background:rgba(239,68,68,0.1)}
@@ -184,6 +186,22 @@
                     </div>
                     <div class="stat-value">24.6</div>
                     <div class="stat-label">区域平均BMI</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span class="stat-trend up">+3.2%</span>
+                    </div>
+                    <div class="stat-value" id="kpi-weight-reach">68.7%</div>
+                    <div class="stat-label">体重达标率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                        <span class="stat-trend up">+2.8%</span>
+                    </div>
+                    <div class="stat-value" id="kpi-waist-reach">61.4%</div>
+                    <div class="stat-label">腰围达标率</div>
                 </div>
             </div>
             <!-- 超重肥胖细分 -->
@@ -706,7 +724,11 @@
                     overweightRate: '58.3%',
                     overweightTrend: '-2.1%',
                     avgBMI: '24.6',
-                    bmiTrend: '-0.3'
+                    bmiTrend: '-0.3',
+                    weightReach: '68.7%',
+                    weightReachTrend: '+3.2%',
+                    waistReach: '61.4%',
+                    waistReachTrend: '+2.8%'
                 },
                 overweightData: { overweight: '32.1%', overweightCount: '15,625', obese: '26.2%', obeseCount: '12,748' },
                 bmiDistribution: [1200, 2800, 4200, 5800, 6500, 5200, 3800, 2100],
@@ -726,7 +748,11 @@
                     overweightRate: '57.8%',
                     overweightTrend: '-3.2%',
                     avgBMI: '24.5',
-                    bmiTrend: '-0.4'
+                    bmiTrend: '-0.4',
+                    weightReach: '69.5%',
+                    weightReachTrend: '+3.8%',
+                    waistReach: '62.1%',
+                    waistReachTrend: '+3.1%'
                 },
                 overweightData: { overweight: '31.8%', overweightCount: '15,472', obese: '26.0%', obeseCount: '12,655' },
                 bmiDistribution: [1800, 3500, 5200, 6500, 5800, 4200, 2500, 1500],
@@ -746,7 +772,11 @@
                     overweightRate: '56.5%',
                     overweightTrend: '-5.8%',
                     avgBMI: '24.3',
-                    bmiTrend: '-0.6'
+                    bmiTrend: '-0.6',
+                    weightReach: '71.2%',
+                    weightReachTrend: '+4.5%',
+                    waistReach: '63.8%',
+                    waistReachTrend: '+4.2%'
                 },
                 overweightData: { overweight: '31.2%', overweightCount: '15,185', obese: '25.3%', obeseCount: '12,314' },
                 bmiDistribution: [2200, 4200, 5800, 6800, 5500, 3800, 2200, 1200],
@@ -766,7 +796,11 @@
                     overweightRate: '55.2%',
                     overweightTrend: '-8.6%',
                     avgBMI: '24.1',
-                    bmiTrend: '-0.8'
+                    bmiTrend: '-0.8',
+                    weightReach: '73.6%',
+                    weightReachTrend: '+6.1%',
+                    waistReach: '65.9%',
+                    waistReachTrend: '+5.8%'
                 },
                 overweightData: { overweight: '30.5%', overweightCount: '14,845', obese: '24.7%', obeseCount: '12,018' },
                 bmiDistribution: [2800, 4800, 6200, 7200, 5800, 4200, 2500, 1400],
@@ -786,7 +820,11 @@
                     overweightRate: '52.8%',
                     overweightTrend: '-12.5%',
                     avgBMI: '23.8',
-                    bmiTrend: '-1.2'
+                    bmiTrend: '-1.2',
+                    weightReach: '76.3%',
+                    weightReachTrend: '+8.4%',
+                    waistReach: '68.5%',
+                    waistReachTrend: '+7.6%'
                 },
                 overweightData: { overweight: '29.2%', overweightCount: '14,212', obese: '23.6%', obeseCount: '11,487' },
                 bmiDistribution: [3200, 5200, 6800, 7800, 6200, 4500, 2800, 1500],
@@ -802,11 +840,12 @@
             var data = timeFilterData[period];
             if (!data) return;
 
-            // 更新统计卡片
-            var statCards = document.querySelectorAll('.stat-card');
+            // 更新统计卡片（原有5个）
+            var statCards = document.querySelectorAll('.stats-grid .stat-card');
             var stats = [data.stats.totalUsers, data.stats.newUsers, data.stats.activeUsers, data.stats.overweightRate, data.stats.avgBMI];
             var trends = [data.stats.totalTrend, data.stats.newTrend, data.stats.activeTrend, data.stats.overweightTrend, data.stats.bmiTrend];
             statCards.forEach(function(card, index) {
+                if (index >= 5) return; // 跳过新增的2个卡片，避免被覆盖
                 var value = card.querySelector('.stat-value');
                 var trend = card.querySelector('.stat-trend');
                 if (value) value.textContent = stats[index] || '';
@@ -815,6 +854,15 @@
                     trend.className = 'stat-trend ' + (trends[index].indexOf('-') === 0 ? 'down' : 'up');
                 }
             });
+            // 更新体重达标率、腰围达标率（新增卡片，按id精准更新）
+            var kwEl = document.getElementById('kpi-weight-reach');
+            var kwTrEl = kwEl && kwEl.closest('.stat-card') && kwEl.closest('.stat-card').querySelector('.stat-trend');
+            if (kwEl) kwEl.textContent = data.stats.weightReach || '';
+            if (kwTrEl) { kwTrEl.textContent = data.stats.weightReachTrend || ''; kwTrEl.className = 'stat-trend up'; }
+            var wzEl = document.getElementById('kpi-waist-reach');
+            var wzTrEl = wzEl && wzEl.closest('.stat-card') && wzEl.closest('.stat-card').querySelector('.stat-trend');
+            if (wzEl) wzEl.textContent = data.stats.waistReach || '';
+            if (wzTrEl) { wzTrEl.textContent = data.stats.waistReachTrend || ''; wzTrEl.className = 'stat-trend up'; }
 
             // 更新超重肥胖细分
             var overweightCards = document.querySelectorAll('.weight-breakdown .stat-card');
