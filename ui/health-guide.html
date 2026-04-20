@@ -257,7 +257,7 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
         <div class="page-header">
             <div class="page-header-left">
                 <h1>健康指导管理</h1>
-                <p>热量换算 · 营养数据库 · 特殊人群指导 · 健身减脂 · 营养知识科普</p>
+                <p>热量换算 · 营养数据库 · 特殊人群指导 · 健身减脂 · 营养知识科普 · 运动项目管理</p>
             </div>
         </div>
 
@@ -269,6 +269,7 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
             <button class="tab-btn" data-tab="special">特殊人群饮食指导</button>
             <button class="tab-btn" data-tab="fitness">健身减脂</button>
             <button class="tab-btn" data-tab="knowledge">营养知识科普</button>
+            <button class="tab-btn" data-tab="exercise">运动项目管理</button>
         </div>
 
         <!-- Tab1: 综合概览 -->
@@ -978,6 +979,137 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
                 </div>
             </div>
         </div>
+
+        <!-- Tab7: 运动项目管理 -->
+        <div class="tab-content" id="tab-exercise">
+            <div class="banner" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">
+                <div class="banner-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <div class="banner-content">
+                    <h3>运动项目管理</h3>
+                    <p>管理各类运动项目配置，包含热量消耗参数、强度等级划分及适用人群设置，为用户提供科学的运动指导方案。</p>
+                </div>
+            </div>
+
+            <!-- KPI卡片 -->
+            <div class="kpi-grid" style="margin-bottom:24px">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        </div>
+                        <div class="kpi-trend up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+6</div>
+                    </div>
+                    <div class="kpi-value">24</div>
+                    <div class="kpi-label">运动项目总数</div>
+                    <div class="kpi-sub">本月新增 6</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#34D399)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="kpi-trend up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+2</div>
+                    </div>
+                    <div class="kpi-value">18</div>
+                    <div class="kpi-label">已启用项目</div>
+                    <div class="kpi-sub">禁用 6 项</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#6366F1,#818CF8)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="kpi-trend up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+18.3%</div>
+                    </div>
+                    <div class="kpi-value">3,241</div>
+                    <div class="kpi-label">本月执行次数</div>
+                    <div class="kpi-sub">人均 2.8 次/周</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#EF4444,#F87171)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <div class="kpi-trend up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+5.2%</div>
+                    </div>
+                    <div class="kpi-value">76.4%</div>
+                    <div class="kpi-label">运动方案完成率</div>
+                    <div class="kpi-sub">较上月提升 5.2%</div>
+                </div>
+            </div>
+
+            <!-- 图表区 -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">运动类型使用频次分布</div>
+                    </div>
+                    <div id="chart-exercise-type" style="height:240px"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">各强度等级热量消耗对比（千卡/小时）</div>
+                    </div>
+                    <div id="chart-exercise-calorie" style="height:240px"></div>
+                </div>
+            </div>
+
+            <!-- 分类筛选 + 表格 -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">运动项目库</div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="exercise-search" placeholder="搜索运动项目..." oninput="filterExerciseTable()">
+                        </div>
+                        <button class="btn-primary" onclick="openExerciseModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            新增运动项目
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 分类筛选 -->
+                <div class="filter-bar" id="exercise-filter-bar" style="padding:12px 20px;border-bottom:1px solid #F1F5F9;display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="filter-btn active" data-category="all">全部</button>
+                    <button class="filter-btn" data-category="有氧运动">有氧运动</button>
+                    <button class="filter-btn" data-category="力量训练">力量训练</button>
+                    <button class="filter-btn" data-category="柔韧拉伸">柔韧拉伸</button>
+                    <button class="filter-btn" data-category="水上运动">水上运动</button>
+                    <button class="filter-btn" data-category="球类运动">球类运动</button>
+                    <button class="filter-btn" data-category="传统健身">传统健身</button>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>运动名称</th>
+                            <th>类型</th>
+                            <th>强度等级</th>
+                            <th>热量消耗(千卡/小时)</th>
+                            <th>适用人群</th>
+                            <th>推荐时长(分钟)</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exercise-tbody"></tbody>
+                </table>
+
+                <div class="table-footer">
+                    <div class="table-info" id="exercise-table-info">共 0 条记录</div>
+                    <div class="pagination">
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 </div>
 
@@ -1107,6 +1239,73 @@ tbody td{padding:14px 16px;font-size:13px;color:#374151;border-bottom:1px solid 
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeSpecialModal()">取消</button>
             <button class="btn-confirm" onclick="saveSpecial()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 运动项目新增/编辑弹窗 -->
+<div class="modal-overlay" id="exercise-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="exercise-modal-title">新增运动项目</div>
+            <button class="modal-close" onclick="closeExerciseModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">运动名称 *</label>
+                    <input type="text" class="form-input" id="ex-name" placeholder="如：慢跑">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">运动类型 *</label>
+                    <select class="form-select" id="ex-category">
+                        <option value="">请选择</option>
+                        <option>有氧运动</option>
+                        <option>力量训练</option>
+                        <option>柔韧拉伸</option>
+                        <option>水上运动</option>
+                        <option>球类运动</option>
+                        <option>传统健身</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">强度等级 *</label>
+                    <select class="form-select" id="ex-intensity">
+                        <option value="">请选择</option>
+                        <option>低强度</option>
+                        <option>中强度</option>
+                        <option>高强度</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">热量消耗(千卡/小时) *</label>
+                    <input type="number" class="form-input" id="ex-calorie" placeholder="如：400">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">推荐时长(分钟)</label>
+                    <input type="number" class="form-input" id="ex-duration" placeholder="如：30">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">适用人群</label>
+                    <input type="text" class="form-input" id="ex-target" placeholder="如：轻度肥胖、中老年">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">动作要领</label>
+                <textarea class="form-textarea" id="ex-tips" placeholder="请输入动作要领或注意事项..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">禁忌人群</label>
+                <input type="text" class="form-input" id="ex-contraindication" placeholder="如：严重心脏病、膝关节损伤患者">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeExerciseModal()">取消</button>
+            <button class="btn-confirm" onclick="saveExercise()">保存</button>
         </div>
     </div>
 </div>
@@ -1537,6 +1736,28 @@ var knowledgeData=[
   {title:'高尿酸人群的饮食禁忌',cat:'疾病饮食禁忌',read:598,collect:128,date:'2026-04-02',status:'草稿'}
 ];
 
+// ===== 运动项目数据 =====
+var exerciseData=[
+  {name:'慢跑',category:'有氧运动',intensity:'中强度',calorie:480,duration:30,target:'轻度肥胖、中老年',tips:'保持匀速，心率维持在最大心率60%-70%',contraindication:'膝关节严重损伤者',status:'启用'},
+  {name:'快走',category:'有氧运动',intensity:'低强度',calorie:280,duration:45,target:'老年人、孕产妇、初级锻炼者',tips:'大步幅行走，双臂配合摆动',contraindication:'无特殊禁忌',status:'启用'},
+  {name:'跳绳',category:'有氧运动',intensity:'高强度',calorie:720,duration:20,target:'中青年、体能较好者',tips:'前脚掌落地，保持节奏一致',contraindication:'膝关节损伤、心脏病患者',status:'启用'},
+  {name:'骑自行车',category:'有氧运动',intensity:'中强度',calorie:420,duration:40,target:'中轻度肥胖',tips:'调整座椅高度至踩踏时腿微弯',contraindication:'严重膝关节疾病',status:'启用'},
+  {name:'游泳',category:'水上运动',intensity:'中强度',calorie:500,duration:45,target:'肥胖人群、关节疾病患者',tips:'蛙泳、自由泳均可，量力而行',contraindication:'皮肤病、传染病活动期',status:'启用'},
+  {name:'水中慢跑',category:'水上运动',intensity:'低强度',calorie:300,duration:40,target:'老年人、关节炎患者、孕妇',tips:'借助水的浮力减少关节压力',contraindication:'皮肤开放性创口',status:'启用'},
+  {name:'深蹲',category:'力量训练',intensity:'中强度',calorie:350,duration:20,target:'需增强下肢力量者',tips:'膝盖不超过脚尖，背部保持挺直',contraindication:'膝关节严重损伤',status:'启用'},
+  {name:'哑铃训练',category:'力量训练',intensity:'中强度',calorie:320,duration:30,target:'需增肌减脂的中青年',tips:'动作要标准，避免代偿发力',contraindication:'肩袖损伤者',status:'启用'},
+  {name:'平板支撑',category:'力量训练',intensity:'低强度',calorie:200,duration:15,target:'核心力量薄弱者',tips:'保持身体一条直线，自然呼吸',contraindication:'腰椎间盘突出急性期',status:'启用'},
+  {name:'举重',category:'力量训练',intensity:'高强度',calorie:540,duration:45,target:'专业运动需求者',tips:'需专业指导，循序渐进增加重量',contraindication:'心脑血管疾病、高血压患者',status:'启用'},
+  {name:'瑜伽',category:'柔韧拉伸',intensity:'低强度',calorie:240,duration:60,target:'压力大、柔韧性差者',tips:'保持呼吸均匀，不强求体式',contraindication:'骨质疏松重度患者',status:'启用'},
+  {name:'太极拳',category:'传统健身',intensity:'低强度',calorie:200,duration:40,target:'老年人、慢性病患者',tips:'动作舒缓连贯，意气合一',contraindication:'无特殊禁忌',status:'启用'},
+  {name:'八段锦',category:'传统健身',intensity:'低强度',calorie:180,duration:30,target:'中老年、体质虚弱者',tips:'动作到位，配合呼吸节奏',contraindication:'无特殊禁忌',status:'启用'},
+  {name:'乒乓球',category:'球类运动',intensity:'中强度',calorie:360,duration:40,target:'中青年、手眼协调训练',tips:'注重移步步法，勿只动手臂',contraindication:'腰伤急性期',status:'启用'},
+  {name:'羽毛球',category:'球类运动',intensity:'中强度',calorie:400,duration:40,target:'中青年，需要上肢力量',tips:'注意热身，避免踝关节扭伤',contraindication:'肩关节严重损伤',status:'启用'},
+  {name:'篮球',category:'球类运动',intensity:'高强度',calorie:580,duration:60,target:'青年、体能良好者',tips:'充分热身，重视防守技术',contraindication:'膝关节疾病、心脏病',status:'启用'},
+  {name:'椭圆机',category:'有氧运动',intensity:'中强度',calorie:450,duration:35,target:'膝关节不适、需低冲击有氧',tips:'保持上身直立，双手握把辅助发力',contraindication:'严重髋关节疾病',status:'禁用'},
+  {name:'划船机',category:'有氧运动',intensity:'高强度',calorie:600,duration:30,target:'需全身有氧训练者',tips:'腿-腰-臂顺序发力，避免弓腰',contraindication:'腰椎间盘突出',status:'禁用'}
+];
+
 // ===== 特殊人群食谱详情数据 =====
 var specialRecipeDetail=[
   // 婴幼儿 5个
@@ -1688,7 +1909,10 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
     this.classList.add('active');
     var tab=this.getAttribute('data-tab');
     document.getElementById('tab-'+tab).classList.add('active');
-    setTimeout(function(){window.dispatchEvent(new Event('resize'))},50);
+    setTimeout(function(){
+      window.dispatchEvent(new Event('resize'));
+      if(tab==='exercise')initExerciseCharts();
+    },50);
   });
 });
 
@@ -1872,6 +2096,9 @@ function initAllCharts(){
       {name:'阅读量',type:'line',smooth:true,data:[320,456,512,688,820,1056],lineStyle:{width:2,color:'#10B981'},symbol:'circle',symbolSize:6,itemStyle:{color:'#10B981'}}
     ]
   });
+
+  // 运动项目图表（延迟初始化，Tab激活后再init）
+  // 由 initExerciseCharts() 在 Tab 切换时调用
 }
 
 // ===== 表格渲染 =====
@@ -2410,6 +2637,177 @@ document.querySelector('.special-filter').addEventListener('click',function(e){
   }
 });
 
+// ===== 运动项目管理 =====
+var currentExerciseFilter='all';
+var currentExerciseEditIndex=-1;
+
+function renderExerciseTable(category){
+  if(category!==undefined)currentExerciseFilter=category;
+  var keyword=(document.getElementById('exercise-search')||{}).value||'';
+  var filtered=exerciseData.filter(function(d){
+    var catOk=currentExerciseFilter==='all'||d.category===currentExerciseFilter;
+    var kwOk=!keyword||d.name.includes(keyword)||d.category.includes(keyword)||d.target.includes(keyword);
+    return catOk&&kwOk;
+  });
+  var tbody=document.getElementById('exercise-tbody');
+  if(!tbody)return;
+  var intensityColor={低强度:'#10B981',中强度:'#F59E0B',高强度:'#EF4444'};
+  tbody.innerHTML=filtered.map(function(d,i){
+    return '<tr>'+
+      '<td><span style="font-weight:600;color:#1E293B">'+d.name+'</span></td>'+
+      '<td><span class="badge badge-info">'+d.category+'</span></td>'+
+      '<td><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:'+intensityColor[d.intensity]+'">'+
+        '<span style="width:6px;height:6px;border-radius:50%;background:'+intensityColor[d.intensity]+'"></span>'+d.intensity+'</span></td>'+
+      '<td><span style="font-weight:600">'+d.calorie+'</span> 千卡</td>'+
+      '<td style="font-size:13px;color:#64748B">'+d.target+'</td>'+
+      '<td>'+d.duration+' min</td>'+
+      '<td><span class="badge '+(d.status==='启用'?'badge-success':'badge-danger')+'">'+d.status+'</span></td>'+
+      '<td>'+
+        '<button class="btn-link" onclick="editExercise('+exerciseData.indexOf(d)+')">编辑</button>'+
+        '<button class="btn-link" onclick="toggleExerciseStatus('+exerciseData.indexOf(d)+')" style="color:'+(d.status==='启用'?'#EF4444':'#10B981')+'">'+
+          (d.status==='启用'?'禁用':'启用')+
+        '</button>'+
+        '<button class="btn-link" style="color:#EF4444" onclick="deleteExercise('+exerciseData.indexOf(d)+')">删除</button>'+
+      '</td>'+
+    '</tr>';
+  }).join('');
+  var info=document.getElementById('exercise-table-info');
+  if(info)info.textContent='共 '+filtered.length+' 条记录';
+}
+
+function filterExerciseTable(){renderExerciseTable();}
+
+function openExerciseModal(editIdx){
+  currentExerciseEditIndex=editIdx!==undefined?editIdx:-1;
+  var title=document.getElementById('exercise-modal-title');
+  if(title)title.textContent=currentExerciseEditIndex>=0?'编辑运动项目':'新增运动项目';
+  if(currentExerciseEditIndex>=0){
+    var d=exerciseData[currentExerciseEditIndex];
+    document.getElementById('ex-name').value=d.name;
+    document.getElementById('ex-category').value=d.category;
+    document.getElementById('ex-intensity').value=d.intensity;
+    document.getElementById('ex-calorie').value=d.calorie;
+    document.getElementById('ex-duration').value=d.duration;
+    document.getElementById('ex-target').value=d.target;
+    document.getElementById('ex-tips').value=d.tips;
+    document.getElementById('ex-contraindication').value=d.contraindication;
+  } else {
+    ['ex-name','ex-calorie','ex-duration','ex-target','ex-tips','ex-contraindication'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('ex-category').value='';
+    document.getElementById('ex-intensity').value='';
+  }
+  document.getElementById('exercise-modal').classList.add('show');
+}
+
+function closeExerciseModal(){
+  document.getElementById('exercise-modal').classList.remove('show');
+}
+
+function saveExercise(){
+  var name=document.getElementById('ex-name').value.trim();
+  var category=document.getElementById('ex-category').value;
+  var intensity=document.getElementById('ex-intensity').value;
+  var calorie=parseInt(document.getElementById('ex-calorie').value)||0;
+  if(!name||!category||!intensity||!calorie){showToast('请填写必填项','error');return;}
+  var item={
+    name:name,
+    category:category,
+    intensity:intensity,
+    calorie:calorie,
+    duration:parseInt(document.getElementById('ex-duration').value)||30,
+    target:document.getElementById('ex-target').value||'全人群',
+    tips:document.getElementById('ex-tips').value||'',
+    contraindication:document.getElementById('ex-contraindication').value||'无',
+    status:'启用'
+  };
+  if(currentExerciseEditIndex>=0){
+    item.status=exerciseData[currentExerciseEditIndex].status;
+    exerciseData[currentExerciseEditIndex]=item;
+    showToast('运动项目已更新','success');
+  } else {
+    exerciseData.push(item);
+    showToast('运动项目已添加','success');
+  }
+  closeExerciseModal();
+  renderExerciseTable();
+  initExerciseCharts();
+}
+
+function editExercise(idx){openExerciseModal(idx);}
+
+function toggleExerciseStatus(idx){
+  exerciseData[idx].status=exerciseData[idx].status==='启用'?'禁用':'启用';
+  renderExerciseTable();
+  showToast('状态已更新','success');
+}
+
+function deleteExercise(idx){
+  if(confirm('确定删除「'+exerciseData[idx].name+'」吗？')){
+    exerciseData.splice(idx,1);
+    renderExerciseTable();
+    initExerciseCharts();
+    showToast('已删除','success');
+  }
+}
+
+function initExerciseCharts(){
+  // 运动类型使用频次柱状图
+  var typeChart=charts['exercise-type'];
+  if(!typeChart){
+    var el=document.getElementById('chart-exercise-type');
+    if(el){typeChart=echarts.init(el);charts['exercise-type']=typeChart;}
+  }
+  if(typeChart){
+    var catCount={};
+    exerciseData.forEach(function(d){catCount[d.category]=(catCount[d.category]||0)+1;});
+    var cats=Object.keys(catCount);
+    var vals=cats.map(function(c){return catCount[c];});
+    typeChart.setOption({
+      grid:{top:20,bottom:40,left:50,right:20},
+      tooltip:{trigger:'axis'},
+      xAxis:{type:'category',data:cats,axisLabel:{fontSize:11}},
+      yAxis:{type:'value',name:'项目数'},
+      series:[{type:'bar',data:vals,itemStyle:{borderRadius:[4,4,0,0],color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#FBBF24'},{offset:1,color:'#F59E0B'}])},label:{show:true,position:'top',fontSize:11}}]
+    },true);
+  }
+
+  // 热量消耗对比条形图
+  var calChart=charts['exercise-calorie'];
+  if(!calChart){
+    var el2=document.getElementById('chart-exercise-calorie');
+    if(el2){calChart=echarts.init(el2);charts['exercise-calorie']=calChart;}
+  }
+  if(calChart){
+    var intensityMap={低强度:[],中强度:[],高强度:[]};
+    exerciseData.forEach(function(d){if(intensityMap[d.intensity])intensityMap[d.intensity].push(d.calorie);});
+    var iLabels=['低强度','中强度','高强度'];
+    var avgs=iLabels.map(function(k){
+      var arr=intensityMap[k];
+      return arr.length?Math.round(arr.reduce(function(a,b){return a+b;},0)/arr.length):0;
+    });
+    var colors=['#10B981','#F59E0B','#EF4444'];
+    calChart.setOption({
+      grid:{top:20,bottom:40,left:60,right:20},
+      tooltip:{trigger:'axis',formatter:'{b}: {c} 千卡/小时'},
+      xAxis:{type:'value',name:'千卡/小时'},
+      yAxis:{type:'category',data:iLabels},
+      series:[{type:'bar',data:avgs.map(function(v,i){return{value:v,itemStyle:{borderRadius:[0,4,4,0],color:colors[i]}}}),label:{show:true,position:'right',formatter:'{c} 千卡'}}]
+    },true);
+  }
+}
+
+document.getElementById('exercise-modal').addEventListener('click',function(e){
+  if(e.target===this)closeExerciseModal();
+});
+
+document.getElementById('exercise-filter-bar').addEventListener('click',function(e){
+  if(e.target.classList.contains('filter-btn')){
+    this.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+    e.target.classList.add('active');
+    renderExerciseTable(e.target.getAttribute('data-category'));
+  }
+});
+
 // 页面加载
 document.addEventListener('DOMContentLoaded',function(){
   initAllCharts();
@@ -2419,6 +2817,7 @@ document.addEventListener('DOMContentLoaded',function(){
   renderSpecialTable();
   renderFitnessTable();
   renderKnowledgeTable();
+  renderExerciseTable();
 });
 </script>
 </body>
